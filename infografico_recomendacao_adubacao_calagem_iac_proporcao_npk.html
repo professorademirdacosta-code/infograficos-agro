@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Infográfico Dinâmico — Recomendação de Calagem e Adubação</title>
+<style>
+  :root{
+    --bg:#f5f7ef;
+    --card:#ffffff;
+    --ink:#1f2a24;
+    --muted:#65736b;
+    --line:#dfe6dc;
+    --accent:#517a3a;
+    --accent2:#a56a2a;
+    --soft:#eef4e8;
+    --warn:#fff5d6;
+    --danger:#ffe5e0;
+    --ok:#e7f7e3;
+    --blue:#e8f0ff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:var(--ink)}
+  body{overflow:hidden}
+  .app{height:100vh;display:grid;grid-template-columns:290px 1fr}
+  aside{
+    background:#17251c;color:#fff;padding:22px 18px;display:flex;flex-direction:column;gap:16px;
+    box-shadow:8px 0 30px rgba(0,0,0,.12);z-index:5
+  }
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .logo{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#90c46c,#f4d06f);display:grid;place-items:center;font-size:26px}
+  .brand h1{font-size:18px;line-height:1.15;margin:0}
+  .brand p{font-size:12px;color:#c7d4ca;margin:3px 0 0}
+  .nav{display:flex;flex-direction:column;gap:8px}
+  .nav button{
+    border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;
+    border-radius:14px;padding:11px 12px;text-align:left;cursor:pointer;font-weight:700
+  }
+  .nav button.active{background:#ffffff;color:#17251c}
+  .side-note{font-size:12px;line-height:1.45;color:#d5ded8;background:rgba(255,255,255,.07);border-radius:16px;padding:12px;margin-top:auto}
+  main{height:100vh;overflow:hidden;position:relative}
+  .slides{height:100%;display:flex;transition:transform .45s ease}
+  section.slide{min-width:100%;height:100vh;padding:28px;overflow:auto}
+  .frame{max-width:1180px;margin:0 auto;min-height:calc(100vh - 56px);display:flex;flex-direction:column;gap:18px}
+  .hero{
+    background:linear-gradient(135deg,#ffffff 0%,#edf5e9 100%);
+    border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:0 18px 45px rgba(31,42,36,.08)
+  }
+  h2{font-size:34px;line-height:1.05;margin:0 0 10px}
+  h3{font-size:22px;margin:0 0 8px}
+  p{font-size:16px;line-height:1.45;margin:0;color:var(--muted)}
+  .grid{display:grid;gap:16px}
+  .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 10px 25px rgba(31,42,36,.06)
+  }
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 11px;font-weight:800;font-size:12px;background:var(--soft);color:#33512b;margin-bottom:8px}
+  .equation{font-family:Georgia,serif;background:#17251c;color:#fff;border-radius:18px;padding:16px;font-size:22px;text-align:center;margin:10px 0}
+  label{font-size:12px;font-weight:800;color:#3c4b43;display:block;margin-bottom:5px}
+  input, select{
+    width:100%;border:1px solid #cad6cc;border-radius:13px;padding:10px 11px;background:#fff;font-size:14px;color:var(--ink)
+  }
+  input:focus, select:focus{outline:3px solid rgba(81,122,58,.18);border-color:var(--accent)}
+  .form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .btn{
+    border:none;border-radius:16px;padding:13px 16px;background:var(--accent);color:#fff;font-weight:900;cursor:pointer;font-size:15px
+  }
+  .btn.secondary{background:#26372b}
+  .btn.light{background:#eef4e8;color:#25401e;border:1px solid #cddfc8}
+  .result{
+    border-radius:20px;padding:16px;border:1px solid var(--line);background:#fff
+  }
+  .result strong{font-size:24px;color:#17251c}
+  .tag{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;margin:3px;background:#edf2ec;color:#34483b}
+  .tag.low{background:#ffe8dc;color:#8b2c0e}
+  .tag.med{background:#fff5d6;color:#7c5a00}
+  .tag.high{background:#e7f7e3;color:#24611f}
+  .tag.very{background:#e8f0ff;color:#214e91}
+  .bar{height:12px;background:#edf0ed;border-radius:999px;overflow:hidden;margin-top:8px}
+  .bar span{display:block;height:100%;background:linear-gradient(90deg,#d95f35,#f2c94c,#6ab04c);width:20%;border-radius:999px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+  th{background:#f1f5ee;color:#34483b}
+  .summary-box{
+    background:#fff;border:2px dashed #a8b8a8;border-radius:24px;padding:20px;min-height:360px
+  }
+  .lines{display:grid;gap:12px;margin-top:14px}
+  .line{height:24px;border-bottom:1px solid #b8c3b8}
+  .alert{background:var(--warn);border:1px solid #eed891;color:#5e4300;border-radius:16px;padding:12px;font-size:14px;line-height:1.4}
+  .mini{font-size:12px;color:#718078}
+  .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:stretch}
+  .step{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px;text-align:center}
+  .step b{display:block;font-size:15px;margin-bottom:5px}
+  .step span{font-size:12px;color:var(--muted)}
+  .arrow{font-size:24px;color:#56745a}
+  .footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  @media(max-width:900px){
+    body{overflow:auto}.app{display:block;height:auto}aside{position:sticky;top:0;border-radius:0}.nav{display:grid;grid-template-columns:repeat(2,1fr)}
+    main{height:auto}.slides{display:block;transform:none!important}section.slide{min-width:0;height:auto}
+    .grid.two,.grid.three,.grid.four,.form-grid,.flow{grid-template-columns:1fr}
+  }
+  @media print{
+    body{overflow:visible;background:white}.app{display:block}aside{display:none}main{height:auto;overflow:visible}
+    .slides{display:block;transform:none!important}section.slide{height:auto;page-break-after:always;padding:16px}
+    .card,.hero{box-shadow:none}.btn{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="logo">🌱</div>
+      <div>
+        <h1>Recomendação de Calagem e Adubação</h1>
+        <p>Infográfico dinâmico — Boletim 100/IAC</p>
+      </div>
+    </div>
+    <div class="nav" id="nav"></div>
+    <div class="side-note">
+      <b>Uso didático:</b> esta versão interpreta a análise de solo, calcula calagem e converte necessidades de N, P₂O₅ e K₂O em fórmulas comerciais. A recomendação final deve ser conferida com um responsável técnico.
+    </div>
+  </aside>
+
+  <main>
+    <div class="slides" id="slides">
+      <section class="slide">
+        <div class="frame">
+          <div class="hero">
+            <span class="pill">Aula prática + tomada de decisão</span>
+            <h2>Da análise de solo à escolha do fertilizante</h2>
+            <p>O aluno preenche os resultados da análise, escolhe a cultura e a meta produtiva. O sistema interpreta acidez, fósforo, potássio, cálcio, magnésio, enxofre e micronutrientes; depois calcula a necessidade de calcário e sugere como transformar uma recomendação de N–P₂O₅–K₂O em dose de fórmula comercial.</p>
+          </div>
+
+          <div class="flow">
+            <div class="step"><b>1. Amostra</b><span>Gleba homogênea e dados confiáveis</span></div>
+            <div class="step"><b>2. Interpretação</b><span>Classes de fertilidade</span></div>
+            <div class="step"><b>3. Calagem</b><span>Elevar V% ao alvo da cultura</span></div>
+            <div class="step"><b>4. Adubação</b><span>Definir N, P₂O₅ e K₂O</span></div>
+            <div class="step"><b>5. Produto</b><span>Escolher fórmula e dose</span></div>
+          </div>
+
+          <div class="grid three">
+            <div class="card">
+              <span class="pill">Entrada</span>
+              <h3>Análise de solo</h3>
+              <p>pH, MO, P resina, K, Ca, Mg, H+Al, S e micronutrientes.</p>
+            </div>
+            <div class="card">
+              <span class="pill">Cálculo</span>
+              <h3>Correção e nutrientes</h3>
+              <p>O app calcula SB, CTC, V%, necessidade de calcário e balanço da fórmula NPK.</p>
+            </div>
+            <div class="card">
+              <span class="pill">Saída</span>
+              <h3>Relatório didático</h3>
+              <p>Gera interpretação técnica e quadro-resumo para o aluno anotar.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div class="hero">
+            <span class="pill">Fundamento técnico</span>
+            <h2>Como o raciocínio agronômico será apresentado</h2>
+            <p>Antes de “dar a resposta”, o infográfico mostra a lógica da recomendação. Isso evita que o aluno pense apenas em decorar dose de fertilizante.</p>
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <h3>Interpretação dos resultados</h3>
+              <p>Os teores são classificados em muito baixo, baixo, médio, alto ou muito alto. Para fósforo, o grupo da cultura altera a faixa de interpretação: florestais, perenes, anuais e hortaliças.</p>
+              <table>
+                <tr><th>Item</th><th>Uso no app</th></tr>
+                <tr><td>P resina</td><td>Classificação conforme grupo da cultura.</td></tr>
+                <tr><td>K trocável</td><td>Classificação por teor em mmolc/dm³.</td></tr>
+                <tr><td>pH e V%</td><td>Diagnóstico de acidez e cálculo de calagem.</td></tr>
+                <tr><td>Ca, Mg e S</td><td>Alerta de deficiência ou suficiência.</td></tr>
+                <tr><td>B, Cu, Fe, Mn, Zn</td><td>Triagem inicial de micronutrientes.</td></tr>
+              </table>
+            </div>
+            <div class="card">
+              <h3>Fórmula central da calagem — discriminada</h3>
+              <div class="equation">NC = [CTC × (V₂ − V₁)] ÷ (10 × PRNT)</div>
+              <table>
+                <tr><th>Símbolo</th><th>Significado</th><th>Unidade / forma de uso</th></tr>
+                <tr><td><b>NC</b></td><td>Necessidade de calagem</td><td>t/ha</td></tr>
+                <tr><td><b>CTC</b></td><td>Capacidade de troca de cátions a pH 7</td><td>mmolc/dm³</td></tr>
+                <tr><td><b>V₁</b></td><td>Saturação por bases atual do solo</td><td>%</td></tr>
+                <tr><td><b>V₂</b></td><td>Saturação por bases desejada para a cultura</td><td>%</td></tr>
+                <tr><td><b>PRNT</b></td><td>Poder relativo de neutralização total do calcário</td><td>%</td></tr>
+              </table>
+              <div class="alert">Exemplo: CTC = 60 mmolc/dm³, V₁ = 40%, V₂ = 70% e PRNT = 80%. Então NC = [60 × (70 − 40)] ÷ (10 × 80) = 2,25 t/ha.</div>
+              <p class="mini">O cálculo só recomenda calcário quando V₂ é maior que V₁. Quando V₁ já está acima do alvo, o app mostra “sem necessidade pelo critério de V%”.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div class="hero">
+            <span class="pill">Calculadora principal</span>
+            <h2>Preencha a análise de solo</h2>
+            <p>Use os valores normalmente presentes no laudo de análise de solo. Quando CTC e V% não forem informados, o app calcula a partir de Ca, Mg, K e H+Al.</p>
+          </div>
+
+          <div class="card">
+            <div class="form-grid">
+              <div><label>Cultura</label><select id="cultura"></select></div>
+              <div><label>Área (ha)</label><input id="area" type="number" value="1" step="0.1"></div>
+              <div><label>Meta produtiva</label><select id="meta"></select></div>
+              <div><label>PRNT do calcário (%)</label><input id="prnt" type="number" value="80" step="1"></div>
+              <div><label>pH em CaCl₂</label><input id="ph" type="number" value="5.0" step="0.1"></div>
+              <div><label>MO (g/dm³)</label><input id="mo" type="number" value="22" step="1"></div>
+              <div><label>P resina (mg/dm³)</label><input id="p" type="number" value="12" step="1"></div>
+              <div><label>K (mmolc/dm³)</label><input id="k" type="number" value="1.4" step="0.1"></div>
+              <div><label>Ca (mmolc/dm³)</label><input id="ca" type="number" value="18" step="0.1"></div>
+              <div><label>Mg (mmolc/dm³)</label><input id="mg" type="number" value="6" step="0.1"></div>
+              <div><label>H+Al (mmolc/dm³)</label><input id="hal" type="number" value="35" step="0.1"></div>
+              <div><label>S-SO₄ (mg/dm³)</label><input id="s" type="number" value="6" step="0.1"></div>
+              <div><label>B (mg/dm³)</label><input id="b" type="number" value="0.25" step="0.01"></div>
+              <div><label>Cu (mg/dm³)</label><input id="cu" type="number" value="0.4" step="0.01"></div>
+              <div><label>Fe (mg/dm³)</label><input id="fe" type="number" value="8" step="0.1"></div>
+              <div><label>Mn (mg/dm³)</label><input id="mn" type="number" value="2" step="0.1"></div>
+              <div><label>Zn (mg/dm³)</label><input id="zn" type="number" value="0.7" step="0.01"></div>
+            </div>
+            <div class="footer-actions">
+              <button class="btn" onclick="calcular()">Calcular recomendação</button>
+              <button class="btn light" onclick="carregarExemplo()">Carregar exemplo didático</button>
+              <button class="btn secondary" onclick="window.print()">Salvar em PDF / Imprimir</button>
+            </div>
+          </div>
+
+          <div id="resultados" class="grid three"></div>
+        </div>
+      </section>
+
+
+      <section class="slide">
+        <div class="frame">
+          <div class="hero">
+            <span class="pill">Método da relação NPK</span>
+            <h2>Escolha da fórmula pela proporção dos nutrientes</h2>
+            <p>Esse método compara a relação entre N, P₂O₅ e K₂O recomendados com a relação da fórmula comercial. A ideia é procurar uma fórmula que tenha proporção semelhante à necessidade da cultura.</p>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <h3>1) Como reduzir a recomendação</h3>
+              <p>Divida os três valores de N, P₂O₅ e K₂O pelo menor valor diferente de zero. Depois arredonde para obter uma relação simples.</p>
+              <div class="equation">Relação = N ÷ menor : P₂O₅ ÷ menor : K₂O ÷ menor</div>
+              <div class="alert">Exemplo: uma recomendação de 20-60-20 kg/ha gera relação 1-3-1. Portanto, fórmulas como 04-12-04, 05-15-05 ou 10-30-10 têm a mesma proporção.</div>
+              <div class="form-grid" style="grid-template-columns:repeat(3,1fr);margin-top:12px">
+                <div><label>N recomendado</label><input id="propN" type="number" value="20" step="1"></div>
+                <div><label>P₂O₅ recomendado</label><input id="propP" type="number" value="60" step="1"></div>
+                <div><label>K₂O recomendado</label><input id="propK" type="number" value="20" step="1"></div>
+              </div>
+              <button class="btn" style="margin-top:12px" onclick="calcularProporcao()">Calcular proporção</button>
+              <div id="propResultado" style="margin-top:12px"></div>
+            </div>
+
+            <div class="card">
+              <h3>2) Como calcular a dose da fórmula</h3>
+              <p>Depois de escolher uma fórmula com proporção semelhante, calcula-se a quantidade do produto pela soma dos nutrientes recomendados.</p>
+              <div class="equation">Dose = [(N + P₂O₅ + K₂O) × 100] ÷ (n + p + k)</div>
+              <p class="mini">Onde n, p e k são os teores percentuais da fórmula comercial. Exemplo: para recomendação 20-60-20 e fórmula 05-15-05, a dose é: (100 × 100) ÷ 25 = 400 kg/ha.</p>
+              <div class="alert">Depois da dose, confira quanto de cada nutriente será aplicado: nutriente fornecido = dose × teor da fórmula ÷ 100.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Fórmulas comerciais compatíveis com algumas proporções comuns</h3>
+            <table>
+              <tr><th>Proporção da necessidade</th><th>Exemplos de fórmulas próximas</th><th>Uso didático</th></tr>
+              <tr><td>1-1-1</td><td>04-04-04, 10-10-10, 20-20-20</td><td>Quando N, P₂O₅ e K₂O estão equilibrados.</td></tr>
+              <tr><td>1-2-1</td><td>04-08-04, 05-10-05, 10-20-10</td><td>Quando o fósforo precisa ser maior que N e K.</td></tr>
+              <tr><td>1-3-1</td><td>04-12-04, 05-15-05, 10-30-10</td><td>Adubação de plantio com maior participação de P₂O₅.</td></tr>
+              <tr><td>1-6-3</td><td>05-30-15</td><td>Exemplo clássico do Boletim 100 para recomendação 20-130-70.</td></tr>
+              <tr><td>0-1-1</td><td>00-20-20, 00-15-15</td><td>Quando não se deseja aplicar N na fórmula.</td></tr>
+              <tr><td>2-1-2</td><td>20-10-20, 10-05-10</td><td>Quando N e K são maiores que P₂O₅.</td></tr>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div class="hero">
+            <span class="pill">Escolha do fertilizante</span>
+            <h2>Transformar necessidade de nutrientes em dose de produto</h2>
+            <p>Depois que a recomendação técnica define quantos kg/ha de N, P₂O₅ e K₂O devem ser aplicados, o aluno compara fórmulas comerciais e observa qual atende melhor ao nutriente limitante.</p>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <h3>1) Necessidade de nutrientes</h3>
+              <div class="form-grid" style="grid-template-columns:repeat(3,1fr)">
+                <div><label>N recomendado (kg/ha)</label><input id="recN" type="number" value="30" step="1"></div>
+                <div><label>P₂O₅ recomendado (kg/ha)</label><input id="recP" type="number" value="80" step="1"></div>
+                <div><label>K₂O recomendado (kg/ha)</label><input id="recK" type="number" value="50" step="1"></div>
+              </div>
+              <h3 style="margin-top:18px">2) Fórmulas disponíveis</h3>
+              <p class="mini">Edite as fórmulas conforme os produtos que a escola/propriedade tem disponíveis.</p>
+              <div id="formulaList"></div>
+              <button class="btn light" onclick="addFormula()">+ adicionar fórmula</button>
+            </div>
+
+            <div class="card">
+              <h3>Resultado da comparação</h3>
+              <div class="alert">Critério didático: o app calcula a dose necessária de cada fórmula para atender ao nutriente mais exigente proporcionalmente. Depois mostra excesso ou complemento necessário.</div>
+              <button class="btn" style="margin:12px 0" onclick="compararFormulas()">Comparar fórmulas</button>
+              <div id="formulaResult"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div class="hero">
+            <span class="pill">Diagnóstico visual</span>
+            <h2>Painel de interpretação para discussão em sala</h2>
+            <p>Use este painel para perguntar: “qual nutriente está mais limitante?”, “qual correção vem antes?”, “qual risco há em escolher uma fórmula apenas pelo preço?”.</p>
+          </div>
+          <div id="painel" class="grid two"></div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div class="hero">
+            <span class="pill">Quadro para anotação</span>
+            <h2>Resumo que o aluno deve registrar</h2>
+            <p>Este quadro pode ser impresso ou salvo em PDF após preencher a análise de solo.</p>
+          </div>
+
+          <div class="summary-box">
+            <h3>Recomendação de calagem e adubação — síntese</h3>
+            <div id="resumoAluno">
+              <p><b>1. Cultura:</b> ________________________________</p>
+              <p><b>2. Classe de acidez:</b> _________________________</p>
+              <p><b>3. V% atual e V% desejado:</b> ___________________</p>
+              <p><b>4. Necessidade de calcário:</b> _________________ t/ha</p>
+              <p><b>5. Classe de P:</b> ______________________________</p>
+              <p><b>6. Classe de K:</b> ______________________________</p>
+              <p><b>7. Fórmula NPK escolhida:</b> ____________________</p>
+              <p><b>8. Dose do produto:</b> __________________________ kg/ha</p>
+              <p><b>9. Complementos necessários:</b> _________________</p>
+            </div>
+            <div class="lines">
+              <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const navNames = ['Início','Fundamento','Análise de solo','Proporção NPK','Fertilizante','Painel','Quadro'];
+let current = 0;
+const nav = document.getElementById('nav');
+navNames.forEach((n,i)=>{
+  const b=document.createElement('button');
+  b.textContent=(i+1)+'. '+n;
+  b.onclick=()=>go(i);
+  nav.appendChild(b);
+});
+function go(i){current=i;document.getElementById('slides').style.transform=`translateX(-${i*100}%)`;updateNav();}
+function updateNav(){[...nav.children].forEach((b,i)=>b.classList.toggle('active',i===current));}
+updateNav();
+
+const culturas = {
+  milho:{nome:'Milho grão', grupoP:'anuais', v2:70, obs:'Cereal de alta resposta a N; ajustar cobertura conforme histórico da gleba e expectativa de produtividade.', metas:[
+    {nome:'Baixa / média', n:30, p:60, k:40},
+    {nome:'Média / alta', n:60, p:80, k:60},
+    {nome:'Alta', n:90, p:100, k:80}
+  ]},
+  soja:{nome:'Soja', grupoP:'anuais', v2:60, obs:'Leguminosa; em geral não se recomenda N mineral quando há inoculação eficiente.', metas:[
+    {nome:'Baixa / média', n:0, p:50, k:40},
+    {nome:'Média / alta', n:0, p:70, k:60},
+    {nome:'Alta', n:0, p:90, k:80}
+  ]},
+  feijao:{nome:'Feijão', grupoP:'anuais', v2:70, obs:'Leguminosa anual; pode receber N de arranque e cobertura conforme sistema e resposta esperada.', metas:[
+    {nome:'Baixa / média', n:20, p:60, k:40},
+    {nome:'Média / alta', n:40, p:80, k:60},
+    {nome:'Alta', n:60, p:100, k:80}
+  ]},
+
+  algodao:{nome:'Algodão', grupoP:'anuais', v2:70, obs:'No Boletim 100, o algodão exige V% próximo de 70% e atenção ao Mg; as doses variam por produtividade, P resina, K e CTC.', metas:[
+    {nome:'1,5 a 2,0 t/ha', n:50, p:60, k:50},
+    {nome:'2,0 a 2,4 t/ha', n:60, p:80, k:70},
+    {nome:'Acima de 2,4 t/ha', n:80, p:100, k:80}
+  ]},
+  girassol:{nome:'Girassol', grupoP:'anuais', v2:70, obs:'Oleaginosa; no Boletim 100 há recomendação de V% 70%, Mg mínimo, S e atenção especial ao B.', metas:[
+    {nome:'Condição média', n:50, p:60, k:40},
+    {nome:'Condição alta', n:60, p:80, k:60}
+  ]},
+  sorgo:{nome:'Sorgo granífero/forrageiro', grupoP:'anuais', v2:60, obs:'Gramínea rústica, mas responsiva a N; ajustar se o objetivo for grão, silagem, forragem ou vassoura.', metas:[
+    {nome:'Baixa / média', n:40, p:50, k:40},
+    {nome:'Média / alta', n:70, p:70, k:60},
+    {nome:'Alta produção de massa', n:100, p:80, k:90}
+  ]},
+  milheto:{nome:'Milheto', grupoP:'anuais', v2:50, obs:'Inclusão didática como gramínea de cobertura/forrageira. Como não aparece explicitamente na lista principal do Boletim 100, use como referência ajustável e confira recomendação regional.', metas:[
+    {nome:'Cobertura do solo', n:20, p:40, k:30},
+    {nome:'Forragem / massa verde', n:60, p:60, k:50},
+    {nome:'Alta produção de biomassa', n:90, p:70, k:70}
+  ]},
+  aveia_preta:{nome:'Aveia preta', grupoP:'anuais', v2:50, obs:'O Boletim 100 indica V% 50% para aveia preta e centeio, com atenção a S, Zn e B conforme análise.', metas:[
+    {nome:'1 a 2 t/ha', n:20, p:50, k:30},
+    {nome:'2 a 3 t/ha', n:40, p:60, k:40},
+    {nome:'Cobertura/adubo verde', n:20, p:40, k:30}
+  ]},
+
+  tremoco:{nome:'Tremoço', grupoP:'anuais', v2:60, obs:'Leguminosa usada como adubo verde; pode aproveitar adubação residual da cultura anterior.', metas:[
+    {nome:'Adubo verde — solo baixo', n:0, p:40, k:30},
+    {nome:'Adubo verde — solo médio', n:0, p:20, k:20},
+    {nome:'Adubo verde — solo alto', n:0, p:0, k:0}
+  ]},
+  feijao_porco:{nome:'Feijão-de-porco', grupoP:'anuais', v2:60, obs:'Leguminosa para adubação verde; no Boletim 100 pode dispensar adubação se houver bom efeito residual da cultura anterior.', metas:[
+    {nome:'Adubo verde — solo baixo', n:0, p:40, k:30},
+    {nome:'Adubo verde — solo médio', n:0, p:20, k:20},
+    {nome:'Adubo verde — solo alto', n:0, p:0, k:0}
+  ]},
+
+  cana:{nome:'Cana-de-açúcar', grupoP:'perenes', v2:60, obs:'Cultura industrial; distinguir cana-planta e soqueira.', metas:[
+    {nome:'Cana planta', n:30, p:100, k:100},
+    {nome:'Soqueira média', n:80, p:30, k:100},
+    {nome:'Soqueira alta', n:100, p:40, k:140}
+  ]},
+  citros:{nome:'Citros', grupoP:'perenes', v2:70, obs:'Perenes exigem integração com diagnose foliar, produtividade e manejo de parcelamento.', metas:[
+    {nome:'Formação', n:40, p:50, k:40},
+    {nome:'Produção média', n:120, p:60, k:100},
+    {nome:'Produção alta', n:160, p:80, k:140}
+  ]},
+  pastagem:{nome:'Pastagem / forrageira', grupoP:'perenes', v2:50, obs:'A intensidade de uso altera fortemente a necessidade de N e K.', metas:[
+    {nome:'Manutenção baixa', n:40, p:40, k:30},
+    {nome:'Intensificada', n:100, p:60, k:80},
+    {nome:'Alta intensificação', n:180, p:80, k:120}
+  ]},
+
+  alface:{nome:'Alface / almeirão / rúcula', grupoP:'hortalicas', v2:80, obs:'Hortaliças têm uso intensivo do solo, geralmente irrigadas, com alta demanda por correção, matéria orgânica e adubação bem manejada.', metas:[
+    {nome:'Folhosas — ciclo comum', n:80, p:180, k:80},
+    {nome:'Folhosas — alta intensidade', n:120, p:240, k:120}
+  ]},
+  couve:{nome:'Couve-manteiga / mostarda', grupoP:'hortalicas', v2:80, obs:'Folhosas de colheita parcelada exigem atenção ao parcelamento de N e K.', metas:[
+    {nome:'Produção média', n:100, p:180, k:120},
+    {nome:'Produção alta', n:150, p:240, k:180}
+  ]},
+  cenoura:{nome:'Cenoura / beterraba / rabanete', grupoP:'hortalicas', v2:80, obs:'Hortaliças de raiz exigem solo bem corrigido, bom preparo e cuidado para evitar desequilíbrios que afetem qualidade comercial.', metas:[
+    {nome:'Produção média', n:60, p:200, k:120},
+    {nome:'Produção alta', n:90, p:280, k:180}
+  ]},
+  repolho:{nome:'Repolho / brócolis / couve-flor', grupoP:'hortalicas', v2:80, obs:'Brássicas são exigentes; avaliar B e Mo conforme análise, histórico da área e sintomas.', metas:[
+    {nome:'Produção média', n:120, p:220, k:160},
+    {nome:'Produção alta', n:180, p:300, k:220}
+  ]},
+  pimentao:{nome:'Pimentão / berinjela / jiló', grupoP:'hortalicas', v2:80, obs:'Solanáceas exigem parcelamento e equilíbrio nutricional para reduzir distúrbios fisiológicos.', metas:[
+    {nome:'Produção média', n:120, p:250, k:160},
+    {nome:'Produção alta', n:180, p:350, k:240}
+  ]},
+  pepino:{nome:'Pepino / abobrinha / abóbora', grupoP:'hortalicas', v2:80, obs:'Cucurbitáceas respondem bem a correção, adubação orgânica e parcelamento de N e K.', metas:[
+    {nome:'Produção média', n:100, p:220, k:140},
+    {nome:'Produção alta', n:150, p:300, k:220}
+  ]},
+  tomate:{nome:'Tomate estaqueado', grupoP:'hortalicas', v2:80, obs:'Hortaliça de alta exigência; dose e parcelamento devem considerar sistema, irrigação e produtividade esperada.', metas:[
+    {nome:'Média', n:80, p:250, k:120},
+    {nome:'Alta', n:120, p:350, k:180}
+  ]},
+  melancia:{nome:'Melancia / melão', grupoP:'hortalicas', v2:80, obs:'Cucurbitáceas de fruto; o K é decisivo para produção e qualidade, mas deve ser equilibrado com Ca e Mg.', metas:[
+    {nome:'Produção média', n:80, p:180, k:120},
+    {nome:'Produção alta', n:120, p:260, k:200}
+  ]}
+};
+
+const formulasPadrao = [
+  {nome:'04-14-08', n:4, p:14, k:8},
+  {nome:'08-28-16', n:8, p:28, k:16},
+  {nome:'10-10-10', n:10, p:10, k:10},
+  {nome:'20-05-20', n:20, p:5, k:20},
+  {nome:'Ureia', n:45, p:0, k:0},
+  {nome:'Superfosfato simples', n:0, p:18, k:0},
+  {nome:'Cloreto de potássio', n:0, p:0, k:60}
+];
+
+const pRanges = {
+  florestais:[[0,2],[3,5],[6,8],[9,16],[16.0001,9999]],
+  perenes:[[0,5],[6,12],[13,30],[31,60],[60.0001,9999]],
+  anuais:[[0,6],[7,15],[16,40],[41,80],[80.0001,9999]],
+  hortalicas:[[0,10],[11,25],[26,60],[61,120],[120.0001,9999]]
+};
+const classes = ['Muito baixo','Baixo','Médio','Alto','Muito alto'];
+
+function setupCulturas(){
+  const sel=document.getElementById('cultura');
+  Object.entries(culturas).forEach(([key,c])=>{
+    const o=document.createElement('option');o.value=key;o.textContent=c.nome;sel.appendChild(o);
+  });
+  sel.onchange=updateMetas;
+  updateMetas();
+}
+function updateMetas(){
+  const c=culturas[document.getElementById('cultura').value];
+  const meta=document.getElementById('meta');
+  meta.innerHTML='';
+  c.metas.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m.nome;meta.appendChild(o);});
+  document.getElementById('recN').value=c.metas[0].n;
+  document.getElementById('recP').value=c.metas[0].p;
+  document.getElementById('recK').value=c.metas[0].k;
+}
+document.getElementById('meta').addEventListener('change',()=>{
+  const c=culturas[document.getElementById('cultura').value];
+  const m=c.metas[Number(document.getElementById('meta').value)];
+  document.getElementById('recN').value=m.n;document.getElementById('recP').value=m.p;document.getElementById('recK').value=m.k;
+});
+
+function val(id){return Number(document.getElementById(id).value)||0}
+function classByRanges(v,ranges){
+  for(let i=0;i<ranges.length;i++){ if(v>=ranges[i][0] && v<=ranges[i][1]) return {nome:classes[i], idx:i};}
+  return {nome:'Fora da escala',idx:0};
+}
+function classeK(k){
+  if(k<=0.7)return {nome:'Muito baixo',idx:0};
+  if(k<=1.5)return {nome:'Baixo',idx:1};
+  if(k<=3.0)return {nome:'Médio',idx:2};
+  if(k<=6.0)return {nome:'Alto',idx:3};
+  return {nome:'Muito alto',idx:4};
+}
+function classeAcidezPH(ph){
+  if(ph<=4.3)return 'Muito alta';
+  if(ph<=5.0)return 'Alta';
+  if(ph<=5.5)return 'Média';
+  if(ph<=6.0)return 'Baixa';
+  return 'Muito baixa';
+}
+function classeV(v){
+  if(v<=25)return 'Muito baixa';
+  if(v<=50)return 'Baixa';
+  if(v<=70)return 'Média';
+  if(v<=90)return 'Alta';
+  return 'Muito alta';
+}
+function classe3(v,a,b){ if(v<=a)return ['Baixo',0]; if(v<=b)return ['Médio',1]; return ['Alto',2];}
+function tagClass(idx){return idx<=1?'low':idx===2?'med':idx===3?'high':'very'}
+
+function calcular(){
+  const cultura=culturas[document.getElementById('cultura').value];
+  const meta=cultura.metas[Number(document.getElementById('meta').value)];
+  document.getElementById('recN').value=meta.n;document.getElementById('recP').value=meta.p;document.getElementById('recK').value=meta.k;
+
+  const ph=val('ph'), p=val('p'), k=val('k'), ca=val('ca'), mg=val('mg'), hal=val('hal'), prnt=val('prnt'), area=val('area');
+  const sb=ca+mg+k;
+  const ctc=sb+hal;
+  const v1=ctc>0?(sb/ctc)*100:0;
+  const nc=Math.max(0, ctc*(cultura.v2-v1)/(10*prnt));
+  const pC=classByRanges(p,pRanges[cultura.grupoP]);
+  const kC=classeK(k);
+  const caC=classe3(ca,3,7), mgC=classe3(mg,4,8), sC=classe3(val('s'),4,10);
+  const bC=classe3(val('b'),0.20,0.60), cuC=classe3(val('cu'),0.2,0.8), feC=classe3(val('fe'),4,12), mnC=classe3(val('mn'),1.2,5.0), znC=classe3(val('zn'),0.5,1.2);
+
+  const out = `
+    <div class="result"><span class="pill">SB / CTC / V%</span><p>Soma de bases</p><strong>${sb.toFixed(1)}</strong><p class="mini">CTC: ${ctc.toFixed(1)} mmolc/dm³<br>V atual: ${v1.toFixed(1)}% (${classeV(v1)})</p></div>
+    <div class="result"><span class="pill">Calagem</span><p>Alvo da cultura: V₂ = ${cultura.v2}%</p><strong>${nc.toFixed(2)} t/ha</strong><p class="mini">Total para ${area} ha: ${(nc*area).toFixed(2)} t</p></div>
+    <div class="result"><span class="pill">P e K</span><p>P resina: <span class="tag ${tagClass(pC.idx)}">${pC.nome}</span></p><p>K: <span class="tag ${tagClass(kC.idx)}">${kC.nome}</span></p><p class="mini">Grupo de P: ${cultura.grupoP}</p></div>
+  `;
+  document.getElementById('resultados').innerHTML=out;
+
+  document.getElementById('painel').innerHTML = `
+    <div class="card">
+      <h3>Interpretação da fertilidade</h3>
+      ${linhaDiag('pH CaCl₂', ph, classeAcidezPH(ph), ph<=5?1:3)}
+      ${linhaDiag('Saturação por bases V%', v1.toFixed(1)+'%', classeV(v1), v1<50?1:v1<70?2:3)}
+      ${linhaDiag('Fósforo resina', p+' mg/dm³', pC.nome, pC.idx)}
+      ${linhaDiag('Potássio', k+' mmolc/dm³', kC.nome, kC.idx)}
+      ${linhaDiag('Cálcio', ca+' mmolc/dm³', caC[0], caC[1]+1)}
+      ${linhaDiag('Magnésio', mg+' mmolc/dm³', mgC[0], mgC[1]+1)}
+      ${linhaDiag('Enxofre', val('s')+' mg/dm³', sC[0], sC[1]+1)}
+    </div>
+    <div class="card">
+      <h3>Micronutrientes</h3>
+      ${linhaDiag('Boro', val('b')+' mg/dm³', bC[0], bC[1]+1)}
+      ${linhaDiag('Cobre', val('cu')+' mg/dm³', cuC[0], cuC[1]+1)}
+      ${linhaDiag('Ferro', val('fe')+' mg/dm³', feC[0], feC[1]+1)}
+      ${linhaDiag('Manganês', val('mn')+' mg/dm³', mnC[0], mnC[1]+1)}
+      ${linhaDiag('Zinco', val('zn')+' mg/dm³', znC[0], znC[1]+1)}
+      <div class="alert" style="margin-top:12px">Baixos teores não significam aplicação automática. A decisão depende da cultura, histórico da área, sintomas, produtividade esperada, fonte e forma de aplicação.</div>
+    </div>
+    <div class="card">
+      <h3>Recomendação-base para a cultura selecionada</h3>
+      <p><b>${cultura.nome}</b> — ${meta.nome}</p>
+      <table><tr><th>N</th><th>P₂O₅</th><th>K₂O</th></tr><tr><td>${meta.n} kg/ha</td><td>${meta.p} kg/ha</td><td>${meta.k} kg/ha</td></tr></table>
+      <div class="alert" style="margin-top:10px">${cultura.obs || 'Ajustar a recomendação conforme análise, produtividade esperada e sistema de cultivo.'}</div>
+      <p class="mini">Esses valores são editáveis no slide “Fertilizante” para adequação à tabela oficial, cultivar, sistema de cultivo, classe de solo e meta produtiva.</p>
+    </div>
+    <div class="card">
+      <h3>Sequência recomendada de decisão</h3>
+      <p>1. Conferir se a amostra representa a gleba.<br>2. Corrigir acidez quando necessário.<br>3. Definir dose de P e K pela classe de solo e cultura.<br>4. Definir N pela cultura, histórico da área e parcelamento.<br>5. Escolher fórmula comercial e complementar nutrientes em falta.</p>
+    </div>
+  `;
+
+  document.getElementById('resumoAluno').innerHTML = `
+    <p><b>1. Cultura:</b> ${cultura.nome} — ${meta.nome}</p>
+    <p><b>2. Classe de acidez:</b> pH ${ph} = ${classeAcidezPH(ph)}; V% = ${v1.toFixed(1)}% (${classeV(v1)})</p>
+    <p><b>3. V% atual e V% desejado:</b> ${v1.toFixed(1)}% → ${cultura.v2}%</p>
+    <p><b>4. Necessidade de calcário:</b> ${nc.toFixed(2)} t/ha | Total: ${(nc*area).toFixed(2)} t em ${area} ha</p>
+    <p><b>5. Classe de P:</b> ${pC.nome} (${p} mg/dm³)</p>
+    <p><b>6. Classe de K:</b> ${kC.nome} (${k} mmolc/dm³)</p>
+    <p><b>7. Recomendação N-P₂O₅-K₂O usada:</b> ${meta.n}-${meta.p}-${meta.k} kg/ha</p>
+    <p><b>8. Observação técnica:</b> ${cultura.obs || 'Conferir recomendação oficial para a cultura.'}</p>
+    <p><b>9. Fórmula NPK escolhida:</b> ____________________</p>
+    <p><b>9. Dose do produto e complementos:</b> ____________________</p>
+  `;
+}
+function linhaDiag(nome, valor, classe, idx){
+  const pct = Math.max(12, Math.min(100, (idx+1)*22));
+  return `<div style="margin-bottom:12px"><b>${nome}</b><span class="tag ${tagClass(idx)}" style="float:right">${classe}</span><p class="mini">${valor}</p><div class="bar"><span style="width:${pct}%"></span></div></div>`;
+}
+
+function renderFormulas(){
+  const box=document.getElementById('formulaList'); box.innerHTML='';
+  formulasPadrao.forEach((f,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:1.2fr repeat(3,.6fr) 34px;gap:6px;margin:8px 0;align-items:end';
+    row.innerHTML=`
+      <div><label>Nome</label><input value="${f.nome}" onchange="formulasPadrao[${i}].nome=this.value"></div>
+      <div><label>N %</label><input type="number" value="${f.n}" onchange="formulasPadrao[${i}].n=Number(this.value)||0"></div>
+      <div><label>P₂O₅ %</label><input type="number" value="${f.p}" onchange="formulasPadrao[${i}].p=Number(this.value)||0"></div>
+      <div><label>K₂O %</label><input type="number" value="${f.k}" onchange="formulasPadrao[${i}].k=Number(this.value)||0"></div>
+      <button class="btn light" style="padding:10px" onclick="formulasPadrao.splice(${i},1);renderFormulas()">×</button>
+    `;
+    box.appendChild(row);
+  });
+}
+function addFormula(){formulasPadrao.push({nome:'Nova fórmula',n:0,p:0,k:0});renderFormulas();}
+function mdc2(a,b){a=Math.round(Math.abs(a));b=Math.round(Math.abs(b));while(b){let t=b;b=a%b;a=t;}return a||1;}
+function mdc3(a,b,c){return mdc2(mdc2(a,b),c);}
+function proporcaoSimples(n,p,k){
+  const vals=[n,p,k].map(x=>Number(x)||0);
+  const positivos=vals.filter(x=>x>0);
+  if(!positivos.length)return '0-0-0';
+  const menor=Math.min(...positivos);
+  const rel=vals.map(x=>x===0?0:Math.round((x/menor)*10)/10);
+  const todosInteiros=rel.every(x=>Number.isInteger(x));
+  if(todosInteiros){
+    const m=mdc3(rel[0],rel[1],rel[2]);
+    return rel.map(x=>x/m).join('-');
+  }
+  return rel.join('-');
+}
+function calcularProporcao(){
+  const n=val('propN'), p=val('propP'), k=val('propK');
+  const rel=proporcaoSimples(n,p,k);
+  document.getElementById('propResultado').innerHTML = `
+    <div class="result">
+      <span class="pill">Resultado</span>
+      <p>Recomendação informada: <b>${n}-${p}-${k} kg/ha</b></p>
+      <strong>${rel}</strong>
+      <p class="mini">Procure uma fórmula comercial com essa mesma relação ou a mais próxima possível.</p>
+    </div>`;
+}
+function compararFormulas(){
+  const req={n:val('recN'),p:val('recP'),k:val('recK')};
+  const relReq = proporcaoSimples(req.n, req.p, req.k);
+  const somaReq=req.n+req.p+req.k;
+  const linhas = formulasPadrao.map(f=>{
+    const somaFormula=f.n+f.p+f.k;
+    const dose=somaFormula>0 ? (somaReq*100)/somaFormula : 0;
+    const forn={n:dose*f.n/100,p:dose*f.p/100,k:dose*f.k/100};
+    const falta={n:req.n-forn.n,p:req.p-forn.p,k:req.k-forn.k};
+    const relFormula=proporcaoSimples(f.n,f.p,f.k);
+    const erro=Math.abs(forn.n-req.n)+Math.abs(forn.p-req.p)+Math.abs(forn.k-req.k);
+    return {f,dose,forn,falta,relFormula,erro};
+  }).sort((a,b)=>a.erro-b.erro);
+  document.getElementById('formulaResult').innerHTML = `
+    <div class="alert" style="margin-bottom:12px">Relação da recomendação: <b>${relReq}</b>. As melhores fórmulas são as que chegam mais perto dessa proporção e deixam menor necessidade de complemento.</div>
+    <table>
+      <tr><th>Fórmula</th><th>Relação</th><th>Dose kg/ha</th><th>Fornece N-P₂O₅-K₂O</th><th>Complemento / excesso</th></tr>
+      ${linhas.map(x=>`
+        <tr>
+          <td><b>${x.f.nome}</b><br><span class="mini">${x.f.n}-${x.f.p}-${x.f.k}</span></td>
+          <td><span class="tag ${x.relFormula===relReq?'high':'med'}">${x.relFormula}</span></td>
+          <td>${x.dose.toFixed(0)}</td>
+          <td>${x.forn.n.toFixed(1)} - ${x.forn.p.toFixed(1)} - ${x.forn.k.toFixed(1)}</td>
+          <td class="mini">
+            N: ${x.falta.n>0?'falta '+x.falta.n.toFixed(1):'excesso '+Math.abs(x.falta.n).toFixed(1)}<br>
+            P₂O₅: ${x.falta.p>0?'falta '+x.falta.p.toFixed(1):'excesso '+Math.abs(x.falta.p).toFixed(1)}<br>
+            K₂O: ${x.falta.k>0?'falta '+x.falta.k.toFixed(1):'excesso '+Math.abs(x.falta.k).toFixed(1)}
+          </td>
+        </tr>`).join('')}
+    </table>
+    <div class="alert" style="margin-top:12px">Método usado: Dose = [(N + P₂O₅ + K₂O) × 100] ÷ soma dos teores da fórmula. Depois, confira os nutrientes fornecidos por dose × teor ÷ 100.</div>
+  `;
+}
+function carregarExemplo(){
+  document.getElementById('cultura').value='milho'; updateMetas();
+  document.getElementById('area').value=2; document.getElementById('prnt').value=80;
+  document.getElementById('ph').value=5.0; document.getElementById('mo').value=22;
+  document.getElementById('p').value=12; document.getElementById('k').value=1.4;
+  document.getElementById('ca').value=18; document.getElementById('mg').value=6;
+  document.getElementById('hal').value=35; document.getElementById('s').value=6;
+  document.getElementById('b').value=.25; document.getElementById('cu').value=.4; document.getElementById('fe').value=8; document.getElementById('mn').value=2; document.getElementById('zn').value=.7;
+  calcular();
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')go(Math.min(current+1,slides.length-1));
+  if(e.key==='ArrowLeft')go(Math.max(current-1,0));
+});
+setupCulturas(); renderFormulas(); calcular();
+</script>
+</body>
+</html>

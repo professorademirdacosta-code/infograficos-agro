@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infográfico Dinâmico — Classificação dos Alimentos para Nutrição Animal</title>
+  <style>
+    :root{
+      --bg:#f3f6f2;
+      --card:#ffffff;
+      --text:#1c2520;
+      --muted:#5f6f67;
+      --green:#13713d;
+      --green2:#0f5b31;
+      --yellow:#d9aa00;
+      --yellow2:#b88d00;
+      --dark:#263742;
+      --dark2:#192832;
+      --orange:#ef6c1a;
+      --orange2:#cf5410;
+      --blue:#1b77b8;
+      --line:#d7e0d9;
+      --shadow: 0 16px 45px rgba(20, 45, 32, .13);
+      --radius: 22px;
+    }
+
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(19,113,61,.15), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(239,108,26,.13), transparent 28%),
+        var(--bg);
+      color:var(--text);
+    }
+
+    .app{
+      width:min(1500px, 96vw);
+      margin:0 auto;
+      padding:24px 0 50px;
+    }
+
+    header{
+      background:rgba(255,255,255,.78);
+      backdrop-filter: blur(10px);
+      border:1px solid rgba(255,255,255,.65);
+      box-shadow:var(--shadow);
+      border-radius:30px;
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    header::after{
+      content:"";
+      position:absolute;
+      right:-80px;
+      top:-110px;
+      width:330px;
+      height:330px;
+      background:linear-gradient(135deg, rgba(19,113,61,.18), rgba(239,108,26,.16));
+      border-radius:50%;
+    }
+
+    .kicker{
+      color:var(--green);
+      font-weight:800;
+      letter-spacing:.09em;
+      text-transform:uppercase;
+      font-size:.82rem;
+    }
+
+    h1{
+      margin:8px 0 8px;
+      font-size:clamp(2.1rem, 4.7vw, 5rem);
+      line-height:.98;
+      max-width:1100px;
+      letter-spacing:-.05em;
+      position:relative;
+      z-index:1;
+    }
+
+    .subtitle{
+      max-width:980px;
+      font-size:clamp(1rem, 1.4vw, 1.2rem);
+      color:var(--muted);
+      line-height:1.55;
+      position:relative;
+      z-index:1;
+    }
+
+    .toolbar{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:24px;
+      position:relative;
+      z-index:2;
+    }
+
+    .btn{
+      border:0;
+      cursor:pointer;
+      border-radius:999px;
+      padding:12px 18px;
+      font-weight:800;
+      color:#fff;
+      background:var(--green);
+      box-shadow:0 8px 18px rgba(19,113,61,.23);
+      transition:.2s transform, .2s filter;
+    }
+    .btn:hover{transform:translateY(-2px); filter:brightness(1.04);}
+    .btn.secondary{background:#fff;color:var(--green);border:1px solid #cfe0d4; box-shadow:none;}
+    .btn.yellow{background:var(--yellow2);}
+    .btn.dark{background:var(--dark);}
+    .btn.orange{background:var(--orange);}
+
+    .section-title{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:20px;
+      margin:36px 0 16px;
+    }
+    .section-title h2{
+      font-size:clamp(1.5rem,2.8vw,2.6rem);
+      margin:0;
+      letter-spacing:-.035em;
+    }
+    .section-title p{
+      margin:0;
+      color:var(--muted);
+      max-width:650px;
+      line-height:1.45;
+    }
+
+    .mapa{
+      display:grid;
+      grid-template-columns: 280px 1fr 1fr;
+      gap:22px 26px;
+      align-items:stretch;
+      position:relative;
+    }
+
+    .grupo{
+      min-height:145px;
+      border-radius:var(--radius);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:20px;
+      font-size:1.85rem;
+      font-weight:900;
+      line-height:1.1;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .grupo span{display:block;font-size:1.15rem;font-weight:700;opacity:.92;margin-top:8px;}
+    .grupo::after{
+      content:"";
+      position:absolute;
+      width:170px;height:170px;
+      right:-65px;top:-65px;
+      border-radius:50%;
+      background:rgba(255,255,255,.14);
+    }
+
+    .g-vol{background:linear-gradient(135deg,var(--green),var(--green2));}
+    .g-con{background:linear-gradient(135deg,#e5bd13,var(--yellow2));}
+    .g-min{background:linear-gradient(135deg,var(--dark),var(--dark2));}
+    .g-vit{background:linear-gradient(135deg,var(--orange),var(--orange2));}
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(0,0,0,.06);
+      overflow:hidden;
+      min-height:145px;
+      transition:.25s transform, .25s box-shadow, .25s opacity;
+      position:relative;
+    }
+    .card:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(20,45,32,.18);}
+    .card .top{
+      color:#fff;
+      font-weight:900;
+      font-size:1.55rem;
+      padding:14px 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card .body{
+      padding:18px 22px 20px;
+      line-height:1.42;
+      font-size:1.03rem;
+    }
+    .card .body b{font-weight:900;}
+    .tagline{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:800;
+      background:#eef5ef;
+      color:var(--green2);
+    }
+
+    .green .top{background:linear-gradient(135deg,var(--green),var(--green2));}
+    .yellow .top{background:linear-gradient(135deg,#e6bd0d,var(--yellow2));}
+    .dark .top{background:linear-gradient(135deg,var(--dark),var(--dark2));}
+    .orange .top{background:linear-gradient(135deg,var(--orange),var(--orange2));}
+
+    .icon{font-size:1.8rem;line-height:1;}
+
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      background:#fff;
+      border:1px solid var(--line);
+      padding:12px;
+      border-radius:22px;
+      box-shadow:0 10px 30px rgba(0,0,0,.06);
+    }
+    .chip{
+      border:1px solid var(--line);
+      background:#f7faf7;
+      color:#26342d;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s;
+    }
+    .chip.active, .chip:hover{background:var(--green);color:#fff;border-color:var(--green);}
+
+    .painel{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:24px;
+      margin-top:18px;
+    }
+    .box{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+    .box h3{margin:0 0 12px;font-size:1.45rem;letter-spacing:-.02em;}
+    .box p{color:var(--muted);line-height:1.5;}
+
+    .selector{
+      width:100%;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid #cddbd2;
+      font-size:1rem;
+      font-weight:800;
+      background:#f8fbf8;
+      color:#1d2a23;
+    }
+    .result{
+      margin-top:16px;
+      border-radius:20px;
+      padding:18px;
+      background:#f4f8f4;
+      border:1px solid #dce8de;
+      min-height:160px;
+    }
+    .result h4{margin:0 0 8px;font-size:1.3rem;}
+    .result ul{padding-left:20px;line-height:1.5;margin:10px 0 0;}
+
+    .legend{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    .legend-item{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .dot{width:14px;height:14px;border-radius:50%;margin-top:4px;flex:0 0 14px;}
+    .dot.green{background:var(--green);}.dot.yellow{background:var(--yellow);}.dot.dark{background:var(--dark);}.dot.orange{background:var(--orange);}
+    .legend-item b{display:block;margin-bottom:4px;}
+    .legend-item span{font-size:.9rem;color:var(--muted);line-height:1.35;}
+
+    .decision{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+    }
+    .step{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:0 10px 28px rgba(0,0,0,.06);
+    }
+    .step .num{
+      width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;
+      color:#fff;font-weight:900;
+      background:var(--green);
+      margin-bottom:12px;
+    }
+    .step:nth-child(2) .num{background:var(--yellow2);}
+    .step:nth-child(3) .num{background:var(--orange);}
+    .step h3{margin:0 0 8px;}
+    .step p{color:var(--muted);line-height:1.45;margin:0;}
+
+    .quiz{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      align-items:start;
+    }
+    .question{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:0 10px 28px rgba(0,0,0,.06);
+    }
+    .question h3{margin:0 0 12px;}
+    .options{display:grid;gap:10px;}
+    .option{
+      cursor:pointer;
+      border:1px solid #d7e1da;
+      background:#f8fbf8;
+      border-radius:16px;
+      padding:12px;
+      font-weight:800;
+      transition:.2s;
+    }
+    .option:hover{transform:translateX(4px);background:#eef6ef;}
+    .option.correct{background:#dff4e6;border-color:#62bc7e;color:#13572e;}
+    .option.wrong{background:#ffe5df;border-color:#ff9b86;color:#912b17;}
+    .feedback{
+      margin-top:14px;
+      min-height:44px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .summary-table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      background:#fff;
+      border:1px solid var(--line);
+    }
+    .summary-table th, .summary-table td{
+      padding:15px 14px;
+      border-bottom:1px solid #e5ece7;
+      vertical-align:top;
+      text-align:left;
+    }
+    .summary-table th{background:#243541;color:#fff;font-size:.96rem;}
+    .summary-table tr:last-child td{border-bottom:0;}
+    .summary-table td:first-child{font-weight:900;}
+
+    .note{
+      margin-top:16px;
+      padding:16px 18px;
+      background:#fff8e1;
+      border:1px solid #f0d37b;
+      border-radius:18px;
+      color:#5c4810;
+      line-height:1.45;
+    }
+
+    .hidden{display:none!important;}
+    .fade{opacity:.22;filter:grayscale(.35);}
+
+    footer{
+      margin-top:34px;
+      color:var(--muted);
+      text-align:center;
+      font-size:.9rem;
+    }
+
+    @media (max-width: 1050px){
+      .mapa{grid-template-columns:1fr;}
+      .grupo{min-height:110px;}
+      .painel,.quiz{grid-template-columns:1fr;}
+      .legend{grid-template-columns:1fr 1fr;}
+      .decision{grid-template-columns:1fr;}
+    }
+
+    @media print{
+      body{background:#fff;}
+      .toolbar,.filters,.quiz,.painel{display:none;}
+      header,.card,.grupo,.box,.summary-table{box-shadow:none;}
+      .app{width:100%;padding:0;}
+      .mapa{grid-template-columns: 220px 1fr 1fr;gap:12px;}
+      .card,.grupo{break-inside:avoid;}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="kicker">Nutrição Animal • Classificação técnica dos alimentos</div>
+      <h1>O Mapa Completo da Classificação dos Alimentos</h1>
+      <p class="subtitle">
+        Infográfico dinâmico para aula: visualize a classificação dos alimentos usados na nutrição animal conforme teor de fibra bruta, proteína bruta, umidade, minerais e vitaminas. Use os filtros, o classificador rápido e o quiz para fixação.
+      </p>
+      <div class="toolbar">
+        <button class="btn" onclick="scrollToId('mapa')">Ver mapa</button>
+        <button class="btn yellow" onclick="scrollToId('classificador')">Classificador rápido</button>
+        <button class="btn dark" onclick="scrollToId('resumo')">Quadro resumo</button>
+        <button class="btn orange" onclick="scrollToId('quiz')">Quiz</button>
+        <button class="btn secondary" onclick="window.print()">Imprimir / salvar em PDF</button>
+      </div>
+    </header>
+
+    <section class="section-title" id="mapa">
+      <div>
+        <h2>Mapa visual da classificação</h2>
+      </div>
+      <p>Use os botões para destacar uma categoria. A base principal é a separação entre volumosos, concentrados, minerais e vitaminas.</p>
+    </section>
+
+    <div class="filters" aria-label="Filtros do mapa">
+      <button class="chip active" onclick="filterCards('todos', this)">Todos</button>
+      <button class="chip" onclick="filterCards('volumoso', this)">Volumosos</button>
+      <button class="chip" onclick="filterCards('concentrado', this)">Concentrados</button>
+      <button class="chip" onclick="filterCards('minerais', this)">Minerais</button>
+      <button class="chip" onclick="filterCards('vitaminas', this)">Vitaminas</button>
+    </div>
+
+    <section class="mapa" aria-label="Mapa de classificação dos alimentos">
+      <div class="grupo g-vol" data-cat="volumoso">Volumoso <span>&gt; 18% de Fibra Bruta</span></div>
+      <article class="card green" data-cat="volumoso">
+        <div class="top">Secos <span class="icon">🌾</span></div>
+        <div class="body">
+          <b>Fenos:</b> geralmente entre 12% e 25% de umidade.<br>
+          <b>Palhas:</b> geralmente abaixo de 12% de umidade.<br>
+          <span class="tagline">Baixa umidade • maior conservação</span>
+        </div>
+      </article>
+      <article class="card green" data-cat="volumoso">
+        <div class="top">Suculentos <span class="icon">💧</span></div>
+        <div class="body">
+          <b>Silagens:</b> acima de 25% de umidade.<br>
+          <b>Pastagens:</b> alimento verde consumido diretamente ou fornecido cortado.<br>
+          <span class="tagline">Alta umidade • maior participação de água</span>
+        </div>
+      </article>
+
+      <div class="grupo g-con" data-cat="concentrado">Concentrado <span>&lt; 18% de Fibra Bruta</span></div>
+      <article class="card yellow" data-cat="concentrado">
+        <div class="top">Energéticos &lt; 20% PB <span class="icon">🌽</span></div>
+        <div class="body">
+          <b>Origem animal:</b> gordura animal, sebo.<br>
+          <b>Origem vegetal:</b> milho, sorgo, arroz, trigo, aveia, cana-de-açúcar, cevada, centeio e óleos.<br>
+          <span class="tagline">Principal função: energia</span>
+        </div>
+      </article>
+      <article class="card yellow" data-cat="concentrado">
+        <div class="top">Proteicos &gt; 20% PB <span class="icon">🐟</span></div>
+        <div class="body">
+          <b>Origem animal:</b> farinha de carne, farinha de peixe, farinha de penas, farinha de sangue e subprodutos de abatedouros.<br>
+          <b>Origem vegetal:</b> soja, algodão, amendoim e girassol.<br>
+          <span class="tagline">Principal função: proteína</span>
+        </div>
+      </article>
+
+      <div class="grupo g-min" data-cat="minerais">Minerais <span>Elementos inorgânicos essenciais</span></div>
+      <article class="card dark" data-cat="minerais">
+        <div class="top">Macrominerais <span class="icon">⚖️</span></div>
+        <div class="body">
+          Cálcio (Ca), Fósforo (P), Potássio (K), Magnésio (Mg), Sódio (Na), Cloro (Cl) e Enxofre (S).<br>
+          <span class="tagline">Exigidos em maior quantidade</span>
+        </div>
+      </article>
+      <article class="card dark" data-cat="minerais">
+        <div class="top">Microminerais <span class="icon">🔬</span></div>
+        <div class="body">
+          Ferro (Fe), Cobre (Cu), Cobalto (Co), Iodo (I), Manganês (Mn), Zinco (Zn), Selênio (Se), Molibdênio (Mo) e Flúor (F).<br>
+          <span class="tagline">Exigidos em pequena quantidade</span>
+        </div>
+      </article>
+
+      <div class="grupo g-vit" data-cat="vitaminas">Vitaminas <span>Compostos orgânicos reguladores</span></div>
+      <article class="card orange" data-cat="vitaminas">
+        <div class="top">Lipossolúveis <span class="icon">🟠</span></div>
+        <div class="body">
+          Vitaminas A, D, E e K.<br>
+          <span class="tagline">Solúveis em gordura • podem ser armazenadas</span>
+        </div>
+      </article>
+      <article class="card orange" data-cat="vitaminas">
+        <div class="top">Hidrossolúveis <span class="icon">💦</span></div>
+        <div class="body">
+          Complexo B: B1, B2, B3, B5, B6, B7, B9, B12; e Vitamina C.<br>
+          <span class="tagline">Solúveis em água • menor armazenamento corporal</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="section-title" id="classificador">
+      <div><h2>Classificador rápido</h2></div>
+      <p>Escolha um alimento ou nutriente e veja onde ele se encaixa no mapa. Útil para revisão em sala e para atividades de fixação.</p>
+    </section>
+
+    <section class="painel">
+      <div class="box">
+        <h3>Selecione um exemplo</h3>
+        <select id="foodSelect" class="selector" onchange="classificar()">
+          <option value="">— escolha um item —</option>
+          <option value="feno">Feno</option>
+          <option value="palha">Palha</option>
+          <option value="silagem">Silagem</option>
+          <option value="pastagem">Pastagem</option>
+          <option value="milho">Milho</option>
+          <option value="sorgo">Sorgo</option>
+          <option value="soja">Farelo de soja</option>
+          <option value="girassol">Torta/Farelo de girassol</option>
+          <option value="farinha_peixe">Farinha de peixe</option>
+          <option value="calcio">Cálcio</option>
+          <option value="zinco">Zinco</option>
+          <option value="vitamina_a">Vitamina A</option>
+          <option value="vitamina_b1">Vitamina B1</option>
+        </select>
+        <div id="resultado" class="result">
+          <h4>Resultado</h4>
+          <p>O resultado aparecerá aqui após a seleção.</p>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Critérios centrais</h3>
+        <div class="legend">
+          <div class="legend-item"><span class="dot green"></span><div><b>Volumosos</b><span>Maior teor de fibra bruta, normalmente usados para estrutura da dieta e funcionamento ruminal.</span></div></div>
+          <div class="legend-item"><span class="dot yellow"></span><div><b>Concentrados</b><span>Menor teor de fibra bruta; divididos conforme o teor de proteína bruta.</span></div></div>
+          <div class="legend-item"><span class="dot dark"></span><div><b>Minerais</b><span>Elementos essenciais, classificados em macro e microminerais conforme a exigência.</span></div></div>
+          <div class="legend-item"><span class="dot orange"></span><div><b>Vitaminas</b><span>Reguladores metabólicos, classificados pela solubilidade.</span></div></div>
+        </div>
+        <div class="note"><b>Atenção didática:</b> a classificação ajuda a organizar os alimentos, mas a formulação da dieta depende da espécie, categoria animal, fase produtiva, análise bromatológica e objetivo de produção.</div>
+      </div>
+    </section>
+
+    <section class="section-title">
+      <div><h2>Roteiro de decisão</h2></div>
+      <p>Uma forma simples de ensinar os alunos a classificar um alimento na prática.</p>
+    </section>
+
+    <section class="decision">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>Verifique a fibra bruta</h3>
+        <p>Se o alimento tem mais de 18% de fibra bruta, ele tende a ser classificado como volumoso. Se tem menos de 18%, tende a ser concentrado.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>Nos concentrados, veja a proteína</h3>
+        <p>Concentrados com menos de 20% de proteína bruta são energéticos. Concentrados com mais de 20% de proteína bruta são proteicos.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>Separe suplementos reguladores</h3>
+        <p>Minerais e vitaminas não entram como volumosos ou concentrados clássicos: são suplementos essenciais para equilíbrio metabólico e desempenho.</p>
+      </div>
+    </section>
+
+    <section class="section-title" id="resumo">
+      <div><h2>Quadro resumo para anotação</h2></div>
+      <p>Use este quadro ao final da aula para revisão ou como base para uma atividade em grupo.</p>
+    </section>
+
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Critério principal</th>
+          <th>Subdivisões</th>
+          <th>Exemplos</th>
+          <th>Função didática na dieta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Volumosos</td>
+          <td>Mais de 18% de fibra bruta</td>
+          <td>Secos e suculentos</td>
+          <td>Fenos, palhas, silagens e pastagens</td>
+          <td>Fornecem fibra efetiva, favorecem mastigação, ruminação e saúde do trato digestivo.</td>
+        </tr>
+        <tr>
+          <td>Concentrados energéticos</td>
+          <td>Menos de 18% de fibra bruta e menos de 20% de proteína bruta</td>
+          <td>Origem vegetal ou animal</td>
+          <td>Milho, sorgo, arroz, trigo, óleos, gordura animal e sebo</td>
+          <td>Elevam a densidade energética da dieta e ajudam no ganho de peso, produção de leite ou postura.</td>
+        </tr>
+        <tr>
+          <td>Concentrados proteicos</td>
+          <td>Menos de 18% de fibra bruta e mais de 20% de proteína bruta</td>
+          <td>Origem vegetal ou animal</td>
+          <td>Soja, algodão, amendoim, girassol, farinha de peixe e farinha de carne</td>
+          <td>Complementam aminoácidos e nitrogênio para crescimento, produção e reprodução.</td>
+        </tr>
+        <tr>
+          <td>Minerais</td>
+          <td>Exigência quantitativa no organismo</td>
+          <td>Macro e microminerais</td>
+          <td>Ca, P, K, Mg, Na, Cl, S, Fe, Cu, Co, I, Mn, Zn, Se, Mo, F</td>
+          <td>Participam da formação óssea, equilíbrio osmótico, enzimas, imunidade e metabolismo.</td>
+        </tr>
+        <tr>
+          <td>Vitaminas</td>
+          <td>Solubilidade</td>
+          <td>Lipossolúveis e hidrossolúveis</td>
+          <td>A, D, E, K, complexo B e vitamina C</td>
+          <td>Atuam como reguladores metabólicos, antioxidantes, cofatores e suporte ao sistema imune.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <section class="section-title" id="quiz">
+      <div><h2>Quiz rápido</h2></div>
+      <p>Clique na alternativa correta. O feedback aparece imediatamente.</p>
+    </section>
+
+    <section class="quiz">
+      <div class="question">
+        <h3>1. Um alimento com menos de 18% de fibra bruta e mais de 20% de proteína bruta é:</h3>
+        <div class="options" data-answer="b">
+          <button class="option" data-value="a">Volumoso seco</button>
+          <button class="option" data-value="b">Concentrado proteico</button>
+          <button class="option" data-value="c">Macromineral</button>
+          <button class="option" data-value="d">Vitamina hidrossolúvel</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="question">
+        <h3>2. Feno e palha são classificados principalmente como:</h3>
+        <div class="options" data-answer="a">
+          <button class="option" data-value="a">Volumosos secos</button>
+          <button class="option" data-value="b">Volumosos suculentos</button>
+          <button class="option" data-value="c">Concentrados energéticos</button>
+          <button class="option" data-value="d">Microminerais</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="question">
+        <h3>3. Cálcio, fósforo e magnésio são exemplos de:</h3>
+        <div class="options" data-answer="c">
+          <button class="option" data-value="a">Vitaminas lipossolúveis</button>
+          <button class="option" data-value="b">Concentrados proteicos</button>
+          <button class="option" data-value="c">Macrominerais</button>
+          <button class="option" data-value="d">Alimentos suculentos</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="question">
+        <h3>4. Vitaminas A, D, E e K pertencem ao grupo das:</h3>
+        <div class="options" data-answer="d">
+          <button class="option" data-value="a">Hidrossolúveis</button>
+          <button class="option" data-value="b">Microminerais</button>
+          <button class="option" data-value="c">Energéticas</button>
+          <button class="option" data-value="d">Lipossolúveis</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <footer>
+      Material didático em HTML — Classificação dos alimentos na nutrição animal.
+    </footer>
+  </main>
+
+  <script>
+    const dados = {
+      feno: {
+        titulo: 'Feno', grupo: 'Volumoso seco', cor: 'green',
+        pontos: ['Classificado como volumoso por apresentar maior teor de fibra.', 'Tem menor umidade que alimentos verdes.', 'Usado principalmente para fornecer fibra e manter função ruminal.']
+      },
+      palha: {
+        titulo: 'Palha', grupo: 'Volumoso seco', cor: 'green',
+        pontos: ['Geralmente apresenta baixa umidade.', 'Possui alto teor de fibra e menor valor nutritivo em comparação a fenos de boa qualidade.', 'Pode ser usada como fonte de fibra, respeitando limitações nutricionais.']
+      },
+      silagem: {
+        titulo: 'Silagem', grupo: 'Volumoso suculento', cor: 'green',
+        pontos: ['Apresenta umidade mais elevada.', 'É conservada por fermentação anaeróbia.', 'Muito utilizada em dietas de ruminantes, especialmente bovinos.']
+      },
+      pastagem: {
+        titulo: 'Pastagem', grupo: 'Volumoso suculento', cor: 'green',
+        pontos: ['Alimento verde e úmido.', 'Pode ser consumido diretamente no pastejo.', 'Sua qualidade varia conforme espécie forrageira, idade da planta, manejo e fertilidade do solo.']
+      },
+      milho: {
+        titulo: 'Milho', grupo: 'Concentrado energético', cor: 'yellow',
+        pontos: ['Classificado como concentrado por ter menor teor de fibra.', 'É energético porque possui menos de 20% de proteína bruta.', 'Fonte importante de amido e energia metabolizável.']
+      },
+      sorgo: {
+        titulo: 'Sorgo', grupo: 'Concentrado energético', cor: 'yellow',
+        pontos: ['Fonte energética de origem vegetal.', 'Pode substituir parcialmente o milho em formulações.', 'Sua utilização depende da composição, processamento e presença de taninos em algumas variedades.']
+      },
+      soja: {
+        titulo: 'Farelo de soja', grupo: 'Concentrado proteico', cor: 'yellow',
+        pontos: ['Fonte proteica vegetal muito utilizada.', 'Entra no grupo dos concentrados proteicos por superar 20% de proteína bruta.', 'Importante para suprir proteína e aminoácidos.']
+      },
+      girassol: {
+        titulo: 'Torta/Farelo de girassol', grupo: 'Concentrado proteico', cor: 'yellow',
+        pontos: ['Fonte proteica vegetal.', 'Pode entrar como alternativa em formulações, dependendo do teor de fibra e proteína.', 'A inclusão deve considerar análise bromatológica e espécie animal.']
+      },
+      farinha_peixe: {
+        titulo: 'Farinha de peixe', grupo: 'Concentrado proteico de origem animal', cor: 'yellow',
+        pontos: ['Alta concentração de proteína.', 'Fonte de aminoácidos e minerais.', 'Seu uso depende de custo, disponibilidade, qualidade e restrições da formulação.']
+      },
+      calcio: {
+        titulo: 'Cálcio', grupo: 'Macromineral', cor: 'dark',
+        pontos: ['Exigido em maior quantidade que microminerais.', 'Relacionado à formação óssea, contração muscular, coagulação e produção.', 'O balanço cálcio:fósforo é importante em muitas espécies.']
+      },
+      zinco: {
+        titulo: 'Zinco', grupo: 'Micromineral', cor: 'dark',
+        pontos: ['Exigido em pequena quantidade.', 'Participa de enzimas, integridade de pele, casco, imunidade e reprodução.', 'Deficiência ou excesso podem comprometer desempenho e saúde.']
+      },
+      vitamina_a: {
+        titulo: 'Vitamina A', grupo: 'Vitamina lipossolúvel', cor: 'orange',
+        pontos: ['Solúvel em gordura.', 'Relacionada à visão, reprodução, imunidade e integridade de tecidos.', 'Pode ser armazenada em maior grau que vitaminas hidrossolúveis.']
+      },
+      vitamina_b1: {
+        titulo: 'Vitamina B1 — Tiamina', grupo: 'Vitamina hidrossolúvel', cor: 'orange',
+        pontos: ['Faz parte do complexo B.', 'Participa do metabolismo energético.', 'Por ser hidrossolúvel, tende a ter menor armazenamento corporal.']
+      }
+    };
+
+    function scrollToId(id){
+      document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function filterCards(cat, el){
+      document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+      el.classList.add('active');
+      document.querySelectorAll('[data-cat]').forEach(item => {
+        if(cat === 'todos' || item.dataset.cat === cat){
+          item.classList.remove('fade');
+        }else{
+          item.classList.add('fade');
+        }
+      });
+    }
+
+    function classificar(){
+      const value = document.getElementById('foodSelect').value;
+      const box = document.getElementById('resultado');
+      if(!value){
+        box.innerHTML = '<h4>Resultado</h4><p>O resultado aparecerá aqui após a seleção.</p>';
+        return;
+      }
+      const item = dados[value];
+      const colorMap = {green:'#13713d', yellow:'#b88d00', dark:'#263742', orange:'#ef6c1a'};
+      box.style.borderColor = colorMap[item.cor] || '#dce8de';
+      box.innerHTML = `
+        <h4>${item.titulo}</h4>
+        <p><b>Classificação:</b> <span style="color:${colorMap[item.cor]}; font-weight:900">${item.grupo}</span></p>
+        <ul>${item.pontos.map(p => `<li>${p}</li>`).join('')}</ul>
+      `;
+    }
+
+    document.querySelectorAll('.options').forEach(group => {
+      group.addEventListener('click', e => {
+        if(!e.target.classList.contains('option')) return;
+        const answer = group.dataset.answer;
+        const selected = e.target.dataset.value;
+        const feedback = group.parentElement.querySelector('.feedback');
+        group.querySelectorAll('.option').forEach(btn => {
+          btn.classList.remove('correct','wrong');
+          if(btn.dataset.value === answer) btn.classList.add('correct');
+        });
+        if(selected === answer){
+          feedback.textContent = 'Correto. Essa classificação segue o critério técnico apresentado no mapa.';
+          feedback.style.color = '#13572e';
+        }else{
+          e.target.classList.add('wrong');
+          feedback.textContent = 'Ainda não. Observe o critério de fibra, proteína, minerais ou solubilidade das vitaminas.';
+          feedback.style.color = '#912b17';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

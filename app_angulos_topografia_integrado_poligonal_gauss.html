@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App de Conversões Angulares</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --ink: #152238;
+      --muted: #62728a;
+      --blue: #0f2d52;
+      --blue-2: #174b7f;
+      --orange: #f4511e;
+      --orange-soft: #fff0ea;
+      --green: #18864b;
+      --green-soft: #eaf8f0;
+      --red: #c84242;
+      --red-soft: #fff0f0;
+      --line: #d9e1ec;
+      --shadow: 0 16px 38px rgba(15, 45, 82, 0.10);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(244, 81, 30, 0.08), transparent 32rem),
+        radial-gradient(circle at top right, rgba(15, 45, 82, 0.10), transparent 34rem),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .app {
+      width: min(1450px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 60px;
+    }
+
+    .topbar {
+      position: relative;
+      top: auto;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(217,225,236,.9);
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(15,45,82,.08);
+      backdrop-filter: blur(10px);
+      padding: 10px 12px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: max-content;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 14px;
+      font-size: 1.3rem;
+      box-shadow: 0 9px 18px rgba(15,45,82,.18);
+    }
+
+    .brand strong {
+      display: block;
+      color: var(--blue);
+      line-height: 1.1;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .tab {
+      appearance: none;
+      cursor: pointer;
+      box-shadow: none;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      color: var(--blue);
+      background: #fff;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      white-space: nowrap;
+      font-size: .9rem;
+      transition: .18s ease;
+    }
+
+    .tab:hover {
+      box-shadow: none;
+      background: var(--orange-soft);
+      color: var(--orange);
+      border-color: rgba(244,81,30,.25);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      min-height: clamp(380px, 52vw, 680px);
+      background:
+        linear-gradient(135deg, rgba(15, 45, 82, 0.98), rgba(22, 75, 128, 0.92)),
+        repeating-linear-gradient(45deg, transparent 0 12px, rgba(255,255,255,0.06) 12px 13px);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 28px;
+      align-items: center;
+      padding: clamp(28px, 5vw, 68px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 48px solid rgba(255,255,255,0.06);
+      right: -160px;
+      top: -130px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #fff;
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3, h4 { margin: 0; line-height: 1.12; }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 5.2rem);
+      letter-spacing: -0.045em;
+      max-width: 880px;
+    }
+
+    .subtitle {
+      margin-top: 14px;
+      color: #ffcfbf;
+      font-weight: 900;
+      font-size: clamp(1.15rem, 2.1vw, 2rem);
+    }
+
+    .hero p {
+      color: rgba(255,255,255,0.84);
+      max-width: 780px;
+      font-size: clamp(1rem, 1.25vw, 1.18rem);
+      margin: 22px 0 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .btn, button {
+      appearance: none;
+      border: 0;
+      background: var(--orange);
+      color: #fff;
+      font-weight: 900;
+      border-radius: 15px;
+      padding: 12px 16px;
+      cursor: pointer;
+      box-shadow: 0 9px 20px rgba(244, 81, 30, 0.23);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.96rem;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      box-shadow: none;
+    }
+
+    button:hover, .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(244, 81, 30, 0.28);
+    }
+
+    .hero-panel {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 28px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .concept {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 120px;
+    }
+
+    .concept strong {
+      display: block;
+      color: #fff;
+      font-size: 1.02rem;
+      margin-bottom: 5px;
+    }
+
+    .concept span {
+      color: rgba(255,255,255,0.76);
+      font-size: 0.92rem;
+    }
+
+    .section { margin-top: 28px; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 40px 4px 16px;
+    }
+
+    .section-title h2 {
+      color: var(--blue);
+      font-size: clamp(1.55rem, 2.7vw, 2.55rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-title p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      max-width: 820px;
+    }
+
+    .tag {
+      background: var(--orange-soft);
+      color: var(--orange);
+      border: 1px solid rgba(244, 81, 30, 0.16);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(217, 225, 236, 0.88);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 2.2vw, 28px);
+    }
+
+    .card h3 {
+      color: var(--blue);
+      font-size: clamp(1.22rem, 1.7vw, 1.7rem);
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--muted);
+      margin: 0 0 14px;
+    }
+
+    .definition {
+      background: #f8fbff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 15px;
+      margin-bottom: 14px;
+    }
+
+    .definition strong {
+      color: var(--blue);
+    }
+
+    .formula {
+      background: linear-gradient(135deg, #fff7f3, #ffffff);
+      border: 1px solid rgba(244, 81, 30, 0.22);
+      border-left: 6px solid var(--orange);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-weight: 900;
+      color: var(--blue);
+      margin: 14px 0;
+      overflow-x: auto;
+    }
+
+    .rule-list {
+      display: grid;
+      gap: 9px;
+      margin: 14px 0;
+    }
+
+    .rule {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #f7f9fc;
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--ink);
+    }
+
+    .rule b { color: var(--orange); }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .input-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .input-grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .field { display: grid; gap: 6px; }
+
+    label {
+      color: var(--blue);
+      font-weight: 900;
+      font-size: 0.92rem;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 1rem;
+      outline: none;
+      transition: border .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(244, 81, 30, 0.55);
+      box-shadow: 0 0 0 4px rgba(244, 81, 30, 0.11);
+      background: #fff;
+    }
+
+    .result {
+      margin-top: 16px;
+      background: #f7f9fc;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 86px;
+    }
+
+    .result strong { color: var(--blue); }
+
+    .steps {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .highlight {
+      display: inline-block;
+      background: var(--orange-soft);
+      color: var(--orange);
+      border-radius: 9px;
+      padding: 2px 7px;
+      font-weight: 900;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      margin-top: 12px;
+    }
+
+    th, td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th { background: var(--blue); color: #fff; }
+    tr:nth-child(even) td { background: #f8fafc; }
+
+    .compass-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 420px;
+    }
+
+    .compass {
+      width: min(380px, 88vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, #fff 0 25%, transparent 26%),
+        conic-gradient(from -45deg, rgba(244,81,30,.12) 0 25%, rgba(15,45,82,.08) 25% 50%, rgba(244,81,30,.12) 50% 75%, rgba(15,45,82,.08) 75% 100%),
+        #fff;
+      border: 12px solid #edf2f7;
+      box-shadow: inset 0 0 0 2px var(--line), var(--shadow);
+      position: relative;
+    }
+
+    .compass::before, .compass::after {
+      content: "";
+      position: absolute;
+      background: var(--line);
+      left: 50%;
+      top: 7%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 86%;
+    }
+
+    .compass::after { transform: translateX(-50%) rotate(90deg); }
+
+    .dir {
+      position: absolute;
+      font-weight: 900;
+      color: var(--blue);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      box-shadow: 0 6px 14px rgba(15,45,82,.08);
+      z-index: 2;
+    }
+
+    .n { top: 10px; left: 50%; transform: translateX(-50%); }
+    .s { bottom: 10px; left: 50%; transform: translateX(-50%); }
+    .e { right: 10px; top: 50%; transform: translateY(-50%); }
+    .w { left: 10px; top: 50%; transform: translateY(-50%); }
+
+    .quad {
+      position: absolute;
+      font-weight: 900;
+      color: var(--orange);
+      z-index: 2;
+      background: rgba(255,255,255,.82);
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+    .ne { right: 22%; top: 22%; }
+    .se { right: 22%; bottom: 22%; }
+    .sw { left: 22%; bottom: 22%; }
+    .nw { left: 22%; top: 22%; }
+
+    .needle {
+      position: absolute;
+      width: 8px;
+      height: 42%;
+      background: linear-gradient(to top, var(--orange), #ff9a76);
+      border-radius: 999px 999px 3px 3px;
+      left: calc(50% - 4px);
+      bottom: 50%;
+      transform-origin: bottom center;
+      transform: rotate(40deg);
+      z-index: 4;
+      transition: transform .8s cubic-bezier(.2,.9,.2,1);
+      box-shadow: 0 8px 18px rgba(244,81,30,.25);
+    }
+
+    .needle::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 11px solid transparent;
+      border-right: 11px solid transparent;
+      border-bottom: 20px solid var(--orange);
+    }
+
+    .center-dot {
+      width: 26px;
+      height: 26px;
+      background: var(--blue);
+      border: 5px solid #fff;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      box-shadow: 0 3px 12px rgba(0,0,0,.2);
+    }
+
+    .angle-label {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 900;
+      box-shadow: 0 8px 20px rgba(15,45,82,.18);
+    }
+
+    .practice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .exercise {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .exercise h4 { margin: 0 0 8px; color: var(--blue); }
+
+    .exercise .answer-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+      margin-top: 12px;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      display: none;
+      font-size: 0.95rem;
+    }
+
+    .feedback.ok {
+      display: block;
+      color: var(--green);
+      background: var(--green-soft);
+      border: 1px solid rgba(24,134,75,.18);
+    }
+
+    .feedback.bad {
+      display: block;
+      color: var(--red);
+      background: var(--red-soft);
+      border: 1px solid rgba(200,66,66,.18);
+    }
+
+    .note {
+      border-radius: 18px;
+      background: #f8fbff;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .angle-box {
+      display: grid;
+      gap: 12px;
+      background: #f9fbfd;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .angle-title {
+      font-weight: 900;
+      color: var(--blue);
+    }
+
+    footer {
+      margin-top: 26px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+
+    .format-toggle {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0 10px;
+      background: #f7f9fc;
+      border: 1px solid var(--line);
+      padding: 8px;
+      border-radius: 18px;
+    }
+
+    .format-toggle button {
+      box-shadow: none;
+      background: #fff;
+      color: var(--blue);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 11px 12px;
+      font-size: .92rem;
+    }
+
+    .format-toggle button.active {
+      background: var(--orange);
+      color: #fff;
+      border-color: var(--orange);
+      box-shadow: 0 8px 18px rgba(244,81,30,.18);
+    }
+
+    .hidden { display: none !important; }
+
+    .mini-help {
+      color: var(--muted);
+      font-size: .88rem;
+      margin-top: -2px;
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 16px;
+    }
+
+    .table-scroll table { min-width: 520px; }
+
+    .mobile-callout {
+      display: none;
+      background: #fff7f3;
+      border: 1px solid rgba(244,81,30,.20);
+      color: var(--blue);
+      border-radius: 16px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: .92rem;
+    }
+
+    @media (max-width: 1050px) {
+      .hero, .grid-2 { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .compass-wrap { min-height: 360px; }
+      .practice-grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .tabs { width: 100%; }
+    }
+
+    @media (max-width: 680px) {
+      .app { width: min(100% - 18px, 1450px); padding-top: 10px; }
+      .hero { border-radius: 22px; padding: 24px; }
+      .concept-grid, .grid-3, .input-grid, .input-grid.two, .input-grid.four, .exercise .answer-row { grid-template-columns: 1fr; }
+      .section-title { align-items: flex-start; flex-direction: column; }
+      .card { border-radius: 18px; }
+      table { font-size: 0.86rem; }
+      th, td { padding: 9px 7px; }
+    }
+
+    @media (max-width: 480px) {
+      body { line-height: 1.48; }
+      .app { width: 100%; padding: 8px 9px 44px; }
+      .topbar { top: 6px; border-radius: 16px; padding: 8px; }
+      .brand-icon { width: 36px; height: 36px; border-radius: 12px; }
+      .brand strong { font-size: .95rem; }
+      .brand span { font-size: .74rem; }
+      .tabs { gap: 6px; }
+      .tab { padding: 8px 10px; font-size: .8rem; }
+      h1 { font-size: clamp(2rem, 12vw, 3.4rem); }
+      .subtitle { font-size: 1.08rem; }
+      .hero { padding: 20px 16px; border-radius: 18px; gap: 16px; }
+      .hero p { font-size: .96rem; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; }
+      .hero-panel { padding: 12px; border-radius: 18px; }
+      .concept { min-height: auto; padding: 12px; }
+      .section-title { margin: 30px 2px 12px; }
+      .section-title h2 { font-size: 1.45rem; }
+      .card { padding: 15px; }
+      .card h3 { font-size: 1.18rem; }
+      input, select, button, .btn { min-height: 44px; font-size: 1rem; }
+      .input-grid { gap: 9px; }
+      .format-toggle { grid-template-columns: 1fr; }
+      .format-toggle button { width: 100%; }
+      .compass-wrap { min-height: auto; padding-top: 12px; padding-bottom: 12px; }
+      .compass { width: min(300px, 92vw); border-width: 9px; }
+      .angle-label { font-size: .88rem; padding: 7px 10px; }
+      .dir { font-size: .85rem; padding: 5px 8px; }
+      .quad { font-size: .82rem; }
+      table { font-size: .82rem; }
+      .mobile-callout { display: block; }
+      .exercise { padding: 13px; }
+      .result { min-height: 74px; padding: 12px; }
+    }
+
+
+
+    /* ===== MODO APRESENTAÇÃO/PÁGINAS =====
+       Cada bloco vira uma página, evitando rolagem longa em aula e no celular. */
+    body.page-mode {
+      font-size: 18px;
+    }
+
+    body.page-mode .hero,
+    body.page-mode .section {
+      display: none;
+      animation: pageFade .22s ease;
+    }
+
+    body.page-mode .hero.active-page,
+    body.page-mode .section.active-page {
+      display: grid;
+    }
+
+    body.page-mode .section.active-page {
+      display: block;
+      min-height: calc(100vh - 150px);
+    }
+
+    @keyframes pageFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+      box-shadow: 0 8px 18px rgba(15,45,82,.16);
+    }
+
+    body.page-mode .card p,
+    body.page-mode .definition,
+    body.page-mode .rule,
+    body.page-mode .steps,
+    body.page-mode .note,
+    body.page-mode table,
+    body.page-mode input,
+    body.page-mode select,
+    body.page-mode button,
+    body.page-mode .btn {
+      font-size: 1.08rem;
+    }
+
+    body.page-mode label { font-size: 1.02rem; }
+    body.page-mode .tab { font-size: 1rem; padding: 11px 15px; }
+    body.page-mode .brand strong { font-size: 1.08rem; }
+    body.page-mode .brand span { font-size: .94rem; }
+    body.page-mode .card h3 { font-size: clamp(1.38rem, 2vw, 1.95rem); }
+    body.page-mode .section-title h2 { font-size: clamp(1.85rem, 3.1vw, 3rem); }
+    body.page-mode .result { font-size: 1.12rem; }
+
+    .page-controls {
+      margin-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 0 10px 24px rgba(15,45,82,.07);
+    }
+
+    .page-controls .page-count {
+      color: var(--muted);
+      font-weight: 900;
+      text-align: center;
+      flex: 1;
+    }
+
+    .page-controls button {
+      min-width: 145px;
+      box-shadow: none;
+    }
+
+    @media (max-width: 760px) {
+      body.page-mode { font-size: 17px; }
+      .tabs { gap: 6px; }
+      body.page-mode .tab { font-size: .95rem; padding: 10px 13px; }
+      body.page-mode .card p,
+      body.page-mode .definition,
+      body.page-mode .rule,
+      body.page-mode .steps,
+      body.page-mode .note,
+      body.page-mode table,
+      body.page-mode input,
+      body.page-mode select,
+      body.page-mode button,
+      body.page-mode .btn { font-size: 1rem; }
+      .page-controls {
+        position: sticky;
+        bottom: 8px;
+        z-index: 20;
+      }
+      .page-controls button { min-width: auto; flex: 1; }
+      .page-controls .page-count { display: none; }
+      .compass-wrap { min-height: 300px; }
+    }
+
+
+
+    /* Módulos novos: coordenadas cartesianas e área por Gauss */
+    .calc-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .formula-stack {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .formula-line {
+      background: linear-gradient(135deg, #fff7f3, #ffffff);
+      border: 1px solid rgba(244, 81, 30, 0.22);
+      border-left: 6px solid var(--orange);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 900;
+      color: var(--blue);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      margin-top: 12px;
+    }
+
+    .table-wrap table { margin-top: 0; min-width: 620px; }
+
+    .gauss-input-table input {
+      min-width: 88px;
+      padding: 10px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .mini-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .ghost-btn {
+      background: #fff;
+      color: var(--blue);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .ghost-btn:hover {
+      background: var(--orange-soft);
+      color: var(--orange);
+      border-color: rgba(244,81,30,.24);
+    }
+
+    .coordinate-sketch {
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+      background: #f8fbff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .coordinate-sketch svg {
+      width: 100%;
+      max-width: 560px;
+      height: auto;
+      display: block;
+    }
+
+    .answer-big {
+      margin-top: 14px;
+      background: linear-gradient(135deg, var(--orange), #ff7a3d);
+      color: #fff;
+      border-radius: 18px;
+      padding: 15px 18px;
+      font-weight: 900;
+      font-size: clamp(1.1rem, 2vw, 1.55rem);
+      box-shadow: 0 12px 28px rgba(244,81,30,.22);
+    }
+
+    @media (max-width: 980px) {
+      .calc-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .formula-line { white-space: normal; }
+      .mini-toolbar button { width: 100%; }
+      .coordinate-sketch { min-height: 220px; }
+      .table-wrap table { min-width: 560px; }
+    }
+
+  
+
+    /* ===== AJUSTE TELA CHEIA RESPONSIVA =====
+       Usa melhor a largura da tela e reduz rolagem vertical em notebook/projetor. */
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+
+    body.page-mode {
+      min-height: 100dvh;
+      background:
+        radial-gradient(circle at top left, rgba(244, 81, 30, 0.06), transparent 24rem),
+        radial-gradient(circle at top right, rgba(15, 45, 82, 0.08), transparent 26rem),
+        var(--bg);
+    }
+
+    body.page-mode .app {
+      width: 100%;
+      max-width: 100vw;
+      margin: 0;
+      padding: clamp(6px, 1vw, 12px);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.page-mode .topbar {
+      flex-shrink: 0;
+      margin-bottom: 8px;
+      border-radius: 16px;
+      padding: 7px 9px;
+      gap: 10px;
+    }
+
+    body.page-mode .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      font-size: 1.08rem;
+    }
+
+    body.page-mode .brand strong { font-size: clamp(.92rem, 1vw, 1.04rem); }
+    body.page-mode .brand span { font-size: clamp(.72rem, .9vw, .86rem); }
+
+    body.page-mode .tabs {
+      flex: 1;
+      gap: 6px;
+      padding-bottom: 0;
+      scrollbar-width: thin;
+    }
+
+    body.page-mode .tab {
+      font-size: clamp(.78rem, .95vw, .95rem);
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+
+    body.page-mode .hero,
+    body.page-mode .section { margin-top: 0; }
+
+    body.page-mode .hero.active-page,
+    body.page-mode .section.active-page {
+      min-height: 0;
+      flex: 1 1 auto;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    body.page-mode .hero.active-page {
+      min-height: 0;
+      padding: clamp(14px, 2vw, 34px);
+      border-radius: 22px;
+      gap: clamp(12px, 1.6vw, 22px);
+      align-content: center;
+    }
+
+    body.page-mode .section-title {
+      margin: 6px 2px 8px;
+      gap: 8px;
+    }
+
+    body.page-mode .section-title h2 {
+      font-size: clamp(1.35rem, 2.3vw, 2.35rem);
+    }
+
+    body.page-mode .section-title p {
+      font-size: clamp(.92rem, 1.1vw, 1.05rem);
+      margin-top: 3px;
+    }
+
+    body.page-mode .grid-2,
+    body.page-mode .grid-3,
+    body.page-mode .calc-layout,
+    body.page-mode .practice-grid {
+      gap: clamp(8px, 1vw, 14px);
+    }
+
+    body.page-mode .card {
+      padding: clamp(12px, 1.4vw, 22px);
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(15, 45, 82, 0.08);
+    }
+
+    body.page-mode .card h3 {
+      font-size: clamp(1.18rem, 1.65vw, 1.65rem);
+      margin-bottom: 8px;
+    }
+
+    body.page-mode .card p,
+    body.page-mode .definition,
+    body.page-mode .rule,
+    body.page-mode .steps,
+    body.page-mode .note,
+    body.page-mode table,
+    body.page-mode input,
+    body.page-mode select,
+    body.page-mode button,
+    body.page-mode .btn {
+      font-size: clamp(.95rem, 1.05vw, 1.04rem);
+    }
+
+    body.page-mode .definition,
+    body.page-mode .formula,
+    body.page-mode .note,
+    body.page-mode .result,
+    body.page-mode .angle-box {
+      padding: clamp(10px, 1vw, 14px);
+      margin-top: 8px;
+      margin-bottom: 8px;
+      border-radius: 14px;
+    }
+
+    body.page-mode .input-grid { gap: 8px; margin: 10px 0; }
+    body.page-mode input,
+    body.page-mode select,
+    body.page-mode button,
+    body.page-mode .btn {
+      min-height: 40px;
+      padding: 9px 11px;
+    }
+
+    body.page-mode table { margin-top: 8px; }
+    body.page-mode th,
+    body.page-mode td { padding: 8px 8px; }
+
+    body.page-mode .compass-wrap { min-height: 300px; }
+    body.page-mode .compass { width: min(330px, 34vw); }
+
+    body.page-mode .page-controls {
+      flex-shrink: 0;
+      margin-top: 8px;
+      padding: 7px;
+      border-radius: 14px;
+      box-shadow: 0 8px 18px rgba(15,45,82,.06);
+    }
+
+    body.page-mode .page-controls button {
+      min-width: 120px;
+      min-height: 38px;
+      padding: 8px 10px;
+    }
+
+    body.page-mode .page-controls .page-count {
+      font-size: .95rem;
+    }
+
+    body.page-mode footer { display: none; }
+
+    @media (min-width: 1100px) and (max-height: 820px) {
+      body.page-mode { font-size: 16.5px; }
+      body.page-mode .hero.active-page { padding: 16px 24px; }
+      body.page-mode .card { padding: 14px; }
+      body.page-mode .section-title { margin: 4px 2px 6px; }
+      body.page-mode .definition,
+      body.page-mode .formula,
+      body.page-mode .note,
+      body.page-mode .result,
+      body.page-mode .angle-box { padding: 9px 11px; margin-top: 6px; margin-bottom: 6px; }
+      body.page-mode .compass-wrap { min-height: 260px; }
+      body.page-mode .compass { width: min(300px, 30vw); }
+      body.page-mode .page-controls { margin-top: 6px; }
+    }
+
+    @media (max-width: 900px) {
+      body.page-mode .app { padding: 8px; }
+      body.page-mode .topbar { flex-direction: column; align-items: stretch; }
+      body.page-mode .tabs { width: 100%; overflow-x: auto; }
+      body.page-mode .section.active-page { overflow: visible; }
+      body.page-mode .compass { width: min(310px, 82vw); }
+    }
+
+    @media (max-width: 520px) {
+      body.page-mode .app { padding: 6px; }
+      body.page-mode .topbar { border-radius: 14px; margin-bottom: 6px; }
+      body.page-mode .brand-icon { width: 34px; height: 34px; }
+      body.page-mode .tab { font-size: .78rem; padding: 8px 9px; }
+      body.page-mode .section-title h2 { font-size: 1.35rem; }
+      body.page-mode .card { padding: 12px; }
+      body.page-mode .page-controls {
+        position: sticky;
+        bottom: 6px;
+        z-index: 30;
+      }
+    }
+
+  
+
+    .segment-table input {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .segment-table td:last-child,
+    .segment-table th:last-child {
+      width: 120px;
+      white-space: nowrap;
+    }
+
+    .calc-sync-note {
+      margin-top: 10px;
+    }
+
+    .sketch-caption {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .94rem;
+      text-align: center;
+    }
+
+
+  </style>
+</head>
+<body class="page-mode">
+  <main class="app">
+    <nav class="topbar" aria-label="Navegação do aplicativo">
+      <div class="brand">
+        <div class="brand-icon">📐</div>
+        <div><strong>Ângulos Topográficos</strong><span>Conversores e prática</span></div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" type="button" onclick="goToSection('inicio')">Início</button>
+        <button class="tab" type="button" onclick="goToSection('conceitos')">Conceitos</button>
+        <button class="tab" type="button" onclick="goToSection('gms-decimal')">GMS ⇄ Decimal</button>
+        <button class="tab" type="button" onclick="goToSection('rumo-azimute')">Rumo ⇄ Azimute</button>
+        <button class="tab" type="button" onclick="goToSection('azimute-sequencial')">Azimute Sequencial</button>
+        <button class="tab" type="button" onclick="goToSection('operacoes')">Soma/Subtração</button>
+        <button class="tab" type="button" onclick="goToSection('coordenadas-cartesianas')">Coordenadas</button>
+        <button class="tab" type="button" onclick="goToSection('gauss-area')">Área Gauss</button>
+        <button class="tab" type="button" onclick="goToSection('pratica')">Teste</button>
+      </div>
+    </nav>
+
+    <header id="inicio" class="hero active-page">
+      <section>
+        <div class="badge">Topografia • Ângulos • Cálculo de campo</div>
+        <h1>Conversões Angulares na Topografia</h1>
+        <div class="subtitle">GMS ⇄ Decimal | Rumo ⇄ Azimute | Azimute Sequencial | Coordenadas | Área por Gauss</div>
+        <p>
+          Use este aplicativo para converter ângulos, comparar formas de representação e resolver operações angulares usadas em levantamentos topográficos.
+        </p>
+        <div class="hero-actions">
+          <button class="btn" type="button" onclick="goToSection('gms-decimal')">Abrir conversores</button>
+          <button class="btn secondary" type="button" onclick="goToSection('operacoes')">Somar e subtrair ângulos</button>
+        </div>
+      </section>
+
+      <aside class="hero-panel">
+        <div class="compass" style="width:min(330px, 100%); margin:auto;">
+          <span class="dir n">N</span><span class="dir s">S</span><span class="dir e">E</span><span class="dir w">W</span>
+          <span class="quad ne">NE</span><span class="quad se">SE</span><span class="quad sw">SW</span><span class="quad nw">NW</span>
+          <div class="needle" style="transform: rotate(40deg);"></div>
+          <div class="center-dot"></div>
+          <div class="angle-label">40°</div>
+        </div>
+        <div class="concept-grid">
+          <div class="concept"><strong>GMS</strong><span>Representação em graus, minutos e segundos. Ex.: 35° 25’ 30”.</span></div>
+          <div class="concept"><strong>Decimal</strong><span>Representação em número decimal. Ex.: 35,425°.</span></div>
+          <div class="concept"><strong>Rumo</strong><span>Ângulo de 0° a 90°, indicado por quadrante.</span></div>
+          <div class="concept"><strong>Azimute</strong><span>Ângulo de 0° a 360°, medido a partir do Norte.</span></div>
+        </div>
+      </aside>
+    </header>
+
+    <section id="conceitos" class="section">
+      <div class="section-title">
+        <div>
+          <h2>Conceitos essenciais</h2>
+          <p>Antes de converter, veja o significado de cada forma de representação angular.</p>
+        </div>
+        <span class="tag">Base teórica</span>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>GMS e graus decimais</h3>
+          <div class="definition"><strong>GMS:</strong> forma sexagesimal que divide o grau em minutos e segundos. Um grau possui 60 minutos e um minuto possui 60 segundos.</div>
+          <div class="definition"><strong>Graus decimais:</strong> forma numérica em que o ângulo aparece como um único número com casas decimais.</div>
+          <div class="formula">1° = 60’ &nbsp;&nbsp;|&nbsp;&nbsp; 1’ = 60” &nbsp;&nbsp;|&nbsp;&nbsp; 1° = 3600”</div>
+          <p>Na prática, o formato decimal facilita cálculos em planilhas, softwares e fórmulas. O formato GMS é comum em plantas, memoriais e anotações de campo.</p>
+        </article>
+
+        <article class="card">
+          <h3>Rumo e azimute</h3>
+          <div class="definition"><strong>Rumo:</strong> ângulo medido a partir do Norte ou do Sul em direção ao Leste ou Oeste. Varia de 0° a 90°.</div>
+          <div class="definition"><strong>Azimute:</strong> ângulo contado a partir do Norte, no sentido horário. Varia de 0° a 360°.</div>
+          <div class="formula">Rumo: N 40° E &nbsp;&nbsp;|&nbsp;&nbsp; Azimute: 40°</div>
+          <p>O rumo sempre precisa do quadrante. O azimute dispensa letras, pois sua posição já é definida no círculo completo.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="gms-decimal" class="section">
+      <div class="section-title">
+        <div>
+          <h2>GMS ⇄ graus decimais</h2>
+          <p>Converta entre a forma sexagesimal e a forma decimal.</p>
+        </div>
+        <span class="tag">Conversor 1</span>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>GMS para decimal</h3>
+          <p>Os graus permanecem inteiros. Os minutos entram como fração do grau e os segundos como fração ainda menor.</p>
+          <div class="formula">Decimal = Graus + (Minutos ÷ 60) + (Segundos ÷ 3600)</div>
+          <div class="input-grid">
+            <div class="field"><label for="gmsGraus">Graus</label><input id="gmsGraus" type="number" value="35" /></div>
+            <div class="field"><label for="gmsMin">Minutos</label><input id="gmsMin" type="number" value="25" min="0" max="59" /></div>
+            <div class="field"><label for="gmsSeg">Segundos</label><input id="gmsSeg" type="number" value="30" min="0" max="59" step="0.01" /></div>
+          </div>
+          <button onclick="convertGMSToDecimal()">Converter</button>
+          <div id="gmsDecimalResult" class="result"></div>
+        </article>
+
+        <article class="card">
+          <h3>Decimal para GMS</h3>
+          <p>A parte inteira gera os graus. A parte decimal multiplicada por 60 gera os minutos. A nova parte decimal multiplicada por 60 gera os segundos.</p>
+          <div class="formula">Decimal → graus inteiros → minutos → segundos</div>
+          <div class="input-grid two">
+            <div class="field"><label for="decimalInput">Graus decimais</label><input id="decimalInput" type="number" value="35.425" step="0.000001" /></div>
+          </div>
+          <button onclick="convertDecimalToGMS()">Converter</button>
+          <div id="decimalGMSResult" class="result"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="rumo-azimute" class="section">
+      <div class="section-title">
+        <div>
+          <h2>Rumo ⇄ azimute</h2>
+          <p>Converta direções topográficas usando quadrantes ou círculo completo.</p>
+        </div>
+        <span class="tag">Conversor 2</span>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Rumo para azimute</h3>
+          <table>
+            <thead><tr><th>Quadrante</th><th>Fórmula</th><th>Exemplo</th></tr></thead>
+            <tbody>
+              <tr><td>NE</td><td>Azimute = Rumo</td><td>N 40° E → 40°</td></tr>
+              <tr><td>SE</td><td>Azimute = 180° - Rumo</td><td>S 40° E → 140°</td></tr>
+              <tr><td>SW</td><td>Azimute = 180° + Rumo</td><td>S 40° W → 220°</td></tr>
+              <tr><td>NW</td><td>Azimute = 360° - Rumo</td><td>N 40° W → 320°</td></tr>
+            </tbody>
+          </table>
+          <div class="mobile-callout">No celular, use o modo decimal para digitação rápida ou o modo GMS quando o valor estiver em graus, minutos e segundos.</div>
+          <div class="format-toggle" aria-label="Formato do rumo">
+            <button id="rumoFmtDecimalBtn" class="active" type="button" onclick="setRumoFormat('decimal')">Rumo em decimal</button>
+            <button id="rumoFmtGmsBtn" type="button" onclick="setRumoFormat('gms')">Rumo em GMS</button>
+          </div>
+          <div id="rumoDecimalBox" class="input-grid two">
+            <div class="field"><label for="rumoValor">Valor do rumo decimal</label><input id="rumoValor" type="number" value="40" min="0" max="90" step="0.000001" inputmode="decimal" /><span class="mini-help">Ex.: 40,508333°</span></div>
+            <div class="field"><label for="rumoQuad">Quadrante</label><select id="rumoQuad"><option>NE</option><option>SE</option><option>SW</option><option>NW</option></select></div>
+          </div>
+          <div id="rumoGmsBox" class="hidden">
+            <div class="input-grid four">
+              <div class="field"><label for="rumoG">Graus</label><input id="rumoG" type="number" value="40" min="0" max="90" inputmode="numeric" /></div>
+              <div class="field"><label for="rumoM">Minutos</label><input id="rumoM" type="number" value="0" min="0" max="59" inputmode="numeric" /></div>
+              <div class="field"><label for="rumoS">Segundos</label><input id="rumoS" type="number" value="0" min="0" max="59" step="0.01" inputmode="decimal" /></div>
+              <div class="field"><label for="rumoQuadGms">Quadrante</label><select id="rumoQuadGms"><option>NE</option><option>SE</option><option>SW</option><option>NW</option></select></div>
+            </div>
+          </div>
+          <button onclick="convertRumoToAzimute()">Converter</button>
+          <div id="rumoAzResult" class="result"></div>
+        </article>
+
+        <article class="card">
+          <h3>Azimute para rumo</h3>
+          <table>
+            <thead><tr><th>Azimute</th><th>Rumo</th></tr></thead>
+            <tbody>
+              <tr><td>0° a 90°</td><td>N Azimute E</td></tr>
+              <tr><td>90° a 180°</td><td>S (180° - Azimute) E</td></tr>
+              <tr><td>180° a 270°</td><td>S (Azimute - 180°) W</td></tr>
+              <tr><td>270° a 360°</td><td>N (360° - Azimute) W</td></tr>
+            </tbody>
+          </table>
+          <div class="format-toggle" aria-label="Formato do azimute">
+            <button id="azFmtDecimalBtn" class="active" type="button" onclick="setAzFormat('decimal')">Azimute em decimal</button>
+            <button id="azFmtGmsBtn" type="button" onclick="setAzFormat('gms')">Azimute em GMS</button>
+          </div>
+          <div id="azDecimalBox" class="input-grid two">
+            <div class="field"><label for="azInput">Azimute em graus decimais</label><input id="azInput" type="number" value="140" min="0" max="360" step="0.000001" inputmode="decimal" /><span class="mini-help">Ex.: 140,258333°</span></div>
+          </div>
+          <div id="azGmsBox" class="hidden">
+            <div class="input-grid">
+              <div class="field"><label for="azG">Graus</label><input id="azG" type="number" value="140" min="0" max="360" inputmode="numeric" /></div>
+              <div class="field"><label for="azM">Minutos</label><input id="azM" type="number" value="0" min="0" max="59" inputmode="numeric" /></div>
+              <div class="field"><label for="azS">Segundos</label><input id="azS" type="number" value="0" min="0" max="59" step="0.01" inputmode="decimal" /></div>
+            </div>
+          </div>
+          <button onclick="convertAzimuteToRumo()">Converter</button>
+          <div id="azRumoResult" class="result"></div>
+        </article>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px;">
+        <article class="card compass-wrap">
+          <div>
+            <h3>Rosa dos ventos — rumo para azimute</h3>
+            <div class="compass">
+              <span class="dir n">N</span><span class="dir s">S</span><span class="dir e">E</span><span class="dir w">W</span>
+              <span class="quad ne">NE</span><span class="quad se">SE</span><span class="quad sw">SW</span><span class="quad nw">NW</span>
+              <div id="needle1" class="needle"></div><div class="center-dot"></div><div id="angleLabel1" class="angle-label">40°</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card compass-wrap">
+          <div>
+            <h3>Rosa dos ventos — azimute para rumo</h3>
+            <div class="compass">
+              <span class="dir n">N</span><span class="dir s">S</span><span class="dir e">E</span><span class="dir w">W</span>
+              <span class="quad ne">NE</span><span class="quad se">SE</span><span class="quad sw">SW</span><span class="quad nw">NW</span>
+              <div id="needle2" class="needle" style="transform: rotate(140deg);"></div><div class="center-dot"></div><div id="angleLabel2" class="angle-label">140°</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="azimute-sequencial" class="section">
+      <div class="section-title">
+        <div>
+          <h2>Cálculo sequencial de azimutes</h2>
+          <p>Calcule o próximo azimute de uma poligonal usando o azimute anterior e o ângulo externo medido no vértice.</p>
+        </div>
+        <span class="tag">Az anterior + ângulo externo − 180°</span>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Regra usada no roteiro</h3>
+          <div class="definition"><strong>Fórmula principal:</strong> novo azimute = azimute anterior + ângulo externo − 180°.</div>
+          <div class="formula">Az<sub>novo</sub> = Az<sub>anterior</sub> + Ângulo externo − 180°</div>
+          <div class="rule-list">
+            <div class="rule">🧭 <span>Use essa regra quando a poligonal trabalha com o <strong>ângulo externo</strong> entre os alinhamentos.</span></div>
+            <div class="rule">🔁 <span>Se o resultado passar de 360°, subtraia 360° para normalizar.</span></div>
+            <div class="rule">🔁 <span>Se o resultado ficar negativo, some 360° para voltar ao intervalo de 0° a 360°.</span></div>
+          </div>
+          <div class="note">Exemplo: Az anterior = 75° 20’ 00” e ângulo externo = 210° 40’ 00”. Novo azimute = 75°20’ + 210°40’ − 180° = 106°00’00”.</div>
+        </article>
+
+        <article class="card">
+          <h3>Calculadora do próximo azimute</h3>
+          <div class="mobile-callout">Você pode informar o azimute anterior e o ângulo externo em decimal ou em GMS.</div>
+
+          <div class="angle-box">
+            <div class="angle-title">Azimute anterior</div>
+            <div class="format-toggle" aria-label="Formato do azimute anterior">
+              <button id="seqAzFmtDecimalBtn" class="active" type="button" onclick="setSeqAzFormat('decimal')">Decimal</button>
+              <button id="seqAzFmtGmsBtn" type="button" onclick="setSeqAzFormat('gms')">GMS</button>
+            </div>
+            <div id="seqAzDecimalBox" class="input-grid two">
+              <div class="field"><label for="seqAzDecimal">Azimute anterior decimal</label><input id="seqAzDecimal" type="number" value="75.333333" min="0" max="360" step="0.000001" inputmode="decimal" /><span class="mini-help">Ex.: 75,333333°</span></div>
+            </div>
+            <div id="seqAzGmsBox" class="hidden">
+              <div class="input-grid">
+                <div class="field"><label for="seqAzG">Graus</label><input id="seqAzG" type="number" value="75" min="0" max="360" inputmode="numeric" /></div>
+                <div class="field"><label for="seqAzM">Minutos</label><input id="seqAzM" type="number" value="20" min="0" max="59" inputmode="numeric" /></div>
+                <div class="field"><label for="seqAzS">Segundos</label><input id="seqAzS" type="number" value="0" min="0" max="59" step="0.01" inputmode="decimal" /></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="angle-box">
+            <div class="angle-title">Ângulo externo</div>
+            <div class="format-toggle" aria-label="Formato do ângulo externo">
+              <button id="seqExtFmtDecimalBtn" class="active" type="button" onclick="setSeqExtFormat('decimal')">Decimal</button>
+              <button id="seqExtFmtGmsBtn" type="button" onclick="setSeqExtFormat('gms')">GMS</button>
+            </div>
+            <div id="seqExtDecimalBox" class="input-grid two">
+              <div class="field"><label for="seqExtDecimal">Ângulo externo decimal</label><input id="seqExtDecimal" type="number" value="210.666667" min="0" max="360" step="0.000001" inputmode="decimal" /><span class="mini-help">Ex.: 210,666667°</span></div>
+            </div>
+            <div id="seqExtGmsBox" class="hidden">
+              <div class="input-grid">
+                <div class="field"><label for="seqExtG">Graus</label><input id="seqExtG" type="number" value="210" min="0" max="360" inputmode="numeric" /></div>
+                <div class="field"><label for="seqExtM">Minutos</label><input id="seqExtM" type="number" value="40" min="0" max="59" inputmode="numeric" /></div>
+                <div class="field"><label for="seqExtS">Segundos</label><input id="seqExtS" type="number" value="0" min="0" max="59" step="0.01" inputmode="decimal" /></div>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="calculateSequentialAzimuth()">Calcular próximo azimute</button>
+          <div id="seqAzResult" class="result"></div>
+        </article>
+      </div>
+    </section>
+
+
+    <section id="operacoes" class="section">
+      <div class="section-title">
+        <div>
+          <h2>Soma e subtração de ângulos</h2>
+          <p>Resolva operações angulares em GMS e veja o resultado também em graus decimais.</p>
+        </div>
+        <span class="tag">Novo módulo</span>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Como operar em GMS</h3>
+          <div class="definition"><strong>Soma:</strong> some graus com graus, minutos com minutos e segundos com segundos. Depois faça os ajustes: 60” = 1’ e 60’ = 1°.</div>
+          <div class="definition"><strong>Subtração:</strong> subtraia segundos, minutos e graus. Quando faltar valor, faça empréstimo: 1° = 60’ e 1’ = 60”.</div>
+          <div class="formula">Exemplo: 35° 25’ 30” + 12° 40’ 45” = 48° 06’ 15”</div>
+          <div class="rule-list">
+            <div class="rule">🔁 <span>Se os segundos passarem de 60, transforme o excedente em minutos.</span></div>
+            <div class="rule">🔁 <span>Se os minutos passarem de 60, transforme o excedente em graus.</span></div>
+            <div class="rule">➖ <span>Na subtração, use empréstimo quando segundos ou minutos ficarem negativos.</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Calculadora de soma/subtração</h3>
+          <div class="angle-box">
+            <div class="angle-title">Ângulo A</div>
+            <div class="input-grid">
+              <div class="field"><label for="opAG">Graus</label><input id="opAG" type="number" value="35"></div>
+              <div class="field"><label for="opAM">Minutos</label><input id="opAM" type="number" value="25" min="0" max="59"></div>
+              <div class="field"><label for="opAS">Segundos</label><input id="opAS" type="number" value="30" min="0" max="59" step="0.01"></div>
+            </div>
+          </div>
+
+          <div class="input-grid two">
+            <div class="field"><label for="opType">Operação</label><select id="opType"><option value="sum">Somar</option><option value="sub">Subtrair</option></select></div>
+          </div>
+
+          <div class="angle-box">
+            <div class="angle-title">Ângulo B</div>
+            <div class="input-grid">
+              <div class="field"><label for="opBG">Graus</label><input id="opBG" type="number" value="12"></div>
+              <div class="field"><label for="opBM">Minutos</label><input id="opBM" type="number" value="40" min="0" max="59"></div>
+              <div class="field"><label for="opBS">Segundos</label><input id="opBS" type="number" value="45" min="0" max="59" step="0.01"></div>
+            </div>
+          </div>
+
+          <button onclick="calculateAngleOperation()">Calcular operação</button>
+          <div id="opResult" class="result"></div>
+        </article>
+      </div>
+    </section>
+
+
+
+    <section id="coordenadas-cartesianas" class="section">
+      <div class="section-title">
+        <div>
+          <h2>Coordenadas cartesianas</h2>
+          <p>Calcule as coordenadas do próximo ponto usando coordenada inicial, distância e azimute.</p>
+        </div>
+        <span class="tag">Cálculo de campo</span>
+      </div>
+
+      <div class="calc-layout">
+        <article class="card">
+          <h3>Fórmulas usadas</h3>
+          <p>Na topografia, considerando o azimute medido a partir do Norte no sentido horário, usamos seno para a variação em X e cosseno para a variação em Y.</p>
+          <div class="formula-stack">
+            <div class="formula-line">ΔX = d · sen(Az)</div>
+            <div class="formula-line">ΔY = d · cos(Az)</div>
+            <div class="formula-line">X<sub>B</sub> = X<sub>A</sub> + ΔX</div>
+            <div class="formula-line">Y<sub>B</sub> = Y<sub>A</sub> + ΔY</div>
+          </div>
+          <div class="note"><strong>Atenção:</strong> o azimute precisa estar em graus decimais para o cálculo interno. Se estiver em GMS, o app converte automaticamente.</div>
+          <div class="coordinate-sketch" aria-label="Esquema de coordenadas cartesianas">
+            <svg viewBox="0 0 520 330" role="img">
+              <defs>
+                <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#0f2d52" /></marker>
+                <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#f4511e" /></marker>
+              </defs>
+              <rect x="0" y="0" width="520" height="330" rx="18" fill="#f8fbff" />
+              <line x1="60" y1="280" x2="470" y2="280" stroke="#0f2d52" stroke-width="4" marker-end="url(#arrowBlue)" />
+              <line x1="60" y1="280" x2="60" y2="45" stroke="#0f2d52" stroke-width="4" marker-end="url(#arrowBlue)" />
+              <text x="478" y="286" font-size="24" font-weight="900" fill="#0f2d52">X</text>
+              <text x="50" y="34" font-size="24" font-weight="900" fill="#0f2d52">Y</text>
+              <circle cx="160" cy="230" r="8" fill="#174b7f" /><text x="120" y="220" font-size="22" font-weight="900" fill="#174b7f">A</text>
+              <circle cx="360" cy="105" r="8" fill="#f4511e" /><text x="372" y="98" font-size="22" font-weight="900" fill="#f4511e">B</text>
+              <line x1="160" y1="230" x2="360" y2="105" stroke="#152238" stroke-width="4" />
+              <line x1="160" y1="230" x2="360" y2="230" stroke="#174b7f" stroke-width="3" stroke-dasharray="8 8" />
+              <line x1="360" y1="230" x2="360" y2="105" stroke="#174b7f" stroke-width="3" stroke-dasharray="8 8" />
+              <text x="245" y="255" font-size="22" font-weight="900" fill="#174b7f">ΔX</text>
+              <text x="374" y="170" font-size="22" font-weight="900" fill="#174b7f">ΔY</text>
+              <path d="M160 230 L160 145" stroke="#f4511e" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrowOrange)" />
+              <path d="M160 165 A65 65 0 0 1 215 198" fill="none" stroke="#f4511e" stroke-width="4" marker-end="url(#arrowOrange)" />
+              <text x="190" y="165" font-size="22" font-weight="900" fill="#f4511e">Az</text>
+              <text x="175" y="125" font-size="18" fill="#62728a">Azimute a partir do Norte</text>
+            </svg>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Calculadora de coordenadas</h3>
+          <div class="input-grid two">
+            <div class="field"><label for="coordXA">X<sub>A</sub> inicial</label><input id="coordXA" type="text" value="100,000" inputmode="decimal"></div>
+            <div class="field"><label for="coordYA">Y<sub>A</sub> inicial</label><input id="coordYA" type="text" value="200,000" inputmode="decimal"></div>
+          </div>
+          <div class="input-grid two">
+            <div class="field"><label for="coordDist">Distância AB</label><input id="coordDist" type="text" value="50,000" inputmode="decimal"></div>
+            <div class="field"><label for="coordPrecision">Casas decimais no resultado</label><select id="coordPrecision"><option>2</option><option selected>3</option><option>4</option><option>6</option></select></div>
+          </div>
+
+          <div class="angle-box">
+            <div class="angle-title">Azimute</div>
+            <div class="format-toggle" aria-label="Formato do azimute para coordenadas">
+              <button id="coordAzFmtDecimalBtn" class="active" type="button" onclick="setCoordAzFormat('decimal')">Decimal</button>
+              <button id="coordAzFmtGmsBtn" type="button" onclick="setCoordAzFormat('gms')">GMS</button>
+            </div>
+            <div id="coordAzDecimalBox" class="input-grid two">
+              <div class="field"><label for="coordAzDecimal">Azimute decimal</label><input id="coordAzDecimal" type="text" value="30" inputmode="decimal"><span class="mini-help">Ex.: 30 ou 30,5</span></div>
+            </div>
+            <div id="coordAzGmsBox" class="hidden">
+              <div class="input-grid">
+                <div class="field"><label for="coordAzG">Graus</label><input id="coordAzG" type="number" value="30" min="0" max="360"></div>
+                <div class="field"><label for="coordAzM">Minutos</label><input id="coordAzM" type="number" value="0" min="0" max="59"></div>
+                <div class="field"><label for="coordAzS">Segundos</label><input id="coordAzS" type="number" value="0" min="0" max="59" step="0.01"></div>
+              </div>
+            </div>
+          </div>
+          <button onclick="calculateCartesianCoordinates()">Calcular coordenada B</button>
+          <div id="coordResult" class="result"></div>
+        </article>
+      </div>
+
+      <article class="card" style="margin-top:18px;">
+        <h3>Poligonal completa: calcular, armazenar e integrar com Gauss</h3>
+        <p>Monte todos os alinhamentos da poligonal. O aplicativo calcula e armazena as coordenadas de todos os pontos, envia automaticamente os vértices para a tabela da fórmula de Gauss e gera o croqui da área no plano cartesiano.</p>
+
+        <div class="input-grid three">
+          <div class="field"><label for="travStartName">Ponto inicial</label><input id="travStartName" type="text" value="A"></div>
+          <div class="field"><label for="travStartX">X inicial</label><input id="travStartX" type="text" value="100,000" inputmode="decimal"></div>
+          <div class="field"><label for="travStartY">Y inicial</label><input id="travStartY" type="text" value="200,000" inputmode="decimal"></div>
+        </div>
+        <div class="input-grid two">
+          <div class="field"><label for="travPrecision">Casas decimais</label><select id="travPrecision"><option>2</option><option selected>3</option><option>4</option><option>6</option></select></div>
+          <div class="field"><label>Azimute na tabela</label><div class="note calc-sync-note">Aceita decimal (ex.: <strong>75,25</strong>) ou GMS (ex.: <strong>75 15 00</strong> ou <strong>75°15'00&quot;</strong>).</div></div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="gauss-input-table segment-table">
+            <thead><tr><th>Ponto destino</th><th>Distância (m)</th><th>Azimute (decimal ou GMS)</th><th>Ação</th></tr></thead>
+            <tbody id="travInputBody"></tbody>
+          </table>
+        </div>
+
+        <div class="mini-toolbar">
+          <button class="ghost-btn" type="button" onclick="addTraverseRow()">+ Adicionar alinhamento</button>
+          <button class="ghost-btn" type="button" onclick="resetTraverseExample()">Restaurar exemplo</button>
+          <button class="ghost-btn" type="button" onclick="loadTraverseIntoGauss(true)">Usar na tabela de Gauss</button>
+        </div>
+
+        <button onclick="calculateTraverseCoordinates()">Calcular e armazenar todos os pontos</button>
+        <div id="travResult" class="result"></div>
+        <div id="travSketch" class="coordinate-sketch" style="margin-top:18px;"></div>
+        <div class="sketch-caption">Croqui da poligonal no plano cartesiano.</div>
+      </article>
+    </section>
+
+    <section id="gauss-area" class="section">
+      <div class="section-title">
+        <div>
+          <h2>Área pela fórmula de Gauss</h2>
+          <p>Monte a tabela dos produtos cruzados e calcule a área do polígono a partir das coordenadas X e Y.</p>
+        </div>
+        <span class="tag">Método do cadarço</span>
+      </div>
+
+      <div class="calc-layout">
+        <article class="card">
+          <h3>Como o cálculo funciona</h3>
+          <div class="formula-stack">
+            <div class="formula-line">Σ1 = X<sub>1</sub>Y<sub>2</sub> + X<sub>2</sub>Y<sub>3</sub> + ... + X<sub>n</sub>Y<sub>1</sub></div>
+            <div class="formula-line">Σ2 = Y<sub>1</sub>X<sub>2</sub> + Y<sub>2</sub>X<sub>3</sub> + ... + Y<sub>n</sub>X<sub>1</sub></div>
+            <div class="formula-line">Área = |Σ1 − Σ2| ÷ 2</div>
+          </div>
+          <div class="rule-list">
+            <div class="rule">1️⃣ <span>Digite os vértices na ordem do contorno do polígono.</span></div>
+            <div class="rule">2️⃣ <span>O app repete o primeiro ponto automaticamente para fechar o cálculo.</span></div>
+            <div class="rule">3️⃣ <span>Confira se os pontos não estão fora de ordem, pois isso altera a área.</span></div>
+          </div>
+          <div id="gaussSketch" class="coordinate-sketch"></div>
+        </article>
+
+        <article class="card">
+          <h3>Tabela de coordenadas</h3>
+          <p>Use vírgula ou ponto nos valores decimais. O exemplo já vem preenchido com quatro vértices.</p>
+          <div class="table-wrap">
+            <table class="gauss-input-table">
+              <thead><tr><th>Ponto</th><th>X (m)</th><th>Y (m)</th><th>Ação</th></tr></thead>
+              <tbody id="gaussInputBody"></tbody>
+            </table>
+          </div>
+          <div class="mini-toolbar">
+            <button class="ghost-btn" type="button" onclick="addGaussRow()">+ Adicionar ponto</button>
+            <button class="ghost-btn" type="button" onclick="resetGaussExample()">Restaurar exemplo</button>
+            <button class="ghost-btn" type="button" onclick="loadTraverseIntoGauss(true)">Usar pontos da poligonal</button>
+          </div>
+          <button onclick="calculateGaussArea()">Calcular área</button>
+          <div id="gaussResult" class="result"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="pratica" class="section">
+      <div class="section-title">
+        <div>
+          <h2>Teste você mesmo</h2>
+          <p>Digite sua resposta e clique em verificar. Use ponto ou vírgula para decimais. Para rumos, pode digitar com espaços ou sem espaços.</p>
+        </div>
+        <span class="tag">Correção automática</span>
+      </div>
+
+      <article class="card">
+        <div class="practice-grid">
+          <div class="exercise" data-type="decimal" data-answer="45.5" data-resolution="45° 30’ 00” = 45 + 30/60 + 0/3600 = 45,5°.">
+            <h4>a) Converter 45° 30’ 00” para decimal</h4>
+            <div class="answer-row"><input placeholder="Ex.: 45,5" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+          <div class="exercise" data-type="text" data-answer="23° 45’ 0”|23°45’0”|23 45 0|23°45'0&quot;|23° 45' 0&quot;" data-resolution="23,75° = 23° + 0,75 × 60 = 45’. Resultado: 23° 45’ 00”.">
+            <h4>b) Converter 23,75° para GMS</h4>
+            <div class="answer-row"><input placeholder="Ex.: 23° 45’ 00”" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+          <div class="exercise" data-type="decimal" data-answer="35" data-resolution="N 35° E está no quadrante NE. No NE: Azimute = Rumo. Resultado: 35°.">
+            <h4>c) Converter N 35° E para azimute</h4>
+            <div class="answer-row"><input placeholder="Ex.: 35" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+          <div class="exercise" data-type="decimal" data-answer="205" data-resolution="S 25° W está no quadrante SW. No SW: Azimute = 180° + Rumo = 180° + 25° = 205°.">
+            <h4>d) Converter S 25° W para azimute</h4>
+            <div class="answer-row"><input placeholder="Ex.: 205" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+          <div class="exercise" data-type="text" data-answer="S 45° E|S45°E|S 45 E|S45E" data-resolution="135° está entre 90° e 180°. Rumo = S (180° - 135°) E = S 45° E.">
+            <h4>e) Converter azimute 135° para rumo</h4>
+            <div class="answer-row"><input placeholder="Ex.: S 45° E" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+          <div class="exercise" data-type="text" data-answer="N 50° W|N50°W|N 50 W|N50W" data-resolution="310° está entre 270° e 360°. Rumo = N (360° - 310°) W = N 50° W.">
+            <h4>f) Converter azimute 310° para rumo</h4>
+            <div class="answer-row"><input placeholder="Ex.: N 50° W" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+          <div class="exercise" data-type="text" data-answer="48° 6’ 15”|48°06’15”|48 6 15|48° 06' 15&quot;|48°6'15&quot;" data-resolution="35°25’30” + 12°40’45” = 47°65’75”. Ajustando: 75” = 1’15” e 66’ = 1°6’. Resultado: 48°06’15”.">
+            <h4>g) Somar 35° 25’ 30” + 12° 40’ 45”</h4>
+            <div class="answer-row"><input placeholder="Ex.: 48° 06’ 15”" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+          <div class="exercise" data-type="text" data-answer="22° 15’ 30”|22°15’30”|22 15 30|22° 15' 30&quot;|22°15'30&quot;" data-resolution="40°10’20” - 17°54’50”. Empresta 1’ para segundos e 1° para minutos. Resultado: 22°15’30”.">
+            <h4>h) Subtrair 40° 10’ 20” - 17° 54’ 50”</h4>
+            <div class="answer-row"><input placeholder="Ex.: 22° 15’ 30”" /><button onclick="checkExercise(this)">Verificar</button></div><div class="feedback"></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer>Aplicativo offline de conversões angulares para Topografia.</footer>
+  </main>
+
+  <script>
+    // Navegação interna segura para uso dentro do Google Sites.
+    // Evita links com #, que podem causar tela branca em iframes do Google.
+    const pageOrder = ['inicio', 'conceitos', 'gms-decimal', 'rumo-azimute', 'azimute-sequencial', 'operacoes', 'coordenadas-cartesianas', 'gauss-area', 'pratica'];
+    const pageNames = {
+      'inicio': 'Início',
+      'conceitos': 'Conceitos',
+      'gms-decimal': 'GMS ⇄ Decimal',
+      'rumo-azimute': 'Rumo ⇄ Azimute',
+      'azimute-sequencial': 'Azimute sequencial',
+      'operacoes': 'Soma/Subtração',
+      'coordenadas-cartesianas': 'Coordenadas cartesianas',
+      'gauss-area': 'Área por Gauss',
+      'pratica': 'Teste'
+    };
+
+    function goToSection(id) {
+      const page = document.getElementById(id);
+      if (!page) return;
+      document.querySelectorAll('.hero, .section').forEach(el => el.classList.remove('active-page'));
+      page.classList.add('active-page');
+      document.querySelectorAll('.tab').forEach(btn => {
+        const onclick = btn.getAttribute('onclick') || '';
+        btn.classList.toggle('active', onclick.includes(`'${id}'`) || onclick.includes(`\"${id}\"`));
+      });
+      updatePageControls(id);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goRelativePage(step) {
+      const current = document.querySelector('.active-page')?.id || 'inicio';
+      const idx = pageOrder.indexOf(current);
+      const nextIndex = Math.min(pageOrder.length - 1, Math.max(0, idx + step));
+      goToSection(pageOrder[nextIndex]);
+    }
+
+    function updatePageControls(id) {
+      const idx = pageOrder.indexOf(id);
+      document.querySelectorAll('.page-controls').forEach(ctrl => {
+        const count = ctrl.querySelector('.page-count');
+        const prev = ctrl.querySelector('[data-page-prev]');
+        const next = ctrl.querySelector('[data-page-next]');
+        if (count) count.textContent = `${idx + 1} de ${pageOrder.length} • ${pageNames[id] || ''}`;
+        if (prev) prev.disabled = idx <= 0;
+        if (next) next.disabled = idx >= pageOrder.length - 1;
+      });
+    }
+
+    function addPageControls() {
+      document.querySelectorAll('.hero, .section').forEach(page => {
+        if (page.querySelector(':scope > .page-controls')) return;
+        const controls = document.createElement('div');
+        controls.className = 'page-controls';
+        controls.innerHTML = `
+          <button type="button" data-page-prev onclick="goRelativePage(-1)">← Anterior</button>
+          <div class="page-count"></div>
+          <button type="button" data-page-next onclick="goRelativePage(1)">Próxima →</button>
+        `;
+        page.appendChild(controls);
+      });
+      updatePageControls(document.querySelector('.active-page')?.id || 'inicio');
+    }
+
+    function fmt(num, decimals = 6) {
+      const rounded = Number(num.toFixed(decimals));
+      return String(rounded).replace('.', ',');
+    }
+
+    function numValue(id) {
+      const raw = document.getElementById(id).value.replace(',', '.');
+      return Number(raw);
+    }
+
+    let rumoFormat = 'decimal';
+    let azFormat = 'decimal';
+    let seqAzFormat = 'decimal';
+    let seqExtFormat = 'decimal';
+
+    function setRumoFormat(format) {
+      rumoFormat = format;
+      document.getElementById('rumoDecimalBox').classList.toggle('hidden', format !== 'decimal');
+      document.getElementById('rumoGmsBox').classList.toggle('hidden', format !== 'gms');
+      document.getElementById('rumoFmtDecimalBtn').classList.toggle('active', format === 'decimal');
+      document.getElementById('rumoFmtGmsBtn').classList.toggle('active', format === 'gms');
+      convertRumoToAzimute();
+    }
+
+    function setAzFormat(format) {
+      azFormat = format;
+      document.getElementById('azDecimalBox').classList.toggle('hidden', format !== 'decimal');
+      document.getElementById('azGmsBox').classList.toggle('hidden', format !== 'gms');
+      document.getElementById('azFmtDecimalBtn').classList.toggle('active', format === 'decimal');
+      document.getElementById('azFmtGmsBtn').classList.toggle('active', format === 'gms');
+      convertAzimuteToRumo();
+    }
+
+
+    function setSeqAzFormat(format) {
+      seqAzFormat = format;
+      document.getElementById('seqAzDecimalBox').classList.toggle('hidden', format !== 'decimal');
+      document.getElementById('seqAzGmsBox').classList.toggle('hidden', format !== 'gms');
+      document.getElementById('seqAzFmtDecimalBtn').classList.toggle('active', format === 'decimal');
+      document.getElementById('seqAzFmtGmsBtn').classList.toggle('active', format === 'gms');
+      calculateSequentialAzimuth();
+    }
+
+    function setSeqExtFormat(format) {
+      seqExtFormat = format;
+      document.getElementById('seqExtDecimalBox').classList.toggle('hidden', format !== 'decimal');
+      document.getElementById('seqExtGmsBox').classList.toggle('hidden', format !== 'gms');
+      document.getElementById('seqExtFmtDecimalBtn').classList.toggle('active', format === 'decimal');
+      document.getElementById('seqExtFmtGmsBtn').classList.toggle('active', format === 'gms');
+      calculateSequentialAzimuth();
+    }
+
+    function isMinuteSecondValid(value) { return value >= 0 && value < 60; }
+
+    function gmsFieldsToDecimal(gId, mId, sId) {
+      const g = numValue(gId), m = numValue(mId), s = numValue(sId);
+      if ([g, m, s].some(Number.isNaN) || !isMinuteSecondValid(m) || !isMinuteSecondValid(s)) return NaN;
+      const sign = g < 0 ? -1 : 1;
+      return sign * (Math.abs(g) + m / 60 + s / 3600);
+    }
+
+    function decimalToGmsCompact(decimal) {
+      return gmsText(secondsToGMS(decimal * 3600));
+    }
+
+    function setNeedle(needleId, labelId, azimuth) {
+      const normalized = ((azimuth % 360) + 360) % 360;
+      document.getElementById(needleId).style.transform = `rotate(${normalized}deg)`;
+      document.getElementById(labelId).textContent = `${fmt(normalized, 4)}°`;
+    }
+
+    function gmsToSeconds(g, m, s) {
+      const sign = g < 0 ? -1 : 1;
+      return sign * (Math.abs(g) * 3600 + m * 60 + s);
+    }
+
+    function secondsToGMS(totalSeconds) {
+      const sign = totalSeconds < 0 ? -1 : 1;
+      let abs = Math.abs(totalSeconds);
+      let g = Math.floor(abs / 3600);
+      abs -= g * 3600;
+      let m = Math.floor(abs / 60);
+      let s = Number((abs - m * 60).toFixed(2));
+      if (s >= 60) { s = 0; m += 1; }
+      if (m >= 60) { m = 0; g += 1; }
+      return { sign, g, m, s };
+    }
+
+    function gmsText(obj) {
+      const minus = obj.sign < 0 ? '-' : '';
+      return `${minus}${obj.g}° ${String(obj.m).padStart(2, '0')}’ ${fmt(obj.s, 2).padStart(2, '0')}”`;
+    }
+
+    function convertGMSToDecimal() {
+      const graus = numValue('gmsGraus');
+      const minutos = numValue('gmsMin');
+      const segundos = numValue('gmsSeg');
+      const out = document.getElementById('gmsDecimalResult');
+
+      if ([graus, minutos, segundos].some(Number.isNaN) || !isMinuteSecondValid(minutos) || !isMinuteSecondValid(segundos)) {
+        out.innerHTML = '<strong>Verifique os dados.</strong><div class="steps">Minutos e segundos devem estar entre 0 e 59.</div>';
+        return;
+      }
+
+      const sinal = graus < 0 ? -1 : 1;
+      const decimal = sinal * (Math.abs(graus) + minutos / 60 + segundos / 3600);
+      out.innerHTML = `
+        <strong>Resultado:</strong> ${fmt(decimal, 6)}°
+        <div class="steps">
+          ${graus} + <span class="highlight">${minutos} ÷ 60</span> + <span class="highlight">${segundos} ÷ 3600</span><br>
+          ${graus} + ${fmt(minutos / 60, 6)} + ${fmt(segundos / 3600, 6)} = <strong>${fmt(decimal, 6)}°</strong>
+        </div>`;
+    }
+
+    function convertDecimalToGMS() {
+      const decimal = numValue('decimalInput');
+      const out = document.getElementById('decimalGMSResult');
+      if (Number.isNaN(decimal)) { out.innerHTML = '<strong>Digite um valor decimal válido.</strong>'; return; }
+      const totalSeconds = decimal * 3600;
+      const obj = secondsToGMS(totalSeconds);
+      const abs = Math.abs(decimal);
+      const graus = Math.floor(abs);
+      const decimalGraus = abs - graus;
+      const minutosFloat = decimalGraus * 60;
+      const minutosInt = Math.floor(minutosFloat);
+      const segundosFloat = (minutosFloat - minutosInt) * 60;
+      out.innerHTML = `
+        <strong>Resultado:</strong> ${gmsText(obj)}
+        <div class="steps">
+          Parte inteira: <strong>${graus}°</strong><br>
+          Parte decimal: ${fmt(decimalGraus, 6)} × 60 = <span class="highlight">${fmt(minutosFloat, 6)}’</span><br>
+          Parte decimal dos minutos: ${fmt(minutosFloat - minutosInt, 6)} × 60 = <span class="highlight">${fmt(segundosFloat, 2)}”</span>
+        </div>`;
+    }
+
+    function convertRumoToAzimute() {
+      const rumo = rumoFormat === 'decimal' ? numValue('rumoValor') : gmsFieldsToDecimal('rumoG', 'rumoM', 'rumoS');
+      const quad = rumoFormat === 'decimal' ? document.getElementById('rumoQuad').value : document.getElementById('rumoQuadGms').value;
+      const out = document.getElementById('rumoAzResult');
+      if (Number.isNaN(rumo) || rumo < 0 || rumo > 90) {
+        out.innerHTML = '<strong>Digite um rumo válido.</strong><div class="steps">O rumo deve variar de 0° a 90°. Em GMS, minutos e segundos devem estar entre 0 e 59.</div>';
+        return;
+      }
+      let az = 0, formula = '', rumoText = '';
+      const rumoGms = decimalToGmsCompact(rumo);
+      if (quad === 'NE') { az = rumo; formula = `Azimute = Rumo = ${fmt(rumo, 6)}°`; rumoText = `N ${rumoGms} E`; }
+      if (quad === 'SE') { az = 180 - rumo; formula = `Azimute = 180° - Rumo = ${fmt(az, 6)}°`; rumoText = `S ${rumoGms} E`; }
+      if (quad === 'SW') { az = 180 + rumo; formula = `Azimute = 180° + Rumo = ${fmt(az, 6)}°`; rumoText = `S ${rumoGms} W`; }
+      if (quad === 'NW') { az = 360 - rumo; formula = `Azimute = 360° - Rumo = ${fmt(az, 6)}°`; rumoText = `N ${rumoGms} W`; }
+      setNeedle('needle1', 'angleLabel1', az);
+      out.innerHTML = `<strong>Resultado:</strong> ${rumoText}<br>Azimute = <strong>${fmt(az, 6)}°</strong> <span class="highlight">${decimalToGmsCompact(az)}</span><div class="steps">Rumo informado: ${fmt(rumo, 6)}° | ${rumoGms}<br>Fórmula usada: <span class="highlight">${formula}</span></div>`;
+    }
+
+    function convertAzimuteToRumo() {
+      const az = azFormat === 'decimal' ? numValue('azInput') : gmsFieldsToDecimal('azG', 'azM', 'azS');
+      const out = document.getElementById('azRumoResult');
+      if (Number.isNaN(az) || az < 0 || az > 360) {
+        out.innerHTML = '<strong>Digite um azimute válido.</strong><div class="steps">O azimute deve variar de 0° a 360°. Em GMS, minutos e segundos devem estar entre 0 e 59.</div>';
+        return;
+      }
+      let rumo = 0, texto = '', quad = '', formula = '';
+      if (az >= 0 && az <= 90) { rumo = az; texto = `N ${decimalToGmsCompact(rumo)} E`; quad = 'NE'; formula = `Rumo = N Azimute E`; }
+      else if (az > 90 && az <= 180) { rumo = 180 - az; texto = `S ${decimalToGmsCompact(rumo)} E`; quad = 'SE'; formula = `Rumo = S (180° - Azimute) E`; }
+      else if (az > 180 && az <= 270) { rumo = az - 180; texto = `S ${decimalToGmsCompact(rumo)} W`; quad = 'SW'; formula = `Rumo = S (Azimute - 180°) W`; }
+      else { rumo = 360 - az; texto = `N ${decimalToGmsCompact(rumo)} W`; quad = 'NW'; formula = `Rumo = N (360° - Azimute) W`; }
+      setNeedle('needle2', 'angleLabel2', az);
+      out.innerHTML = `<strong>Resultado:</strong> Azimute ${fmt(az, 6)}° <span class="highlight">${decimalToGmsCompact(az)}</span><br>Rumo = <strong>${texto}</strong><div class="steps">Rumo em decimal: <strong>${fmt(rumo, 6)}°</strong><br>Quadrante: <span class="highlight">${quad}</span><br>Fórmula usada: ${formula}</div>`;
+    }
+
+
+    function normalizeAzimuth(angle) {
+      return ((angle % 360) + 360) % 360;
+    }
+
+    function calculateSequentialAzimuth() {
+      const azAnterior = seqAzFormat === 'decimal' ? numValue('seqAzDecimal') : gmsFieldsToDecimal('seqAzG', 'seqAzM', 'seqAzS');
+      const angExt = seqExtFormat === 'decimal' ? numValue('seqExtDecimal') : gmsFieldsToDecimal('seqExtG', 'seqExtM', 'seqExtS');
+      const out = document.getElementById('seqAzResult');
+      if (!out) return;
+      if ([azAnterior, angExt].some(Number.isNaN) || azAnterior < 0 || azAnterior > 360 || angExt < 0 || angExt > 360) {
+        out.innerHTML = '<strong>Verifique os dados.</strong><div class="steps">Azimute anterior e ângulo externo devem estar entre 0° e 360°. Em GMS, minutos e segundos devem estar entre 0 e 59.</div>';
+        return;
+      }
+      const bruto = azAnterior + angExt - 180;
+      const normalizado = normalizeAzimuth(bruto);
+      let ajuste = 'Não foi necessário ajuste.';
+      if (bruto >= 360) ajuste = `Resultado bruto maior ou igual a 360°. Foi subtraído 360° até normalizar.`;
+      if (bruto < 0) ajuste = `Resultado bruto negativo. Foi somado 360° até normalizar.`;
+      out.innerHTML = `
+        <strong>Resultado:</strong> próximo azimute = <strong>${fmt(normalizado, 6)}°</strong> <span class="highlight">${decimalToGmsCompact(normalizado)}</span>
+        <div class="steps">
+          Az anterior: ${fmt(azAnterior, 6)}° | ${decimalToGmsCompact(azAnterior)}<br>
+          Ângulo externo: ${fmt(angExt, 6)}° | ${decimalToGmsCompact(angExt)}<br>
+          Cálculo bruto: ${fmt(azAnterior, 6)}° + ${fmt(angExt, 6)}° − 180° = <span class="highlight">${fmt(bruto, 6)}°</span><br>
+          ${ajuste}<br>
+          Azimute final no intervalo 0°–360°: <strong>${fmt(normalizado, 6)}°</strong>
+        </div>`;
+    }
+
+    function calculateAngleOperation() {
+      const aG = numValue('opAG'), aM = numValue('opAM'), aS = numValue('opAS');
+      const bG = numValue('opBG'), bM = numValue('opBM'), bS = numValue('opBS');
+      const type = document.getElementById('opType').value;
+      const out = document.getElementById('opResult');
+      if ([aG,aM,aS,bG,bM,bS].some(Number.isNaN) || !isMinuteSecondValid(aM) || !isMinuteSecondValid(aS) || !isMinuteSecondValid(bM) || !isMinuteSecondValid(bS)) {
+        out.innerHTML = '<strong>Verifique os dados.</strong><div class="steps">Minutos e segundos devem estar entre 0 e 59.</div>';
+        return;
+      }
+      const totalA = gmsToSeconds(aG, aM, aS);
+      const totalB = gmsToSeconds(bG, bM, bS);
+      const total = type === 'sum' ? totalA + totalB : totalA - totalB;
+      const obj = secondsToGMS(total);
+      const decimal = total / 3600;
+      const symbol = type === 'sum' ? '+' : '-';
+      out.innerHTML = `
+        <strong>Resultado:</strong> ${gmsText(obj)} &nbsp; | &nbsp; ${fmt(decimal, 6)}°
+        <div class="steps">
+          Em segundos: (${fmt(totalA, 2)}”) ${symbol} (${fmt(totalB, 2)}”) = <span class="highlight">${fmt(total, 2)}”</span><br>
+          Convertendo de volta: <strong>${gmsText(obj)}</strong>
+        </div>`;
+    }
+
+
+
+    let coordAzFormat = 'decimal';
+
+    function parsePtNumber(value) {
+      if (value === null || value === undefined) return NaN;
+      const raw = String(value).trim().replace(/\s/g, '').replace(',', '.');
+      return Number(raw);
+    }
+
+    function fmtFixed(num, decimals = 3) {
+      if (!Number.isFinite(num)) return '—';
+      return Number(num).toFixed(decimals).replace('.', ',');
+    }
+
+    function setCoordAzFormat(format) {
+      coordAzFormat = format;
+      document.getElementById('coordAzDecimalBox')?.classList.toggle('hidden', format !== 'decimal');
+      document.getElementById('coordAzGmsBox')?.classList.toggle('hidden', format !== 'gms');
+      document.getElementById('coordAzFmtDecimalBtn')?.classList.toggle('active', format === 'decimal');
+      document.getElementById('coordAzFmtGmsBtn')?.classList.toggle('active', format === 'gms');
+    }
+
+    function calculateCartesianCoordinates() {
+      const xa = parsePtNumber(document.getElementById('coordXA')?.value);
+      const ya = parsePtNumber(document.getElementById('coordYA')?.value);
+      const dist = parsePtNumber(document.getElementById('coordDist')?.value);
+      const precision = Number(document.getElementById('coordPrecision')?.value || 3);
+      const az = coordAzFormat === 'decimal' ? parsePtNumber(document.getElementById('coordAzDecimal')?.value) : gmsFieldsToDecimal('coordAzG', 'coordAzM', 'coordAzS');
+      const out = document.getElementById('coordResult');
+      if (!out) return;
+      if ([xa, ya, dist, az].some(v => !Number.isFinite(v)) || dist < 0 || az < 0 || az > 360) {
+        out.innerHTML = '<strong>Verifique os dados.</strong><div class="steps">Informe X, Y, distância e azimute válidos. O azimute deve estar entre 0° e 360°.</div>';
+        return;
+      }
+      const rad = az * Math.PI / 180;
+      const dx = dist * Math.sin(rad);
+      const dy = dist * Math.cos(rad);
+      const xb = xa + dx;
+      const yb = ya + dy;
+      out.innerHTML = `
+        <strong>Resultado:</strong>
+        <div class="answer-big">B = (${fmtFixed(xb, precision)} ; ${fmtFixed(yb, precision)}) m</div>
+        <div class="steps">
+          Azimute usado: ${fmt(az, 6)}° | ${decimalToGmsCompact(az)}<br>
+          ΔX = ${fmtFixed(dist, precision)} · sen(${fmt(az, 6)}°) = <span class="highlight">${fmtFixed(dx, precision)} m</span><br>
+          ΔY = ${fmtFixed(dist, precision)} · cos(${fmt(az, 6)}°) = <span class="highlight">${fmtFixed(dy, precision)} m</span><br>
+          X<sub>B</sub> = ${fmtFixed(xa, precision)} + ${fmtFixed(dx, precision)} = <strong>${fmtFixed(xb, precision)} m</strong><br>
+          Y<sub>B</sub> = ${fmtFixed(ya, precision)} + ${fmtFixed(dy, precision)} = <strong>${fmtFixed(yb, precision)} m</strong>
+        </div>`;
+    }
+
+    const traverseExample = [
+      {name:'B', dist:'40,000', az:'90'},
+      {name:'C', dist:'25,000', az:'180'},
+      {name:'D', dist:'40,000', az:'270'},
+      {name:'A', dist:'25,000', az:'0'}
+    ];
+
+    let storedTraversePoints = [];
+
+    function parseFlexibleAngle(value) {
+      if (value === null || value === undefined) return NaN;
+      const raw = String(value).trim();
+      if (!raw) return NaN;
+      const normalized = raw.replace(/,/g, '.');
+      const nums = normalized.match(/-?\d+(?:\.\d+)?/g);
+      if (!nums) return NaN;
+      if (nums.length === 1 && !/[°º'”"’]/.test(normalized)) {
+        return Number(nums[0]);
+      }
+      const g = Number(nums[0]);
+      const m = Number(nums[1] || 0);
+      const s = Number(nums[2] || 0);
+      if (![g, m, s].every(Number.isFinite) || m < 0 || m >= 60 || s < 0 || s >= 60) return NaN;
+      const sign = g < 0 ? -1 : 1;
+      return sign * (Math.abs(g) + m / 60 + s / 3600);
+    }
+
+    function pointNameByIndex(i) {
+      return String.fromCharCode(65 + i);
+    }
+
+    function renderTraverseRows(rows) {
+      const body = document.getElementById('travInputBody');
+      if (!body) return;
+      body.innerHTML = '';
+      rows.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" value="${row.name || pointNameByIndex(index + 1)}" aria-label="Ponto destino ${index + 1}"></td>
+          <td><input type="text" inputmode="decimal" value="${row.dist ?? ''}" aria-label="Distância ${index + 1}"></td>
+          <td><input type="text" value="${row.az ?? ''}" aria-label="Azimute ${index + 1}"></td>
+          <td><button class="ghost-btn" type="button" onclick="removeTraverseRow(this)">Remover</button></td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    function readTraverseRows() {
+      const rows = Array.from(document.querySelectorAll('#travInputBody tr'));
+      return rows.map((tr, i) => {
+        const inputs = tr.querySelectorAll('input');
+        return {
+          name: inputs[0].value.trim() || pointNameByIndex(i + 1),
+          dist: inputs[1].value,
+          az: inputs[2].value
+        };
+      });
+    }
+
+    function addTraverseRow() {
+      const rows = readTraverseRows();
+      rows.push({name: pointNameByIndex(rows.length + 1), dist:'', az:''});
+      renderTraverseRows(rows);
+    }
+
+    function removeTraverseRow(btn) {
+      const rows = readTraverseRows();
+      if (rows.length <= 1) {
+        alert('Mantenha pelo menos um alinhamento na tabela.');
+        return;
+      }
+      const row = btn.closest('tr');
+      const idx = Array.from(row.parentNode.children).indexOf(row);
+      rows.splice(idx, 1);
+      renderTraverseRows(rows);
+    }
+
+    function resetTraverseExample() {
+      renderTraverseRows(traverseExample);
+      calculateTraverseCoordinates();
+    }
+
+    function samePoint(a, b) {
+      return Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6;
+    }
+
+    function polygonPointsFromTraverse(points) {
+      if (!points || !points.length) return [];
+      const clean = points.map(p => ({name: p.name, x: p.x, y: p.y}));
+      if (clean.length > 1) {
+        const first = clean[0];
+        const last = clean[clean.length - 1];
+        if ((last.name && first.name && last.name === first.name) || samePoint(first, last)) {
+          clean.pop();
+        }
+      }
+      return clean;
+    }
+
+    function buildCartesianSketch(points, targetId, closeShape = true) {
+      const el = document.getElementById(targetId);
+      if (!el || !points || !points.length) return;
+      const uniquePts = closeShape ? polygonPointsFromTraverse(points) : points;
+      const pts = uniquePts.length ? uniquePts : points;
+      const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+      const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+      const pad = 55, W = 620, H = 360;
+      const spanX = Math.max(1, maxX - minX), spanY = Math.max(1, maxY - minY);
+      const sx = x => pad + ((x - minX) / spanX) * (W - pad * 2);
+      const sy = y => H - pad - ((y - minY) / spanY) * (H - pad * 2);
+      const polyPoints = pts.map(p => `${sx(p.x)},${sy(p.y)}`).join(' ');
+      const linePoints = points.map(p => `${sx(p.x)},${sy(p.y)}`).join(' ');
+      const gridX = Array.from({length: 5}, (_, i) => {
+        const x = pad + i * ((W - pad * 2) / 4);
+        return `<line x1="${x}" y1="25" x2="${x}" y2="${H - pad}" stroke="#e8eef7" stroke-width="1"/>`;
+      }).join('');
+      const gridY = Array.from({length: 5}, (_, i) => {
+        const y = 25 + i * ((H - pad - 25) / 4);
+        return `<line x1="${pad}" y1="${y}" x2="${W - 25}" y2="${y}" stroke="#e8eef7" stroke-width="1"/>`;
+      }).join('');
+      const labels = pts.map((p, i) => `
+        <circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="6" fill="#f4511e"/>
+        <text x="${sx(p.x) + 8}" y="${sy(p.y) - 8}" font-size="16" font-weight="900" fill="#0f2d52">${p.name}</text>
+        <text x="${sx(p.x) + 8}" y="${sy(p.y) + 14}" font-size="12" fill="#62728a">(${fmtFixed(p.x,2)} ; ${fmtFixed(p.y,2)})</text>`).join('');
+      el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Croqui no plano cartesiano">
+        <rect x="0" y="0" width="${W}" height="${H}" rx="18" fill="#f8fbff"/>
+        ${gridX}${gridY}
+        <line x1="${pad}" y1="${H-pad}" x2="${W-25}" y2="${H-pad}" stroke="#9db0c8" stroke-width="2"/>
+        <line x1="${pad}" y1="${H-pad}" x2="${pad}" y2="25" stroke="#9db0c8" stroke-width="2"/>
+        <text x="${W - 24}" y="${H - pad + 20}" font-size="15" fill="#62728a" text-anchor="end">X</text>
+        <text x="${pad - 12}" y="25" font-size="15" fill="#62728a" text-anchor="end">Y</text>
+        ${closeShape && pts.length >= 3 ? `<polygon points="${polyPoints}" fill="rgba(23,75,127,.12)" stroke="#174b7f" stroke-width="4"/>` : `<polyline points="${linePoints}" fill="none" stroke="#174b7f" stroke-width="4"/>`}
+        ${labels}
+      </svg>`;
+    }
+
+    function calculateTraverseCoordinates() {
+      const startName = document.getElementById('travStartName')?.value.trim() || 'A';
+      const startX = parsePtNumber(document.getElementById('travStartX')?.value);
+      const startY = parsePtNumber(document.getElementById('travStartY')?.value);
+      const precision = Number(document.getElementById('travPrecision')?.value || 3);
+      const rows = readTraverseRows();
+      const out = document.getElementById('travResult');
+      if (!out) return;
+      if (![startX, startY].every(Number.isFinite) || !rows.length) {
+        out.innerHTML = '<strong>Verifique os dados.</strong><div class="steps">Informe o ponto inicial e pelo menos um alinhamento.</div>';
+        return;
+      }
+      const points = [{ name: startName, x: startX, y: startY }];
+      const details = [];
+      let current = points[0];
+      for (let i = 0; i < rows.length; i++) {
+        const seg = rows[i];
+        const dist = parsePtNumber(seg.dist);
+        const az = parseFlexibleAngle(seg.az);
+        if (!Number.isFinite(dist) || dist < 0 || !Number.isFinite(az) || az < 0 || az > 360) {
+          out.innerHTML = `<strong>Verifique os dados da linha ${i + 1}.</strong><div class="steps">A distância deve ser positiva e o azimute deve estar entre 0° e 360°, em decimal ou GMS.</div>`;
+          return;
+        }
+        const rad = az * Math.PI / 180;
+        const dx = dist * Math.sin(rad);
+        const dy = dist * Math.cos(rad);
+        const next = {
+          name: seg.name || pointNameByIndex(i + 1),
+          x: current.x + dx,
+          y: current.y + dy,
+          dist,
+          az,
+          dx,
+          dy
+        };
+        details.push({ from: current.name, to: next.name, dist, az, dx, dy, x: next.x, y: next.y });
+        points.push(next);
+        current = next;
+      }
+      storedTraversePoints = points;
+      const uniquePoints = polygonPointsFromTraverse(points);
+      const first = points[0];
+      const last = points[points.length - 1];
+      const closingDx = last.x - first.x;
+      const closingDy = last.y - first.y;
+      const linearError = Math.hypot(closingDx, closingDy);
+      const rowsHtml = [
+        `<tr><td>${first.name}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>${fmtFixed(first.x, precision)}</td><td>${fmtFixed(first.y, precision)}</td></tr>`,
+        ...details.map(d => `<tr><td>${d.to}</td><td>${fmtFixed(d.dist, precision)}</td><td>${fmt(d.az, 6)}°</td><td>${fmtFixed(d.dx, precision)}</td><td>${fmtFixed(d.dy, precision)}</td><td>${fmtFixed(d.x, precision)}</td><td>${fmtFixed(d.y, precision)}</td></tr>`)
+      ].join('');
+      out.innerHTML = `
+        <strong>Tabela de coordenadas calculadas:</strong>
+        <div class="table-wrap"><table><thead><tr><th>Ponto</th><th>Distância</th><th>Azimute</th><th>ΔX</th><th>ΔY</th><th>X</th><th>Y</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>
+        <div class="steps">
+          Pontos armazenados: <strong>${uniquePoints.map(p => p.name).join(' → ')}</strong><br>
+          Fechamento em relação ao ponto inicial: ΔX = ${fmtFixed(closingDx, precision)} m; ΔY = ${fmtFixed(closingDy, precision)} m; erro linear = <strong>${fmtFixed(linearError, precision)} m</strong>.<br>
+          Os vértices foram enviados automaticamente para a <strong>tabela da fórmula de Gauss</strong>.
+        </div>`;
+      renderGaussRows(uniquePoints);
+      calculateGaussArea();
+      buildCartesianSketch(points, 'travSketch', true);
+    }
+
+    function loadTraverseIntoGauss(goToGauss = false) {
+      if (!storedTraversePoints.length) {
+        calculateTraverseCoordinates();
+      }
+      const uniquePoints = polygonPointsFromTraverse(storedTraversePoints);
+      if (uniquePoints.length < 3) {
+        alert('Calcule uma poligonal com pelo menos 3 vértices para usar na fórmula de Gauss.');
+        return;
+      }
+      renderGaussRows(uniquePoints);
+      calculateGaussArea();
+      if (goToGauss) goToSection('gauss-area');
+    }
+
+    const gaussExample = [
+      {name:'A', x:10, y:10},
+      {name:'B', x:30, y:10},
+      {name:'C', x:35, y:25},
+      {name:'D', x:15, y:30}
+    ];
+
+    function renderGaussRows(points) {
+      const body = document.getElementById('gaussInputBody');
+      if (!body) return;
+      body.innerHTML = '';
+      points.forEach((pt, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" value="${pt.name || String.fromCharCode(65+index)}" aria-label="Nome do ponto ${index+1}"></td>
+          <td><input type="text" inputmode="decimal" value="${String(pt.x).replace('.', ',')}" aria-label="Coordenada X do ponto ${index+1}"></td>
+          <td><input type="text" inputmode="decimal" value="${String(pt.y).replace('.', ',')}" aria-label="Coordenada Y do ponto ${index+1}"></td>
+          <td><button class="ghost-btn" type="button" onclick="removeGaussRow(this)">Remover</button></td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    function readGaussPoints() {
+      const rows = Array.from(document.querySelectorAll('#gaussInputBody tr'));
+      return rows.map((tr, i) => {
+        const inputs = tr.querySelectorAll('input');
+        return {
+          name: inputs[0].value.trim() || String.fromCharCode(65+i),
+          x: parsePtNumber(inputs[1].value),
+          y: parsePtNumber(inputs[2].value)
+        };
+      });
+    }
+
+    function addGaussRow() {
+      const pts = readGaussPoints();
+      const nextName = String.fromCharCode(65 + pts.length);
+      pts.push({name: nextName, x: 0, y: 0});
+      renderGaussRows(pts);
+    }
+
+    function removeGaussRow(btn) {
+      const pts = readGaussPoints();
+      if (pts.length <= 3) {
+        alert('Um polígono precisa de pelo menos 3 pontos.');
+        return;
+      }
+      const row = btn.closest('tr');
+      const idx = Array.from(row.parentNode.children).indexOf(row);
+      pts.splice(idx, 1);
+      renderGaussRows(pts);
+      calculateGaussArea();
+    }
+
+    function resetGaussExample() {
+      renderGaussRows(gaussExample);
+      calculateGaussArea();
+    }
+
+    function calculateGaussArea() {
+      const pts = readGaussPoints();
+      const out = document.getElementById('gaussResult');
+      if (!out) return;
+      if (pts.length < 3 || pts.some(p => !Number.isFinite(p.x) || !Number.isFinite(p.y))) {
+        out.innerHTML = '<strong>Verifique os dados.</strong><div class="steps">Informe pelo menos 3 pontos com coordenadas X e Y válidas.</div>';
+        return;
+      }
+      let sum1 = 0, sum2 = 0;
+      const rows = pts.map((p, i) => {
+        const next = pts[(i + 1) % pts.length];
+        const prod1 = p.x * next.y;
+        const prod2 = p.y * next.x;
+        sum1 += prod1;
+        sum2 += prod2;
+        return {p, next, prod1, prod2};
+      });
+      const area = Math.abs(sum1 - sum2) / 2;
+      const tableRows = rows.map(r => `<tr><td>${r.p.name}</td><td>${fmtFixed(r.p.x,3)}</td><td>${fmtFixed(r.p.y,3)}</td><td>${fmtFixed(r.prod1,3)}</td><td>${fmtFixed(r.prod2,3)}</td></tr>`).join('') +
+        `<tr><td>${pts[0].name}</td><td>${fmtFixed(pts[0].x,3)}</td><td>${fmtFixed(pts[0].y,3)}</td><td>—</td><td>—</td></tr>`;
+      out.innerHTML = `
+        <strong>Tabela de produtos cruzados:</strong>
+        <div class="table-wrap"><table><thead><tr><th>Ponto</th><th>X</th><th>Y</th><th>X · Y seguinte</th><th>Y · X seguinte</th></tr></thead><tbody>${tableRows}</tbody></table></div>
+        <div class="steps">
+          Σ1 = <strong>${fmtFixed(sum1,3)}</strong> &nbsp; | &nbsp; Σ2 = <strong>${fmtFixed(sum2,3)}</strong><br>
+          Área = |${fmtFixed(sum1,3)} − ${fmtFixed(sum2,3)}| ÷ 2 = <span class="highlight">${fmtFixed(area,3)} m²</span>
+        </div>
+        <div class="answer-big">Área = ${fmtFixed(area,3)} m²</div>`;
+      drawGaussSketch(pts);
+    }
+
+    function drawGaussSketch(pts) {
+      buildCartesianSketch(pts, 'gaussSketch', true);
+    }
+
+    function normalizeTextAnswer(text) {
+      return text.toUpperCase().replace(/,/g, '.').replace(/[º°]/g, '°').replace(/[’']/g, "'").replace(/[”"]/g, '"').replace(/\s+/g, '').replace(/0+(?=\d)/g, '').trim();
+    }
+
+    function parseDecimalAnswer(text) { return Number(text.replace(',', '.').replace('°', '').trim()); }
+
+    function checkExercise(btn) {
+      const exercise = btn.closest('.exercise');
+      const input = exercise.querySelector('input');
+      const feedback = exercise.querySelector('.feedback');
+      const type = exercise.dataset.type;
+      const resolution = exercise.dataset.resolution;
+      const raw = input.value.trim();
+      if (!raw) { feedback.className = 'feedback bad'; feedback.innerHTML = 'Digite uma resposta antes de verificar.'; return; }
+      let correct = false;
+      if (type === 'decimal') {
+        const expected = Number(exercise.dataset.answer);
+        const value = parseDecimalAnswer(raw);
+        correct = !Number.isNaN(value) && Math.abs(value - expected) <= 0.01;
+      } else {
+        const accepted = exercise.dataset.answer.split('|').map(normalizeTextAnswer);
+        correct = accepted.includes(normalizeTextAnswer(raw));
+      }
+      feedback.className = correct ? 'feedback ok' : 'feedback bad';
+      feedback.innerHTML = correct ? `✅ Correto! <br><strong>Resolução:</strong> ${resolution}` : `❌ Ainda não. <br><strong>Resolução:</strong> ${resolution}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setRumoFormat('decimal');
+      setAzFormat('decimal');
+      setSeqAzFormat('decimal');
+      setSeqExtFormat('decimal');
+      setCoordAzFormat('decimal');
+      renderTraverseRows(traverseExample);
+      convertGMSToDecimal();
+      convertDecimalToGMS();
+      convertRumoToAzimute();
+      convertAzimuteToRumo();
+      calculateSequentialAzimuth();
+      calculateAngleOperation();
+      calculateCartesianCoordinates();
+      calculateTraverseCoordinates();
+      addPageControls();
+      goToSection('inicio');
+    });
+  </script>
+</body>
+</html>

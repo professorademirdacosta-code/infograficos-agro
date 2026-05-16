@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infográfico Premium - Necessidade de Calagem SP</title>
+  <style>
+    :root{
+      --bg:#eef3f8;
+      --paper:#ffffff;
+      --ink:#142b44;
+      --muted:#65788b;
+      --blue:#123d66;
+      --blue2:#1d5d8f;
+      --orange:#f28c28;
+      --orange2:#ffb463;
+      --green:#1f8b57;
+      --red:#c44b4b;
+      --line:#d9e5ef;
+      --soft:#f7fafc;
+      --shadow:0 22px 55px rgba(11,38,70,.13);
+      --shadow2:0 12px 28px rgba(11,38,70,.08);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      font-family:"Segoe UI", Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(242,140,40,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(18,61,102,.13), transparent 35%),
+        linear-gradient(135deg,#eef3f8,#f9fbfd 55%,#edf4fa);
+      line-height:1.5;
+    }
+
+    .deck{
+      width:min(96vw,1500px);
+      margin:18px auto;
+      border-radius:32px;
+      overflow:hidden;
+      background:rgba(255,255,255,.94);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(217,229,239,.9);
+    }
+
+    .ribbon{
+      height:10px;
+      background:linear-gradient(90deg,var(--blue),var(--blue2),var(--orange),#ffd6a1);
+    }
+
+    .hero{
+      position:relative;
+      padding:34px 34px 28px;
+      background:
+        linear-gradient(120deg, rgba(18,61,102,.97), rgba(30,91,139,.94)),
+        url("data:image/svg+xml,%3Csvg width='1200' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.08'%3E%3Cpath d='M0 120 C240 40 360 260 600 150 S960 60 1200 160'/%3E%3Cpath d='M0 240 C220 160 360 380 620 270 S940 170 1200 280'/%3E%3Cpath d='M0 360 C260 260 400 500 650 380 S950 300 1200 420'/%3E%3C/g%3E%3C/svg%3E");
+      color:#fff;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-80px;
+      top:-80px;
+      width:330px;
+      height:330px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.18), transparent 62%);
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.32fr .92fr;
+      gap:30px;
+      align-items:center;
+      position:relative;
+      z-index:1;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.22);
+      padding:8px 14px;
+      border-radius:999px;
+      font-weight:800;
+      color:#eaf5ff;
+      margin-bottom:16px;
+      backdrop-filter:blur(8px);
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(2rem,3vw,3.45rem);
+      line-height:1.05;
+      letter-spacing:-.03em;
+    }
+
+    .subtitle{
+      margin:12px 0 16px;
+      font-size:clamp(1.05rem,1.5vw,1.25rem);
+      color:#ffd7aa;
+      font-weight:900;
+    }
+
+    .lead{
+      max-width:78ch;
+      color:#d9e8f5;
+      margin:0 0 18px;
+      font-size:1.02rem;
+    }
+
+    .hero-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .hero-chip{
+      padding:9px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.18);
+      color:#fff;
+      font-weight:800;
+      font-size:.92rem;
+    }
+
+    .formula-panel{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.24);
+      border-radius:28px;
+      padding:20px;
+      backdrop-filter:blur(12px);
+      box-shadow:0 22px 45px rgba(0,0,0,.16);
+    }
+
+    .formula-panel h3{
+      margin:0 0 12px;
+      color:#fff;
+      font-size:1.1rem;
+    }
+
+    .equation{
+      background:#fff;
+      color:var(--blue);
+      border-radius:20px;
+      padding:18px;
+      font-size:1.25rem;
+      font-weight:950;
+      text-align:center;
+      box-shadow:0 16px 32px rgba(0,0,0,.16);
+    }
+
+    .equation small{
+      display:block;
+      color:var(--muted);
+      font-size:.86rem;
+      font-weight:700;
+      margin-top:8px;
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .flow div{
+      background:rgba(255,255,255,.11);
+      border:1px solid rgba(255,255,255,.18);
+      color:#eaf5ff;
+      padding:10px;
+      border-radius:16px;
+      text-align:center;
+      font-weight:800;
+      font-size:.88rem;
+    }
+
+    .main{
+      padding:24px;
+      display:grid;
+      gap:22px;
+    }
+
+    .section{
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow2);
+      overflow:hidden;
+    }
+
+    .section-head{
+      padding:20px 22px;
+      background:linear-gradient(180deg,#ffffff,#f7fbff);
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .tag{
+      display:inline-block;
+      padding:6px 10px;
+      background:#e9f1f9;
+      border:1px solid #d2e2f0;
+      color:var(--blue);
+      border-radius:999px;
+      font-weight:900;
+      font-size:.8rem;
+      margin-bottom:8px;
+    }
+
+    .section-head h2{
+      margin:0 0 6px;
+      color:var(--blue);
+      font-size:1.42rem;
+    }
+
+    .section-head p{
+      margin:0;
+      color:var(--muted);
+      max-width:950px;
+    }
+
+    .badge{
+      background:#fff3e6;
+      border:1px solid #ffd1a0;
+      color:#96570f;
+      border-radius:999px;
+      padding:7px 12px;
+      font-weight:900;
+      font-size:.84rem;
+    }
+
+    .section-body{
+      padding:22px;
+      display:grid;
+      gap:20px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.02fr .98fr;
+      gap:20px;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .grid-4{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .card{
+      background:linear-gradient(180deg,#ffffff,#f8fbfe);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+    }
+
+    .card h3,.card h4{
+      margin:0 0 10px;
+      color:var(--blue);
+    }
+
+    .muted{color:var(--muted)}
+
+    .concept{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      min-height:120px;
+    }
+
+    .icon{
+      width:46px;
+      height:46px;
+      min-width:46px;
+      display:grid;
+      place-items:center;
+      border-radius:16px;
+      background:linear-gradient(180deg,#fff3e6,#ffe2bf);
+      color:var(--orange);
+      font-size:1.45rem;
+      box-shadow:0 8px 18px rgba(242,140,40,.15);
+    }
+
+    .steps{
+      display:grid;
+      gap:10px;
+    }
+
+    .step{
+      display:flex;
+      gap:12px;
+      padding:12px;
+      border:1px solid var(--line);
+      background:#f7fbff;
+      border-radius:16px;
+    }
+
+    .num{
+      width:30px;
+      height:30px;
+      min-width:30px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:var(--orange);
+      color:#fff;
+      font-weight:950;
+      box-shadow:0 7px 15px rgba(242,140,40,.25);
+    }
+
+    .formula-box{
+      padding:14px;
+      border-radius:18px;
+      background:#f8fbff;
+      border:1px solid var(--line);
+      border-left:6px solid var(--orange);
+      font-family:"Consolas","Courier New",monospace;
+      font-weight:800;
+      color:var(--blue);
+      white-space:pre-wrap;
+    }
+
+    .calc-card{
+      background:
+        radial-gradient(circle at top right, rgba(242,140,40,.10), transparent 30%),
+        linear-gradient(180deg,#ffffff,#f8fbff);
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:20px;
+      box-shadow:var(--shadow2);
+    }
+
+    .input-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .input-grid.two{
+      grid-template-columns:repeat(2,1fr);
+    }
+
+    .field{
+      display:grid;
+      gap:7px;
+    }
+
+    label{
+      font-weight:850;
+      color:var(--blue);
+      font-size:.93rem;
+    }
+
+    input,select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 13px;
+      font-size:1rem;
+      color:var(--ink);
+      background:#fff;
+      outline:none;
+      transition:.18s ease;
+    }
+
+    input:focus,select:focus{
+      border-color:var(--orange);
+      box-shadow:0 0 0 4px rgba(242,140,40,.14);
+    }
+
+    .note{
+      background:#fff8ee;
+      border:1px solid #ffd9ad;
+      border-left:6px solid var(--orange);
+      color:#76502c;
+      padding:12px 14px;
+      border-radius:18px;
+      font-size:.94rem;
+      margin-top:12px;
+    }
+
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    button{
+      border:0;
+      border-radius:16px;
+      padding:12px 16px;
+      font-weight:950;
+      cursor:pointer;
+      font-size:.96rem;
+      transition:.18s ease;
+    }
+
+    .primary{
+      color:#fff;
+      background:linear-gradient(180deg,var(--orange),#df740e);
+      box-shadow:0 12px 24px rgba(242,140,40,.26);
+    }
+
+    .primary:hover,.secondary:hover{
+      transform:translateY(-1px);
+    }
+
+    .secondary{
+      color:var(--blue);
+      background:#edf4fb;
+      border:1px solid #d2e2f0;
+    }
+
+    .dashboard{
+      display:grid;
+      gap:14px;
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .kpi{
+      padding:15px;
+      border-radius:20px;
+      background:#fff;
+      border:1px solid var(--line);
+      text-align:center;
+      box-shadow:0 8px 18px rgba(11,38,70,.04);
+    }
+
+    .kpi span{
+      display:block;
+      color:var(--muted);
+      font-weight:800;
+      font-size:.83rem;
+      margin-bottom:6px;
+    }
+
+    .kpi strong{
+      font-size:1.27rem;
+      color:var(--blue);
+    }
+
+    .bars{
+      display:grid;
+      gap:12px;
+    }
+
+    .barbox{
+      padding:14px;
+      border-radius:20px;
+      background:#fff;
+      border:1px solid var(--line);
+    }
+
+    .bar-title{
+      display:flex;
+      justify-content:space-between;
+      font-weight:900;
+      color:var(--blue);
+      margin-bottom:8px;
+      gap:10px;
+    }
+
+    .bar{
+      height:18px;
+      border-radius:999px;
+      background:#e5edf5;
+      overflow:hidden;
+    }
+
+    .fill{
+      height:100%;
+      border-radius:999px;
+      transition:width .8s ease;
+    }
+
+    .fill.actual{background:linear-gradient(90deg,#4f89c5,#7cb0e1)}
+    .fill.target{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+
+    .result{
+      border-radius:24px;
+      padding:18px;
+      background:linear-gradient(180deg,#123d66,#1e5d8e);
+      color:#fff;
+      box-shadow:0 18px 34px rgba(18,61,102,.18);
+    }
+
+    .result h3{
+      margin:0 0 10px;
+      color:#fff;
+    }
+
+    .result-main{
+      font-size:2.15rem;
+      font-weight:1000;
+      color:#ffd3a1;
+      margin-bottom:10px;
+      letter-spacing:-.03em;
+    }
+
+    .calc-box{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.20);
+      border-radius:18px;
+      padding:13px;
+      font-family:"Consolas","Courier New",monospace;
+      white-space:pre-line;
+      color:#edf7ff;
+      font-size:.94rem;
+    }
+
+    .status{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      font-weight:850;
+      background:rgba(255,255,255,.13);
+      border:1px solid rgba(255,255,255,.20);
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+
+    th,td{
+      padding:12px;
+      border-bottom:1px solid #e8eef5;
+      text-align:left;
+      font-size:.94rem;
+    }
+
+    th{
+      color:var(--blue);
+      background:#f3f8fd;
+    }
+
+    tr:last-child td{border-bottom:0}
+
+    .warning{
+      border-radius:22px;
+      padding:16px;
+      background:#fff8ee;
+      border:1px solid #ffd7a8;
+      color:#73502c;
+    }
+
+    .warning strong{color:#8a4d14}
+
+    .footer{
+      padding:0 24px 26px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    @media (max-width:1180px){
+      .hero-grid,.grid-2{grid-template-columns:1fr}
+      .grid-4,.kpis{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media (max-width:860px){
+      .grid-3,.grid-4,.input-grid,.input-grid.two,.kpis,.flow{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width:640px){
+      .deck{
+        width:100%;
+        margin:0;
+        border-radius:0;
+      }
+      .hero,.main{padding:16px}
+      .section-head,.section-body{padding:16px}
+      .result-main{font-size:1.7rem}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="deck">
+    <div class="ribbon"></div>
+
+    <header class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="pill">🌱 Aula técnica interativa • Fertilidade do Solo</div>
+          <h1>Necessidade de Calagem no Estado de São Paulo</h1>
+          <div class="subtitle">Método da Saturação por Bases | Cálculo com cultura selecionável</div>
+          <p class="lead">
+            Infográfico dinâmico para compreender como a análise de solo se transforma em uma recomendação
+            de calcário. O aluno visualiza <strong>SB</strong>, <strong>CTC</strong>, <strong>V1</strong>,
+            <strong>V2</strong>, <strong>PRNT</strong> e a dose final em <strong>t/ha</strong>.
+          </p>
+          <div class="hero-chips">
+            <span class="hero-chip">Escolha da cultura</span>
+            <span class="hero-chip">Cálculo automático</span>
+            <span class="hero-chip">Etapas explicadas</span>
+            <span class="hero-chip">Visual para projetor</span>
+          </div>
+        </div>
+
+        <div class="formula-panel">
+          <h3>Fórmula central da aula</h3>
+          <div class="equation">
+            NC = [CTC × (V2 − V1)] / (10 × PRNT)
+            <small>NC em t/ha • CTC em mmolc/dm³ • PRNT em %</small>
+          </div>
+          <div class="flow">
+            <div>1. Análise</div>
+            <div>2. Cultura</div>
+            <div>3. PRNT</div>
+            <div>4. Dose</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <span class="tag">VISÃO GERAL</span>
+            <h2>Da análise do solo à dose de calcário</h2>
+            <p>
+              A calagem corrige a acidez e busca elevar a saturação por bases do solo até uma condição
+              adequada para o desenvolvimento da cultura.
+            </p>
+          </div>
+          <span class="badge">Didático + interativo</span>
+        </div>
+
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="card concept">
+              <div class="icon">🧪</div>
+              <div>
+                <h3>1. Entradas da análise</h3>
+                <p class="muted">Use Ca, Mg, K e H+Al para encontrar SB, CTC e V1.</p>
+              </div>
+            </div>
+            <div class="card concept">
+              <div class="icon">🌽</div>
+              <div>
+                <h3>2. Cultura escolhida</h3>
+                <p class="muted">Cada cultura pode trabalhar com uma meta diferente de V2.</p>
+              </div>
+            </div>
+            <div class="card concept">
+              <div class="icon">🪨</div>
+              <div>
+                <h3>3. Qualidade do calcário</h3>
+                <p class="muted">O PRNT ajusta a dose conforme a eficiência do corretivo.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="warning">
+            <strong>Uso em aula:</strong> os valores de V2 sugeridos no seletor são didáticos e editáveis.
+            Para recomendação agronômica real, confirme o valor específico da cultura, cultivar e sistema
+            no boletim técnico correspondente e na assistência técnica local.
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <span class="tag">PASSO A PASSO</span>
+            <h2>Como o cálculo é formado?</h2>
+            <p>O aluno acompanha a sequência lógica antes de chegar à necessidade de calagem.</p>
+          </div>
+          <span class="badge">Raciocínio agronômico</span>
+        </div>
+
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="card">
+              <h3>Etapas do cálculo</h3>
+              <div class="steps">
+                <div class="step">
+                  <div class="num">1</div>
+                  <div><strong>SB = Ca + Mg + K</strong><br><span class="muted">Soma dos cátions básicos.</span></div>
+                </div>
+                <div class="step">
+                  <div class="num">2</div>
+                  <div><strong>CTC = SB + (H+Al)</strong><br><span class="muted">Capacidade total de troca de cátions.</span></div>
+                </div>
+                <div class="step">
+                  <div class="num">3</div>
+                  <div><strong>V1 = (SB × 100) / CTC</strong><br><span class="muted">Saturação por bases atual.</span></div>
+                </div>
+                <div class="step">
+                  <div class="num">4</div>
+                  <div><strong>NC = [CTC × (V2 − V1)] / (10 × PRNT)</strong><br><span class="muted">Dose estimada de calcário em t/ha.</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Fórmulas destacadas</h3>
+              <div class="formula-box">SB = Ca + Mg + K</div>
+              <div style="height:10px"></div>
+              <div class="formula-box">CTC = SB + (H + Al)</div>
+              <div style="height:10px"></div>
+              <div class="formula-box">V1 = (SB × 100) / CTC</div>
+              <div style="height:10px"></div>
+              <div class="formula-box">NC = [CTC × (V2 − V1)] / (10 × PRNT)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <span class="tag">CALCULADORA PREMIUM</span>
+            <h2>Simulador de necessidade de calagem</h2>
+            <p>
+              Preencha os dados da análise, escolha a cultura e acompanhe o cálculo com indicadores visuais.
+            </p>
+          </div>
+          <span class="badge">Ideal para projetor</span>
+        </div>
+
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="calc-card">
+              <h3>Dados de entrada</h3>
+
+              <div class="input-grid">
+                <div class="field">
+                  <label for="ca">Ca (mmolc/dm³)</label>
+                  <input id="ca" type="number" step="0.01" value="12">
+                </div>
+                <div class="field">
+                  <label for="mg">Mg (mmolc/dm³)</label>
+                  <input id="mg" type="number" step="0.01" value="5">
+                </div>
+                <div class="field">
+                  <label for="k">K (mmolc/dm³)</label>
+                  <input id="k" type="number" step="0.01" value="2">
+                </div>
+              </div>
+
+              <div style="height:12px"></div>
+
+              <div class="input-grid two">
+                <div class="field">
+                  <label for="hal">H + Al (mmolc/dm³)</label>
+                  <input id="hal" type="number" step="0.01" value="31">
+                </div>
+                <div class="field">
+                  <label for="prnt">PRNT do calcário (%)</label>
+                  <input id="prnt" type="number" step="0.01" value="80">
+                </div>
+              </div>
+
+              <div style="height:12px"></div>
+
+              <div class="input-grid two">
+                <div class="field">
+                  <label for="cultura">Cultura</label>
+                  <select id="cultura">
+                    <option value="milho">Milho</option>
+                    <option value="soja">Soja</option>
+                    <option value="trigo">Trigo</option>
+                    <option value="hortalicas">Hortaliças</option>
+                    <option value="pastagem">Pastagem</option>
+                    <option value="bananeira">Bananeira</option>
+                    <option value="mandioca">Mandioca</option>
+                    <option value="goiaba">Goiaba</option>
+                    <option value="custom">Personalizada</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="v2">V2 desejado (%)</label>
+                  <input id="v2" type="number" step="0.01" value="70">
+                </div>
+              </div>
+
+              <div class="note" id="notaCultura">
+                <strong>Milho:</strong> valor inicial sugerido de V2 = 70%. Ajuste se desejar.
+              </div>
+
+              <div class="btn-row">
+                <button class="primary" onclick="calcular()">Calcular calagem</button>
+                <button class="secondary" onclick="exemplo()">Carregar exemplo</button>
+                <button class="secondary" onclick="limpar()">Limpar</button>
+              </div>
+            </div>
+
+            <div class="dashboard">
+              <div class="kpis">
+                <div class="kpi"><span>SB</span><strong id="sbOut">19,00</strong></div>
+                <div class="kpi"><span>CTC</span><strong id="ctcOut">50,00</strong></div>
+                <div class="kpi"><span>V1 atual</span><strong id="v1Out">38,00%</strong></div>
+                <div class="kpi"><span>V2 meta</span><strong id="v2Out">70,00%</strong></div>
+              </div>
+
+              <div class="bars">
+                <div class="barbox">
+                  <div class="bar-title"><span>V1 atual</span><span id="v1Label">38,00%</span></div>
+                  <div class="bar"><div class="fill actual" id="v1Bar" style="width:38%"></div></div>
+                </div>
+
+                <div class="barbox">
+                  <div class="bar-title"><span>V2 desejado</span><span id="v2Label">70,00%</span></div>
+                  <div class="bar"><div class="fill target" id="v2Bar" style="width:70%"></div></div>
+                </div>
+              </div>
+
+              <div class="result" id="resultado">
+                <h3>Resultado principal</h3>
+                <div class="result-main">NC = 2,00 t/ha</div>
+                <div class="calc-box">SB  = 12 + 5 + 2 = 19
+CTC = 19 + 31 = 50
+V1  = (19 × 100) / 50 = 38%
+ΔV  = 70 − 38 = 32%
+NC  = [50 × 32] / (10 × 80) = 2,00 t/ha</div>
+                <div class="status">O solo está abaixo da meta de saturação por bases. Pelo critério adotado, há necessidade de calagem.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <span class="tag">INTERPRETAÇÃO</span>
+            <h2>Como explicar o resultado para os alunos?</h2>
+            <p>A dose não deve ser vista apenas como número, mas como consequência da acidez, CTC, V% e PRNT.</p>
+          </div>
+          <span class="badge">Leitura agronômica</span>
+        </div>
+
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="card">
+              <h3>Regras de interpretação</h3>
+              <div class="steps">
+                <div class="step">
+                  <div class="num">A</div>
+                  <div><strong>V1 menor que V2</strong><br><span class="muted">Indica necessidade de elevar a saturação por bases.</span></div>
+                </div>
+                <div class="step">
+                  <div class="num">B</div>
+                  <div><strong>V1 maior ou igual a V2</strong><br><span class="muted">Pelo critério de saturação por bases, a NC é zero.</span></div>
+                </div>
+                <div class="step">
+                  <div class="num">C</div>
+                  <div><strong>PRNT maior</strong><br><span class="muted">Calcário mais eficiente; menor dose para o mesmo objetivo.</span></div>
+                </div>
+                <div class="step">
+                  <div class="num">D</div>
+                  <div><strong>CTC maior</strong><br><span class="muted">Solo com maior capacidade tampão pode exigir mais corretivo para elevar o V%.</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Tabela de variáveis</h3>
+              <table>
+                <thead>
+                  <tr><th>Sigla</th><th>Significado</th><th>Unidade</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Ca, Mg, K</td><td>Bases trocáveis</td><td>mmolc/dm³</td></tr>
+                  <tr><td>H+Al</td><td>Acidez potencial</td><td>mmolc/dm³</td></tr>
+                  <tr><td>SB</td><td>Soma de bases</td><td>mmolc/dm³</td></tr>
+                  <tr><td>CTC</td><td>Capacidade de troca catiônica</td><td>mmolc/dm³</td></tr>
+                  <tr><td>V1</td><td>Saturação atual por bases</td><td>%</td></tr>
+                  <tr><td>V2</td><td>Saturação desejada</td><td>%</td></tr>
+                  <tr><td>PRNT</td><td>Poder relativo de neutralização total</td><td>%</td></tr>
+                  <tr><td>NC</td><td>Necessidade de calagem</td><td>t/ha</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <span class="tag">RESUMO FINAL</span>
+            <h2>Quadro de fixação</h2>
+            <p>Uma síntese para fechar a explicação ou transformar em anotação dos alunos.</p>
+          </div>
+          <span class="badge">Para copiar no caderno</span>
+        </div>
+
+        <div class="section-body">
+          <div class="grid-4">
+            <div class="card">
+              <h4>1. Análise</h4>
+              <p class="muted">Partir dos dados de Ca, Mg, K e H+Al.</p>
+            </div>
+            <div class="card">
+              <h4>2. CTC e V%</h4>
+              <p class="muted">Calcular SB, CTC e V1 atual.</p>
+            </div>
+            <div class="card">
+              <h4>3. Cultura</h4>
+              <p class="muted">Definir a meta V2 conforme a cultura.</p>
+            </div>
+            <div class="card">
+              <h4>4. PRNT</h4>
+              <p class="muted">Ajustar a dose conforme a qualidade do calcário.</p>
+            </div>
+          </div>
+
+          <div class="warning">
+            <strong>Mensagem-chave:</strong> a necessidade de calagem depende da fertilidade atual do solo,
+            da exigência da cultura e da eficiência do corretivo. Não é uma dose fixa para todas as áreas.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer">
+      Infográfico HTML, CSS e JavaScript • Funciona offline • Responsivo • Visual otimizado para aula técnica e projetor.
+    </div>
+  </div>
+
+  <script>
+    const culturas = {
+      milho:{nome:"Milho",v2:70,nota:"valor inicial sugerido de V2 = 70%. Ajuste conforme a recomendação adotada."},
+      soja:{nome:"Soja",v2:70,nota:"valor inicial sugerido de V2 = 70%. Ajuste conforme a recomendação adotada."},
+      trigo:{nome:"Trigo",v2:70,nota:"valor inicial sugerido de V2 = 70%. Ajuste conforme a recomendação adotada."},
+      hortalicas:{nome:"Hortaliças",v2:80,nota:"valor inicial sugerido de V2 = 80%, por serem geralmente mais exigentes."},
+      pastagem:{nome:"Pastagem",v2:60,nota:"valor inicial sugerido de V2 = 60%. Ajuste conforme espécie e sistema."},
+      bananeira:{nome:"Bananeira",v2:65,nota:"valor inicial sugerido de V2 = 65%. Faixa didática comum: 60 a 70%."},
+      mandioca:{nome:"Mandioca",v2:55,nota:"valor inicial sugerido de V2 = 55%. Faixa didática comum: 50 a 60%."},
+      goiaba:{nome:"Goiaba",v2:70,nota:"valor inicial sugerido de V2 = 70%. Ajuste conforme boletim e sistema."},
+      custom:{nome:"Personalizada",v2:70,nota:"informe manualmente o V2 desejado para a cultura ou sistema."}
+    };
+
+    const ids = ["ca","mg","k","hal","prnt","v2"];
+    const cultura = document.getElementById("cultura");
+    const nota = document.getElementById("notaCultura");
+
+    function br(n,d=2){
+      if(!isFinite(n)) return "-";
+      return Number(n).toFixed(d).replace(".",",");
+    }
+
+    function val(id){
+      return parseFloat(document.getElementById(id).value);
+    }
+
+    function mudarCultura(){
+      const c = culturas[cultura.value];
+      if(cultura.value !== "custom") document.getElementById("v2").value = c.v2;
+      nota.innerHTML = `<strong>${c.nome}:</strong> ${c.nota}`;
+      calcular();
+    }
+
+    cultura.addEventListener("change", mudarCultura);
+    ids.forEach(id => document.getElementById(id).addEventListener("input", calcular));
+
+    function exemplo(){
+      document.getElementById("ca").value = 12;
+      document.getElementById("mg").value = 5;
+      document.getElementById("k").value = 2;
+      document.getElementById("hal").value = 31;
+      document.getElementById("prnt").value = 80;
+      document.getElementById("cultura").value = "milho";
+      mudarCultura();
+    }
+
+    function limpar(){
+      ["ca","mg","k","hal","prnt","v2"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("cultura").value = "custom";
+      nota.innerHTML = "<strong>Personalizada:</strong> informe manualmente o V2 desejado para a cultura ou sistema.";
+      ["sbOut","ctcOut","v1Out","v2Out","v1Label","v2Label"].forEach(id => document.getElementById(id).textContent = "-");
+      document.getElementById("v1Bar").style.width = "0%";
+      document.getElementById("v2Bar").style.width = "0%";
+      document.getElementById("resultado").innerHTML = `
+        <h3>Resultado principal</h3>
+        <div class="result-main">Preencha os dados</div>
+        <div class="calc-box">SB  = Ca + Mg + K
+CTC = SB + (H+Al)
+V1  = (SB × 100) / CTC
+NC  = [CTC × (V2 − V1)] / (10 × PRNT)</div>
+        <div class="status">Aguardando os dados de entrada.</div>`;
+    }
+
+    function calcular(){
+      const ca = val("ca"), mg = val("mg"), k = val("k"), hal = val("hal"), prnt = val("prnt"), v2 = val("v2");
+
+      if([ca,mg,k,hal,prnt,v2].some(x => isNaN(x))){
+        document.getElementById("resultado").innerHTML = `
+        <h3>Resultado principal</h3>
+        <div class="result-main">Preencha todos os campos</div>
+        <div class="calc-box">Para calcular, informe Ca, Mg, K, H+Al, PRNT e V2.</div>
+        <div class="status">Complete todos os dados para continuar.</div>`;
+        return;
+      }
+
+      if([ca,mg,k,hal].some(x => x < 0) || prnt <= 0 || v2 < 0){
+        document.getElementById("resultado").innerHTML = `
+        <h3>Resultado principal</h3>
+        <div class="result-main">Valores inválidos</div>
+        <div class="calc-box">Não use valores negativos para os atributos do solo.
+PRNT precisa ser maior que zero.</div>
+        <div class="status">Revise os dados informados.</div>`;
+        return;
+      }
+
+      const sb = ca + mg + k;
+      const ctc = sb + hal;
+
+      if(ctc <= 0){
+        document.getElementById("resultado").innerHTML = `
+        <h3>Resultado principal</h3>
+        <div class="result-main">CTC inválida</div>
+        <div class="calc-box">A CTC calculada foi menor ou igual a zero.</div>
+        <div class="status">Verifique os dados de entrada.</div>`;
+        return;
+      }
+
+      const v1 = (sb * 100) / ctc;
+      const delta = Math.max(0, v2 - v1);
+      const nc = (ctc * delta) / (10 * prnt);
+      const nc100 = (ctc * delta) / (10 * 100);
+
+      document.getElementById("sbOut").textContent = br(sb);
+      document.getElementById("ctcOut").textContent = br(ctc);
+      document.getElementById("v1Out").textContent = br(v1) + "%";
+      document.getElementById("v2Out").textContent = br(v2) + "%";
+      document.getElementById("v1Label").textContent = br(v1) + "%";
+      document.getElementById("v2Label").textContent = br(v2) + "%";
+      document.getElementById("v1Bar").style.width = Math.min(v1,100) + "%";
+      document.getElementById("v2Bar").style.width = Math.min(v2,100) + "%";
+
+      const status = delta === 0
+        ? "A saturação atual já atende ou supera a meta informada. Pelo critério adotado, a NC é zero."
+        : "O solo está abaixo da meta de saturação por bases. Pelo critério adotado, há necessidade de calagem.";
+
+      document.getElementById("resultado").innerHTML = `
+        <h3>Resultado principal</h3>
+        <div class="result-main">NC = ${br(nc)} t/ha</div>
+        <div class="calc-box">SB  = ${br(ca)} + ${br(mg)} + ${br(k)} = ${br(sb)}
+CTC = ${br(sb)} + ${br(hal)} = ${br(ctc)}
+V1  = (${br(sb)} × 100) / ${br(ctc)} = ${br(v1)}%
+ΔV  = ${br(v2)} − ${br(v1)} = ${br(delta)}%
+NC com PRNT 100% = [${br(ctc)} × ${br(delta)}] / (10 × 100) = ${br(nc100)} t/ha
+NC com PRNT ${br(prnt)}% = [${br(ctc)} × ${br(delta)}] / (10 × ${br(prnt)}) = ${br(nc)} t/ha</div>
+        <div class="status">${status}</div>`;
+    }
+
+    exemplo();
+  </script>
+</body>
+</html>
