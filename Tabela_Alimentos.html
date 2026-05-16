@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nutrição Animal | Infográfico Técnico Dinâmico</title>
+  <style>
+    :root {
+      --bg: #f4f7f1;
+      --panel: #ffffff;
+      --panel2: #eef6ea;
+      --text: #1d2b22;
+      --muted: #66736b;
+      --green: #2f7d4f;
+      --green2: #1f5c39;
+      --orange: #f28c28;
+      --blue: #2c7fb8;
+      --red: #c94c4c;
+      --yellow: #f4c542;
+      --line: #d9e4d7;
+      --shadow: 0 18px 45px rgba(22, 48, 32, .13);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(47,125,79,.13), transparent 32%),
+        radial-gradient(circle at 100% 20%, rgba(242,140,40,.13), transparent 32%),
+        var(--bg);
+    }
+    .app {
+      width: min(1360px, 100vw);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 292px 1fr;
+      gap: 20px;
+    }
+    aside {
+      background: rgba(255,255,255,.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      position: sticky;
+      top: 20px;
+      height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .brand {
+      display: flex; gap: 12px; align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+    }
+    .brand-icon {
+      width: 50px; height: 50px; border-radius: 16px;
+      background: linear-gradient(135deg, var(--green2), var(--green));
+      color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 21px;
+    }
+    .brand h1 { font-size: 18px; line-height: 1.12; margin: 0; }
+    .brand small { color: var(--muted); display: block; margin-top: 3px; }
+    nav { display: grid; gap: 7px; }
+    .nav-btn {
+      width: 100%; border: 1px solid transparent; background: transparent;
+      border-radius: 15px; padding: 11px 12px; text-align: left;
+      cursor: pointer; color: var(--text); font-size: 14px;
+      display: flex; align-items: center; gap: 9px; transition: .2s;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--panel2); border-color: #c9ddc8; transform: translateX(3px);
+    }
+    .side-note {
+      margin-top: auto; background: #fff7ea; border: 1px solid #f2ddb9;
+      border-radius: 17px; padding: 13px; font-size: 12.8px; line-height: 1.42; color: #71532a;
+    }
+    main { min-width: 0; }
+    section { display: none; animation: fade .25s ease; }
+    section.active { display: block; }
+    @keyframes fade { from {opacity: 0; transform: translateY(8px)} to {opacity:1; transform: translateY(0)} }
+    .hero {
+      background: linear-gradient(135deg, #173f29, #2f7d4f 62%, #6aa84f);
+      color: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 28px; position: relative; overflow: hidden; min-height: 190px;
+    }
+    .hero:after {
+      content: ""; position: absolute; width: 360px; height: 360px;
+      border-radius: 999px; background: rgba(255,255,255,.12); right: -120px; top: -150px;
+    }
+    .hero h2 { margin: 0 0 10px; font-size: clamp(28px,4vw,46px); line-height: 1.05; max-width: 900px; }
+    .hero p { margin: 0; max-width: 900px; font-size: 16.5px; opacity: .96; line-height: 1.48; }
+    .tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+    .tag { padding: 8px 11px; border-radius: 999px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.23); font-size: 12.5px; }
+    .grid { margin-top: 20px; display: grid; grid-template-columns: repeat(12,1fr); gap: 16px; }
+    .card {
+      background: rgba(255,255,255,.94); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 19px; min-width: 0;
+    }
+    .span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+    h3 { margin: 0 0 9px; font-size: 21px; color: var(--green2); }
+    p { color: var(--muted); line-height: 1.5; margin: 0 0 11px; }
+    label { display:block; font-weight: 800; font-size: 13.5px; margin-bottom: 6px; color: #304036; }
+    input, select {
+      width:100%; border:1px solid var(--line); border-radius: 14px; padding: 11px 12px;
+      font-size: 14.5px; background: #fff; color: var(--text); outline: none;
+    }
+    input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,125,79,.12); }
+    .form-grid { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; margin-top: 12px; }
+    .form-grid-3 { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 13px; margin-top: 12px; }
+    .btn {
+      border: 0; border-radius: 15px; background: var(--green); color: #fff; padding: 12px 15px;
+      font-weight: 800; cursor: pointer; transition: .2s;
+    }
+    .btn:hover { background: var(--green2); transform: translateY(-1px); }
+    .btn.secondary { background:#eef6ea; color:var(--green2); border:1px solid #c9ddc8; }
+    .btn.secondary:hover{ background:#e0f0dc; }
+    .concept-list { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 12px; }
+    .concept { border:1px solid var(--line); background:#fbfdf9; border-radius:17px; padding:13px; cursor:pointer; transition:.2s; }
+    .concept:hover, .concept.active { border-color:var(--green); background:#eef8f0; transform:translateY(-2px); }
+    .concept strong { display:block; color:var(--green2); margin-bottom:5px; }
+    .result-box { background:#f8fbf7; border:1px solid var(--line); border-radius:18px; padding:15px; margin-top:13px; }
+    .result-title { font-size: 22px; font-weight: 900; color: var(--green2); margin-bottom: 6px; }
+    .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .pill { border-radius:999px; padding:8px 10px; background:#eef6ea; color:#315b3f; border:1px solid #c9ddc8; font-size:12.5px; }
+    .metric-grid { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 13px; }
+    .metric { background:#fff; border:1px solid var(--line); border-radius:17px; padding:13px; }
+    .metric small { color:var(--muted); display:block; margin-bottom:5px; }
+    .metric strong { font-size: 22px; color: var(--green2); }
+    .bar-wrap { height: 16px; background: #e8eee8; border-radius: 999px; overflow: hidden; border: 1px solid #d7e0d6; margin-top: 9px; }
+    .bar { height: 100%; width: 50%; background: linear-gradient(90deg,var(--green),var(--orange)); transition: width .3s; }
+    .food-table { width:100%; border-collapse: collapse; border-radius:16px; overflow:hidden; font-size:13.6px; }
+    .food-table th, .food-table td { padding:10px; border-bottom:1px solid var(--line); text-align:left; vertical-align: top; }
+    .food-table th { background:#eef6ea; color:var(--green2); white-space:nowrap; }
+    .food-table tr:last-child td { border-bottom:0; }
+    .status { display:inline-block; border-radius:14px; padding:9px 11px; font-weight:800; margin-top:8px; }
+    .ok { background:#e8f7ed; color:#256b3c; }
+    .warn { background:#fff4d8; color:#806018; }
+    .bad { background:#ffe8e8; color:#934141; }
+    .info { background:#e9f3fb; color:#245d85; }
+    .matrix { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mini-title { font-weight:900; color:var(--green2); margin: 0 0 7px; }
+    .small { font-size: 12.5px; color: var(--muted); line-height: 1.42; }
+    .quiz-option { display:block; width:100%; text-align:left; background:#fbfdf9; border:1px solid var(--line); padding:13px 14px; border-radius:15px; margin-top:9px; cursor:pointer; font-size:14.5px; transition:.2s; }
+    .quiz-option:hover { background:#eef8f0; border-color:var(--green); }
+    .quiz-option.correct { background:#e8f7ed; border-color:#58a96e; }
+    .quiz-option.wrong { background:#ffecec; border-color:#d97777; }
+    .diet-row { display:grid; grid-template-columns: 1.6fr .7fr .7fr; gap: 10px; align-items:end; margin-top: 10px; }
+    @media(max-width:1000px){.app{grid-template-columns:1fr}.side-note{display:none}aside{position:relative;height:auto;top:auto}nav{grid-template-columns:repeat(2,minmax(0,1fr))}.span-3,.span-4,.span-5,.span-6,.span-7,.span-8,.span-12{grid-column:span 12}.form-grid-3{grid-template-columns:1fr}.matrix{grid-template-columns:1fr}}
+    @media(max-width:640px){.app{padding:12px}.form-grid,.concept-list,.metric-grid,.diet-row{grid-template-columns:1fr}.hero{padding:22px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="brand-icon">NA</div>
+      <div><h1>Nutrição Animal</h1><small>Infográfico técnico dinâmico</small></div>
+    </div>
+    <nav>
+      <button class="nav-btn active" data-section="inicio">🏠 Início</button>
+      <button class="nav-btn" data-section="conceitos">📚 Conceitos</button>
+      <button class="nav-btn" data-section="classificador">🔎 Classificação técnica</button>
+      <button class="nav-btn" data-section="materia-seca">💧 MS e nutrientes</button>
+      <button class="nav-btn" data-section="comparador">⚖️ Tabela de alimentos</button>
+      <button class="nav-btn" data-section="dieta">🧮 Avaliação de dieta</button>
+      <button class="nav-btn" data-section="bovinos">🐄 Bovinos leiteiros</button>
+      <button class="nav-btn" data-section="monogastricos">🐔🐖 Aves e suínos</button>
+      <button class="nav-btn" data-section="quiz">✅ Quiz técnico</button>
+    </nav>
+    <div class="side-note">
+      <strong>Base técnica:</strong><br>
+      O app trabalha com MS, PB, FB, NDT/EM, Ca e P. Os valores são didáticos e devem ser substituídos por análise bromatológica ou tabela oficial quando houver formulação real.
+    </div>
+  </aside>
+
+  <main>
+    <section id="inicio" class="active">
+      <div class="hero">
+        <h2>Classificador, Calculadora e Avaliador de Dietas</h2>
+        <p>Ferramenta interativa para estudar alimentos, matéria seca, composição bromatológica, exigências e adequação nutricional em bovinos leiteiros, aves e suínos.</p>
+        <div class="tags"><span class="tag">MS</span><span class="tag">PB</span><span class="tag">FB</span><span class="tag">NDT</span><span class="tag">EM</span><span class="tag">Ca</span><span class="tag">P</span><span class="tag">Lisina</span></div>
+      </div>
+      <div class="grid">
+        <div class="card span-3"><h3>1. Classificar</h3><p>Volumosos, concentrados energéticos, concentrados proteicos, minerais e vitaminas.</p></div>
+        <div class="card span-3"><h3>2. Converter</h3><p>Transformar alimento natural em matéria seca, água, PB, NDT/EM, Ca e P.</p></div>
+        <div class="card span-3"><h3>3. Avaliar</h3><p>Somar nutrientes de uma dieta e comparar com uma meta ou exigência.</p></div>
+        <div class="card span-3"><h3>4. Interpretar</h3><p>Identificar déficit, excesso, equilíbrio e riscos práticos de formulação.</p></div>
+        <div class="card span-12">
+          <h3>Raciocínio zootécnico usado no infográfico</h3>
+          <div class="matrix">
+            <div class="result-box"><div class="mini-title">Alimento natural</div><p>Peso fornecido ao animal, contendo água e matéria seca. Dois alimentos com o mesmo peso podem fornecer quantidades muito diferentes de nutrientes.</p></div>
+            <div class="result-box"><div class="mini-title">Matéria seca</div><p>Fração onde se concentram nutrientes como proteína, energia, fibra, minerais e vitaminas. É a base da comparação técnica entre alimentos.</p></div>
+            <div class="result-box"><div class="mini-title">Exigência</div><p>Quantidade de nutriente necessária para mantença, crescimento, gestação, lactação ou produção de ovos/carne/leite.</p></div>
+            <div class="result-box"><div class="mini-title">Adequação</div><p>Comparação entre o que a dieta fornece e o que o animal exige. O resultado pode indicar déficit, adequado ou excesso.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="conceitos">
+      <div class="hero"><h2>Conceitos técnicos essenciais</h2><p>Clique nos conceitos para revisar a base da alimentação animal e da formulação de dietas.</p></div>
+      <div class="grid">
+        <div class="card span-7"><h3>Selecione um conceito</h3><div class="concept-list" id="conceptList"></div></div>
+        <div class="card span-5"><h3 id="conceptTitle">Alimento</h3><p id="conceptText"></p><div class="result-box"><div class="mini-title">Aplicação prática</div><p id="conceptUse"></p></div></div>
+      </div>
+    </section>
+
+    <section id="classificador">
+      <div class="hero"><h2>Classificação técnica dos alimentos</h2><p>Use fibra bruta, proteína bruta, origem e condição do alimento para estimar seu grupo zootécnico.</p></div>
+      <div class="grid">
+        <div class="card span-5">
+          <h3>Entrada de dados</h3>
+          <div class="form-grid">
+            <div><label>Fibra bruta - FB (%)</label><input id="fibra" type="number" value="8" min="0" max="100" step="0.1"></div>
+            <div><label>Proteína bruta - PB (%)</label><input id="proteina" type="number" value="9" min="0" max="100" step="0.1"></div>
+            <div><label>Condição</label><select id="umidadeTipo"><option value="seco">Seco</option><option value="suculento">Suculento</option><option value="mineral">Mineral</option><option value="vitamina">Vitamina</option></select></div>
+            <div><label>Origem</label><select id="origem"><option value="vegetal">Vegetal</option><option value="animal">Animal</option><option value="mineral">Mineral</option><option value="sintética">Sintética</option></select></div>
+          </div>
+          <button class="btn" style="margin-top:14px" onclick="classificarAlimento()">Classificar</button>
+        </div>
+        <div class="card span-7">
+          <h3>Resultado interpretado</h3>
+          <div class="result-box"><div class="result-title" id="classResult"></div><p id="classDesc"></p><div class="pill-row" id="classPills"></div></div>
+          <div class="metric-grid">
+            <div class="metric"><small>Critério volumoso</small><strong>FB &gt; 18%</strong></div>
+            <div class="metric"><small>Critério proteico</small><strong>PB ≥ 20%</strong></div>
+            <div class="metric"><small>Critério energético</small><strong>PB &lt; 18%</strong></div>
+            <div class="metric"><small>Base de decisão</small><strong>MS</strong></div>
+          </div>
+        </div>
+        <div class="card span-12"><h3>Observação técnica</h3><p>O classificador usa uma regra didática: volumosos tendem a apresentar alto teor de fibra bruta; concentrados energéticos têm maior densidade energética e menor PB; concentrados proteicos têm PB elevada e baixa fibra. Na prática, a classificação pode variar conforme análise bromatológica e espécie animal.</p></div>
+      </div>
+    </section>
+
+    <section id="materia-seca">
+      <div class="hero"><h2>Calculadora de matéria seca e nutrientes</h2><p>Converta kg de alimento natural em kg de MS e estime PB, energia, fibra, cálcio e fósforo fornecidos.</p></div>
+      <div class="grid">
+        <div class="card span-5">
+          <h3>Dados do alimento</h3>
+          <div class="form-grid">
+            <div><label>Quantidade fornecida (kg)</label><input id="qtdAlimento" type="number" value="10" min="0" step="0.1"></div>
+            <div><label>Matéria seca - MS (%)</label><input id="msPercent" type="number" value="30" min="0" max="100" step="0.1"></div>
+            <div><label>Proteína bruta na MS (%)</label><input id="pbPercent" type="number" value="8" min="0" max="100" step="0.1"></div>
+            <div><label>NDT/EM na MS (%)</label><input id="ndtPercent" type="number" value="60" min="0" max="100" step="0.1"></div>
+            <div><label>Fibra bruta na MS (%)</label><input id="fbPercent" type="number" value="24" min="0" max="100" step="0.1"></div>
+            <div><label>Cálcio na MS (%)</label><input id="caPercent" type="number" value="0.30" min="0" max="100" step="0.01"></div>
+            <div><label>Fósforo na MS (%)</label><input id="pPercent" type="number" value="0.20" min="0" max="100" step="0.01"></div>
+            <div><label>Unidade energética</label><select id="energyUnit"><option value="NDT">NDT</option><option value="EM">EM/energia</option></select></div>
+          </div>
+          <button class="btn" style="margin-top:14px" onclick="calcularMS()">Calcular nutrientes</button>
+        </div>
+        <div class="card span-7">
+          <h3>Resultado</h3>
+          <div class="metric-grid">
+            <div class="metric"><small>Matéria seca</small><strong id="msKg"></strong></div>
+            <div class="metric"><small>Água</small><strong id="aguaKg"></strong></div>
+            <div class="metric"><small>PB fornecida</small><strong id="pbKg"></strong></div>
+            <div class="metric"><small id="ndtLabel">NDT/energia</small><strong id="ndtKg"></strong></div>
+            <div class="metric"><small>Fibra bruta</small><strong id="fbKg"></strong></div>
+            <div class="metric"><small>Ca e P</small><strong id="capKg"></strong></div>
+          </div>
+          <div class="result-box"><div class="mini-title">Proporção de MS no alimento natural</div><div class="bar-wrap"><div class="bar" id="msBar"></div></div><span class="status" id="msStatus"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="comparador">
+      <div class="hero"><h2>Tabela técnica de alimentos</h2><p>Compare alimentos por MS, PB, FB, NDT/EM, Ca, P, lisina e limite prático de inclusão.</p></div>
+      <div class="grid">
+        <div class="card span-12">
+          <h3>Seleção</h3>
+          <div class="form-grid-3"><div><label>Alimento 1</label><select id="food1"></select></div><div><label>Alimento 2</label><select id="food2"></select></div><div><label>Alimento 3</label><select id="food3"></select></div></div>
+          <button class="btn" style="margin-top:14px" onclick="compararAlimentos()">Comparar</button>
+        </div>
+        <div class="card span-12"><h3>Comparação bromatológica</h3><div style="overflow:auto"><table class="food-table"><thead><tr><th>Alimento</th><th>Grupo</th><th>MS %</th><th>PB %</th><th>FB %</th><th>NDT/EM</th><th>Ca %</th><th>P %</th><th>Lisina %</th><th>Inclusão prática</th><th>Função</th></tr></thead><tbody id="compareBody"></tbody></table></div><p class="small" style="margin-top:10px">Valores aproximados para uso didático. Ajuste conforme tabela oficial, laboratório e categoria animal.</p></div>
+      </div>
+    </section>
+
+    <section id="dieta">
+      <div class="hero"><h2>Avaliador técnico de dieta</h2><p>Monte uma dieta com até 4 ingredientes, calcule nutrientes fornecidos e compare com metas de MS, PB, energia, fibra, cálcio e fósforo.</p></div>
+      <div class="grid">
+        <div class="card span-6">
+          <h3>Ingredientes da dieta</h3>
+          <div id="dietRows"></div>
+          <button class="btn secondary" style="margin-top:12px" onclick="autoDietExample()">Carregar exemplo</button>
+        </div>
+        <div class="card span-6">
+          <h3>Metas ou exigências</h3>
+          <div class="form-grid">
+            <div><label>MS desejada (kg/dia)</label><input id="targetMS" type="number" value="15" step="0.1"></div>
+            <div><label>PB desejada (kg/dia)</label><input id="targetPB" type="number" value="1.6" step="0.01"></div>
+            <div><label>NDT/energia desejada (kg/dia)</label><input id="targetNDT" type="number" value="9" step="0.1"></div>
+            <div><label>FB desejada (kg/dia)</label><input id="targetFB" type="number" value="2.8" step="0.1"></div>
+            <div><label>Ca desejado (g/dia)</label><input id="targetCa" type="number" value="70" step="1"></div>
+            <div><label>P desejado (g/dia)</label><input id="targetP" type="number" value="45" step="1"></div>
+          </div>
+          <button class="btn" style="margin-top:14px" onclick="avaliarDieta()">Avaliar dieta</button>
+        </div>
+        <div class="card span-12"><h3>Painel de adequação</h3><div style="overflow:auto"><table class="food-table"><thead><tr><th>Nutriente</th><th>Fornecido</th><th>Meta</th><th>Adequação</th><th>Interpretação</th></tr></thead><tbody id="dietResult"></tbody></table></div></div>
+      </div>
+    </section>
+
+    <section id="bovinos">
+      <div class="hero"><h2>Simulador de exigência: bovinos leiteiros</h2><p>Estime exigências diárias de MS, NDT, PB, Ca e P para vacas em lactação, somando mantença e produção de leite.</p></div>
+      <div class="grid">
+        <div class="card span-5">
+          <h3>Dados da vaca</h3>
+          <div class="form-grid">
+            <div><label>Peso vivo (kg)</label><select id="cowWeight"><option>350</option><option>400</option><option>450</option><option selected>500</option><option>550</option><option>600</option><option>650</option><option>700</option><option>750</option><option>800</option></select></div>
+            <div><label>Produção de leite (kg/dia)</label><input id="milkKg" type="number" value="15" step="0.1"></div>
+            <div><label>Gordura do leite (%)</label><select id="milkFat"><option value="3.0">3,0%</option><option value="3.5" selected>3,5%</option><option value="4.0">4,0%</option><option value="4.5">4,5%</option><option value="5.0">5,0%</option><option value="5.5">5,5%</option></select></div>
+            <div><label>Lactação</label><select id="lactationAdj"><option value="1">Adulta</option><option value="1.2">1ª lactação (+20%)</option><option value="1.1">2ª lactação (+10%)</option></select></div>
+          </div>
+          <button class="btn" style="margin-top:14px" onclick="calcBovinos()">Calcular exigência</button>
+        </div>
+        <div class="card span-7">
+          <h3>Exigência diária estimada</h3>
+          <div class="metric-grid">
+            <div class="metric"><small>MS</small><strong id="cowMS"></strong></div>
+            <div class="metric"><small>NDT</small><strong id="cowNDT"></strong></div>
+            <div class="metric"><small>PB</small><strong id="cowPB"></strong></div>
+            <div class="metric"><small>Ca</small><strong id="cowCa"></strong></div>
+            <div class="metric"><small>P</small><strong id="cowP"></strong></div>
+            <div class="metric"><small>Consumo esperado de MS</small><strong id="cowCMS"></strong></div>
+          </div>
+          <div class="result-box"><div class="mini-title">Interpretação</div><p id="cowNote"></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="monogastricos">
+      <div class="hero"><h2>Referência prática: aves e suínos</h2><p>Selecione espécie e fase para visualizar metas didáticas de proteína, energia, cálcio, fósforo e lisina.</p></div>
+      <div class="grid">
+        <div class="card span-5">
+          <h3>Categoria</h3>
+          <div class="form-grid">
+            <div><label>Espécie</label><select id="monoSpecies" onchange="loadMonoPhases()"><option value="frango">Frango de corte</option><option value="poedeira">Poedeira</option><option value="suino">Suíno</option></select></div>
+            <div><label>Fase</label><select id="monoPhase"></select></div>
+          </div>
+          <button class="btn" style="margin-top:14px" onclick="calcMono()">Mostrar referência</button>
+        </div>
+        <div class="card span-7">
+          <h3>Metas nutricionais didáticas</h3>
+          <div class="metric-grid">
+            <div class="metric"><small>Energia</small><strong id="monoEM"></strong></div>
+            <div class="metric"><small>PB</small><strong id="monoPB"></strong></div>
+            <div class="metric"><small>Lisina digestível</small><strong id="monoLis"></strong></div>
+            <div class="metric"><small>Ca</small><strong id="monoCa"></strong></div>
+            <div class="metric"><small>P disponível</small><strong id="monoP"></strong></div>
+            <div class="metric"><small>Foco da fase</small><strong id="monoFocus"></strong></div>
+          </div>
+          <div class="result-box"><div class="mini-title">Uso didático</div><p id="monoNote"></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <div class="hero"><h2>Quiz técnico</h2><p>Questões um pouco mais complexas, com cálculo e interpretação.</p></div>
+      <div class="grid">
+        <div class="card span-7"><h3 id="quizQuestion"></h3><div id="quizOptions"></div><button class="btn" style="margin-top:14px" onclick="nextQuestion()">Próxima questão</button></div>
+        <div class="card span-5"><h3>Feedback</h3><div class="result-box"><div class="result-title" id="quizFeedbackTitle">Aguardando resposta</div><p id="quizFeedback">Escolha uma alternativa.</p></div><div class="metric-grid"><div class="metric"><small>Acertos</small><strong id="scoreOk">0</strong></div><div class="metric"><small>Questão</small><strong id="questionNumber">1/6</strong></div></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('section');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  navBtns.forEach(btn => btn.addEventListener('click', () => {
+    navBtns.forEach(b => b.classList.remove('active'));
+    sections.forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.section).classList.add('active');
+  }));
+
+  const concepts = [
+    {title:'Alimento', short:'Substância orgânica ou mineral.', text:'Substância orgânica ou mineral ingerida pelos animais, capaz de fornecer nutrientes e outros elementos necessários à vida.', use:'Identificar sua função: energia, proteína, fibra, minerais, vitaminas ou aditivo.'},
+    {title:'Matéria seca - MS', short:'Fração após retirada da água.', text:'Parte do alimento que permanece após exclusão da umidade. É a base técnica para comparar alimentos e calcular nutrientes.', use:'Dois alimentos com mesmo peso natural podem fornecer quantidades muito diferentes de nutrientes.'},
+    {title:'Proteína bruta - PB', short:'Estimativa do nitrogênio proteico.', text:'Indicador usado para avaliar o potencial proteico do alimento ou dieta.', use:'Importante para crescimento, produção de leite, ovos, carne e desenvolvimento corporal.'},
+    {title:'Fibra bruta - FB', short:'Indicador de fração fibrosa.', text:'Ajuda a diferenciar alimentos volumosos e concentrados e interfere no consumo e na saúde digestiva.', use:'Em ruminantes, a fibra contribui para ruminação, funcionamento ruminal e teor de gordura do leite.'},
+    {title:'NDT e EM', short:'Indicadores energéticos.', text:'NDT é muito usado em bovinos; EM é comum em aves e suínos. Ambos expressam energia disponível ou aproveitável na dieta.', use:'Energia insuficiente limita ganho, produção e reprodução; excesso pode aumentar custo e deposição de gordura.'},
+    {title:'Dieta', short:'Mistura equilibrada.', text:'Mistura de ingredientes calculada para atender às exigências nutricionais de uma espécie e categoria.', use:'A dieta deve ser avaliada por fornecimento total de nutrientes, não apenas por inclusão percentual.'},
+    {title:'Ração', short:'Porção em 24 horas.', text:'Quantidade de alimento suficiente para um período de 24 horas, fornecida uma ou mais vezes ao dia.', use:'Permite organizar manejo, custo, consumo e ajuste de fornecimento.'},
+    {title:'Digestão', short:'Transformação do alimento.', text:'Processo mecânico, enzimático e biológico que transforma alimentos em moléculas aproveitáveis.', use:'Explica diferenças entre ruminantes e monogástricos no aproveitamento de fibras e ingredientes.'}
+  ];
+  function renderConcepts(){
+    const list=document.getElementById('conceptList'); list.innerHTML='';
+    concepts.forEach((c,i)=>{const div=document.createElement('div'); div.className='concept'+(i===0?' active':''); div.innerHTML=`<strong>${c.title}</strong><span>${c.short}</span>`; div.onclick=()=>{document.querySelectorAll('.concept').forEach(x=>x.classList.remove('active')); div.classList.add('active'); document.getElementById('conceptTitle').textContent=c.title; document.getElementById('conceptText').textContent=c.text; document.getElementById('conceptUse').textContent=c.use;}; list.appendChild(div);});
+    document.getElementById('conceptTitle').textContent=concepts[0].title; document.getElementById('conceptText').textContent=concepts[0].text; document.getElementById('conceptUse').textContent=concepts[0].use;
+  }
+
+  function fmt(n,d=2){ return Number(n).toFixed(d).replace('.',','); }
+
+  function classificarAlimento(){
+    const fb=+document.getElementById('fibra').value, pb=+document.getElementById('proteina').value, cond=document.getElementById('umidadeTipo').value, origem=document.getElementById('origem').value;
+    let grupo, texto, tags=[];
+    if(cond==='mineral'||origem==='mineral'){grupo='Suplemento mineral'; texto='Usado para suprir macrominerais e microminerais, como Ca, P, Na, Cl, Zn, Cu e Se.'; tags=['Mineral','Baixa inclusão','Correção nutricional'];}
+    else if(cond==='vitamina'||origem==='sintética'){grupo='Suplemento vitamínico'; texto='Fonte de vitaminas lipossolúveis ou hidrossolúveis, geralmente incluída em pequenas quantidades.'; tags=['Vitamina','Premix','Metabolismo'];}
+    else if(fb>18){grupo=cond==='suculento'?'Volumoso suculento':'Volumoso seco'; texto=cond==='suculento'?'Alimento fibroso com maior umidade, como pastagens e silagens.':'Alimento fibroso de maior MS, como fenos e palhas.'; tags=['FB elevada','Saciedade','Saúde digestiva'];}
+    else if(pb>=20){grupo='Concentrado proteico'; texto=`Baixa fibra e PB elevada. Pode ser fonte proteica de origem ${origem}.`; tags=['PB elevada','Aminoácidos','Correção proteica'];}
+    else {grupo='Concentrado energético'; texto='Baixa fibra e menor teor proteico. Usado principalmente como fonte de energia.'; tags=['Energia','Grãos/subprodutos','Alta densidade'];}
+    document.getElementById('classResult').textContent=grupo; document.getElementById('classDesc').textContent=texto; document.getElementById('classPills').innerHTML=tags.map(t=>`<span class="pill">${t}</span>`).join('');
+  }
+
+  function calcularMS(){
+    const qtd=+document.getElementById('qtdAlimento').value, ms=+document.getElementById('msPercent').value, pb=+document.getElementById('pbPercent').value, ndt=+document.getElementById('ndtPercent').value, fb=+document.getElementById('fbPercent').value, ca=+document.getElementById('caPercent').value, p=+document.getElementById('pPercent').value, unit=document.getElementById('energyUnit').value;
+    const msKg=qtd*ms/100, agua=qtd-msKg, pbKg=msKg*pb/100, ndtKg=msKg*ndt/100, fbKg=msKg*fb/100, caG=msKg*ca/100*1000, pG=msKg*p/100*1000;
+    document.getElementById('msKg').textContent=`${fmt(msKg)} kg`; document.getElementById('aguaKg').textContent=`${fmt(agua)} kg`; document.getElementById('pbKg').textContent=`${fmt(pbKg)} kg`; document.getElementById('ndtLabel').textContent=unit==='NDT'?'NDT fornecido':'Energia fornecida'; document.getElementById('ndtKg').textContent=`${fmt(ndtKg)} kg`; document.getElementById('fbKg').textContent=`${fmt(fbKg)} kg`; document.getElementById('capKg').textContent=`Ca ${fmt(caG,1)} g | P ${fmt(pG,1)} g`; document.getElementById('msBar').style.width=Math.max(0,Math.min(100,ms))+'%';
+    const st=document.getElementById('msStatus'); st.className='status '+(ms<35?'warn':ms>85?'ok':'info'); st.textContent=ms<35?'Alta umidade: o peso natural superestima o fornecimento real de nutrientes.':ms>85?'Alimento seco: grande parte do peso já é matéria seca.':'MS intermediária: compare sempre em base seca.';
+  }
+
+  const foods=[
+    {nome:'Milho grão',grupo:'Concentrado energético',ms:88,pb:8.8,fb:2.2,energy:86,ca:0.03,p:0.28,lis:0.25,incl:'20-70%',func:'Energia/amido'},
+    {nome:'Sorgo grão',grupo:'Concentrado energético',ms:88,pb:9.5,fb:2.7,energy:82,ca:0.04,p:0.30,lis:0.22,incl:'10-60%',func:'Energia'},
+    {nome:'Farelo de soja 45%',grupo:'Concentrado proteico vegetal',ms:89,pb:45,fb:6,energy:78,ca:0.30,p:0.65,lis:2.75,incl:'5-35%',func:'Proteína/lisina'},
+    {nome:'Farelo de trigo',grupo:'Concentrado intermediário',ms:88,pb:16,fb:10,energy:65,ca:0.12,p:1.10,lis:0.65,incl:'5-25%',func:'PB, fibra e P'},
+    {nome:'Farinha de carne e ossos',grupo:'Proteico animal/mineral',ms:93,pb:55,fb:0,energy:65,ca:9.0,p:4.5,lis:2.7,incl:'0-8%',func:'PB, Ca e P'},
+    {nome:'Óleo de soja',grupo:'Energético lipídico',ms:99.6,pb:0,fb:0,energy:220,ca:0,p:0,lis:0,incl:'0-5%',func:'Energia concentrada'},
+    {nome:'Silagem de milho',grupo:'Volumoso suculento',ms:32,pb:8,fb:24,energy:65,ca:0.25,p:0.20,lis:0.20,incl:'20-80%',func:'Volumoso energético'},
+    {nome:'Cana-de-açúcar',grupo:'Volumoso suculento',ms:24,pb:4,fb:27,energy:58,ca:0.20,p:0.07,lis:0.10,incl:'20-60%',func:'Volumoso energético'},
+    {nome:'Feno de alfafa',grupo:'Volumoso seco proteico',ms:87,pb:18,fb:28,energy:56,ca:1.20,p:0.24,lis:0.75,incl:'10-60%',func:'Fibra, PB e Ca'},
+    {nome:'Feno de coast-cross',grupo:'Volumoso seco',ms:88.5,pb:7.2,fb:32,energy:55,ca:0.49,p:0.15,lis:0.25,incl:'10-70%',func:'Fibra efetiva'},
+    {nome:'Calcário calcítico',grupo:'Mineral',ms:99,pb:0,fb:0,energy:0,ca:38,p:0,lis:0,incl:'0,5-2%',func:'Fonte de cálcio'},
+    {nome:'Fosfato bicálcico',grupo:'Mineral',ms:98,pb:0,fb:0,energy:0,ca:23,p:18,lis:0,incl:'0,5-2%',func:'Ca e P'}
+  ];
+
+  function setupFoods(){
+    ['food1','food2','food3'].forEach((id,idx)=>{document.getElementById(id).innerHTML=foods.map((f,i)=>`<option value="${i}" ${i===idx?'selected':''}>${f.nome}</option>`).join('');});
+    const rows=document.getElementById('dietRows'); rows.innerHTML='';
+    for(let i=0;i<4;i++){rows.insertAdjacentHTML('beforeend',`<div class="diet-row"><div><label>Ingrediente ${i+1}</label><select id="dietFood${i}">${foods.map((f,j)=>`<option value="${j}">${f.nome}</option>`).join('')}</select></div><div><label>kg natural</label><input id="dietKg${i}" type="number" value="0" step="0.1"></div><div><label>% perda/sobra</label><input id="dietLoss${i}" type="number" value="0" step="1"></div></div>`);} compararAlimentos(); autoDietExample();
+  }
+  function compararAlimentos(){
+    const ids=['food1','food2','food3'].map(id=>+document.getElementById(id).value);
+    document.getElementById('compareBody').innerHTML=ids.map(i=>{const f=foods[i]; return `<tr><td><strong>${f.nome}</strong></td><td>${f.grupo}</td><td>${fmt(f.ms,1)}</td><td>${fmt(f.pb,1)}</td><td>${fmt(f.fb,1)}</td><td>${fmt(f.energy,1)}</td><td>${fmt(f.ca,2)}</td><td>${fmt(f.p,2)}</td><td>${fmt(f.lis,2)}</td><td>${f.incl}</td><td>${f.func}</td></tr>`}).join('');
+  }
+  function autoDietExample(){
+    const defaults=[['Silagem de milho',25],['Milho grão',3],['Farelo de soja 45%',1.2],['Calcário calcítico',0.08]];
+    defaults.forEach((d,i)=>{const idx=foods.findIndex(f=>f.nome===d[0]); document.getElementById('dietFood'+i).value=idx; document.getElementById('dietKg'+i).value=d[1]; document.getElementById('dietLoss'+i).value=0;}); avaliarDieta();
+  }
+  function avaliarDieta(){
+    let total={ms:0,pb:0,ndt:0,fb:0,ca:0,p:0};
+    for(let i=0;i<4;i++){const f=foods[+document.getElementById('dietFood'+i).value], kg=+document.getElementById('dietKg'+i).value, loss=+document.getElementById('dietLoss'+i).value; const kgReal=kg*(1-loss/100); const ms=kgReal*f.ms/100; total.ms+=ms; total.pb+=ms*f.pb/100; total.ndt+=ms*f.energy/100; total.fb+=ms*f.fb/100; total.ca+=ms*f.ca/100*1000; total.p+=ms*f.p/100*1000; }
+    const targets={ms:+targetMS.value,pb:+targetPB.value,ndt:+targetNDT.value,fb:+targetFB.value,ca:+targetCa.value,p:+targetP.value};
+    const labels={ms:['MS','kg'],pb:['PB','kg'],ndt:['NDT/energia','kg'],fb:['FB','kg'],ca:['Ca','g'],p:['P','g']};
+    document.getElementById('dietResult').innerHTML=Object.keys(labels).map(k=>{const pct=targets[k]>0?total[k]/targets[k]*100:0; let cls='ok', txt='Adequado'; if(pct<90){cls='bad';txt='Déficit provável'} else if(pct>110){cls='warn';txt='Excesso provável'} const interp=pct<90?'Pode limitar desempenho ou produção.':pct>110?'Pode aumentar custo ou gerar desequilíbrio, conforme nutriente.':'Dentro da faixa didática de adequação.'; return `<tr><td><strong>${labels[k][0]}</strong></td><td>${fmt(total[k],k==='ca'||k==='p'?1:2)} ${labels[k][1]}</td><td>${fmt(targets[k],k==='ca'||k==='p'?1:2)} ${labels[k][1]}</td><td><span class="status ${cls}">${fmt(pct,0)}% - ${txt}</span></td><td>${interp}</td></tr>`}).join('');
+  }
+
+  const cowMaint={350:[10.5,3.11,.295,14,10],400:[12,3.44,.318,16,11],450:[13.5,3.76,.341,18,13],500:[15,4.07,.364,20,14],550:[16.5,4.37,.386,22,16],600:[18,4.66,.406,24,17],650:[19.5,4.96,.428,26,19],700:[21,5.23,.449,28,20],750:[22.5,5.52,.468,30,21],800:[24,5.78,.486,32,23]};
+  const milkReq={'3.0':[.280,.078,2.73,1.68],'3.5':[.301,.084,2.97,1.83],'4.0':[.322,.090,3.21,1.98],'4.5':[.343,.096,3.45,2.13],'5.0':[.364,.101,3.69,2.28],'5.5':[.385,.107,3.93,2.43]};
+  function calcBovinos(){
+    const w=+cowWeight.value, milk=+milkKg.value, fat=milkFat.value, adj=+lactationAdj.value; const m=cowMaint[w], r=milkReq[fat];
+    const ms=m[0]*adj, ndt=m[1]*adj+milk*r[0], pb=m[2]*adj+milk*r[1], ca=m[3]*adj+milk*r[2], p=m[4]*adj+milk*r[3];
+    cowMS.textContent=`${fmt(ms,1)} kg`; cowNDT.textContent=`${fmt(ndt,2)} kg`; cowPB.textContent=`${fmt(pb,2)} kg`; cowCa.textContent=`${fmt(ca,1)} g`; cowP.textContent=`${fmt(p,1)} g`; cowCMS.textContent=`${fmt(w*0.025/1,1)} a ${fmt(w*0.04/1,1)} kg`;
+    cowNote.textContent=`Para ${w} kg de peso vivo, a referência de consumo total de MS fica entre cerca de 2,5% e 4,0% do peso vivo. Em vacas leiteiras, a fibra da MS deve ser observada para manter digestão adequada e teor de gordura do leite.`;
+  }
+
+  const mono={
+    frango:{label:'Frango de corte',phases:{'Inicial 1-21 dias':{em:'2.950-3.050 kcal/kg',pb:'21-22%',lis:'1,10-1,20%',ca:'0,90-1,00%',p:'0,45-0,50%',focus:'Arranque',note:'Fase com maior exigência relativa de aminoácidos para crescimento inicial.'},'Crescimento 22-35 dias':{em:'3.100-3.200 kcal/kg',pb:'19-20%',lis:'1,00-1,08%',ca:'0,80-0,90%',p:'0,38-0,45%',focus:'Ganho',note:'Busca equilíbrio entre energia, aminoácidos e conversão alimentar.'},'Final 36+ dias':{em:'3.200-3.250 kcal/kg',pb:'18-19%',lis:'0,90-1,00%',ca:'0,75-0,85%',p:'0,35-0,42%',focus:'Acabamento',note:'Energia ganha importância; controlar custo e deposição excessiva de gordura.'}}},
+    poedeira:{label:'Poedeira',phases:{'Postura':{em:'2.750-2.850 kcal/kg',pb:'16-18%',lis:'0,70-0,85%',ca:'3,8-4,2%',p:'0,35-0,45%',focus:'Ovos/casca',note:'Cálcio é crítico para formação da casca; consumo diário deve ser observado.'},'Reposição':{em:'2.800-2.900 kcal/kg',pb:'14-17%',lis:'0,60-0,80%',ca:'0,9-1,2%',p:'0,35-0,45%',focus:'Crescimento',note:'Evitar excesso energético e uniformizar o lote antes da postura.'}}},
+    suino:{label:'Suíno',phases:{'Inicial':{em:'3.250-3.350 kcal/kg',pb:'20-22%',lis:'1,20-1,35%',ca:'0,75-0,90%',p:'0,35-0,45%',focus:'Leitões',note:'Alta densidade nutricional e digestibilidade são fundamentais.'},'Crescimento':{em:'3.230-3.300 kcal/kg',pb:'17-19%',lis:'0,90-1,05%',ca:'0,60-0,75%',p:'0,28-0,38%',focus:'Ganho magro',note:'Equilibrar lisina e energia para deposição muscular eficiente.'},'Terminação':{em:'3.200-3.300 kcal/kg',pb:'14-16%',lis:'0,65-0,85%',ca:'0,50-0,65%',p:'0,22-0,32%',focus:'Custo/ganho',note:'Cuidado com excesso de proteína, custo e excreção de nitrogênio.'}}}
+  };
+  function loadMonoPhases(){ const sp=monoSpecies.value; monoPhase.innerHTML=Object.keys(mono[sp].phases).map(x=>`<option>${x}</option>`).join(''); calcMono(); }
+  function calcMono(){ const data=mono[monoSpecies.value].phases[monoPhase.value]; monoEM.textContent=data.em; monoPB.textContent=data.pb; monoLis.textContent=data.lis; monoCa.textContent=data.ca; monoP.textContent=data.p; monoFocus.textContent=data.focus; monoNote.textContent=data.note; }
+
+  const quiz=[
+    {q:'Uma silagem de milho com 32% de MS foi fornecida na quantidade de 25 kg. Quantos kg de MS foram fornecidos?',options:['3,2 kg','8,0 kg','17,0 kg','25,0 kg'],answer:1,exp:'25 × 0,32 = 8 kg de matéria seca.'},
+    {q:'Um alimento com 45% de PB e 6% de FB se enquadra melhor como:',options:['Volumoso seco','Concentrado proteico','Concentrado energético','Suplemento mineral'],answer:1,exp:'PB acima de 20% e baixa fibra indicam concentrado proteico.'},
+    {q:'Na avaliação de uma dieta para vaca leiteira, quais nutrientes são especialmente acompanhados além de MS, PB e energia?',options:['Apenas vitamina C','Ca e P','Somente sódio','Apenas água'],answer:1,exp:'Cálcio e fósforo são minerais importantes em dietas de bovinos leiteiros.'},
+    {q:'Se a dieta fornece 1,2 kg de PB e a meta é 1,6 kg, a adequação é aproximadamente:',options:['75%','100%','125%','160%'],answer:0,exp:'1,2 / 1,6 × 100 = 75%, indicando déficit provável.'},
+    {q:'Para ruminantes, fibra adequada na MS favorece principalmente:',options:['Ausência total de ruminação','Saúde ruminal e gordura do leite','Redução obrigatória do consumo','Eliminação do uso de volumosos'],answer:1,exp:'Fibra efetiva favorece ruminação, funcionamento ruminal e teor de gordura do leite.'},
+    {q:'Em aves e suínos, além da PB, por que a lisina é importante?',options:['Porque representa um aminoácido de referência na formulação','Porque substitui toda a energia','Porque é sempre mineral','Porque mede umidade'],answer:0,exp:'A lisina é aminoácido essencial de referência para balanceamento proteico em monogástricos.'}
+  ];
+  let currentQuestion=0, score=0, answered=false;
+  function renderQuiz(){ answered=false; const item=quiz[currentQuestion]; quizQuestion.textContent=item.q; questionNumber.textContent=`${currentQuestion+1}/${quiz.length}`; quizFeedbackTitle.textContent='Aguardando resposta'; quizFeedback.textContent='Escolha uma alternativa.'; quizOptions.innerHTML=item.options.map((o,i)=>`<button class="quiz-option" onclick="answerQuiz(${i})">${o}</button>`).join(''); }
+  function answerQuiz(i){ if(answered)return; answered=true; const item=quiz[currentQuestion]; document.querySelectorAll('.quiz-option').forEach((b,idx)=>{if(idx===item.answer)b.classList.add('correct'); if(idx===i&&idx!==item.answer)b.classList.add('wrong');}); if(i===item.answer){score++; quizFeedbackTitle.textContent='Correto';}else quizFeedbackTitle.textContent='Atenção'; scoreOk.textContent=score; quizFeedback.textContent=item.exp; }
+  function nextQuestion(){ currentQuestion=(currentQuestion+1)%quiz.length; renderQuiz(); }
+
+  renderConcepts(); classificarAlimento(); calcularMS(); setupFoods(); calcBovinos(); loadMonoPhases(); renderQuiz();
+</script>
+</body>
+</html>
