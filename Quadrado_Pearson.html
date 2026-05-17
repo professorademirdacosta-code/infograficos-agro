@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quadrado de Pearson - Google Sites corrigido</title>
+<title>Quadrado de Pearson - Responsivo para celular</title>
 </head>
 <body style="margin:0;padding:0;background:#eef3f7;">
 <!-- INÍCIO - Infográfico Quadrado de Pearson compatível com Google Sites -->
@@ -102,6 +102,230 @@
   #pearson-sites-embed .node.partsA{right:0;bottom:18px;}
   #pearson-sites-embed .line.l1{left:114px;top:90px;width:360px;transform:rotate(33deg);}
   #pearson-sites-embed .line.l2{left:114px;bottom:90px;width:360px;transform:rotate(-33deg);}
+}
+
+
+/* =========================================================
+   AJUSTE FINAL — RESPONSIVO PARA CELULAR + META EM QUADRADO
+   - Troca o círculo da meta por um quadrado, coerente com o nome
+     “Quadrado de Pearson”.
+   - No celular, o diagrama deixa de usar posições absolutas e passa
+     a empilhar os blocos, evitando sobreposição no Google Sites.
+   ========================================================= */
+#pearson-sites-embed{
+  overflow-x:hidden;
+}
+#pearson-sites-embed .mini-center,
+#pearson-sites-embed .node.target{
+  border-radius:24px !important;
+}
+#pearson-sites-embed .node.target{
+  width:158px;
+  height:158px;
+  aspect-ratio:1 / 1;
+}
+#pearson-sites-embed .node.target strong::before{
+  content:"□ ";
+  font-weight:1000;
+}
+#pearson-sites-embed .mini-center{
+  width:78px;
+  height:78px;
+  aspect-ratio:1 / 1;
+}
+#pearson-sites-embed table{
+  min-width:680px;
+}
+#pearson-sites-embed .card:has(table),
+#pearson-sites-embed .section-body:has(table){
+  overflow-x:auto;
+}
+
+@media (max-width:760px){
+  body{
+    overflow-x:hidden !important;
+  }
+  #pearson-sites-embed{
+    width:100%;
+    overflow-x:hidden;
+  }
+  #pearson-sites-embed .deck{
+    width:100%;
+    max-width:100%;
+    margin:0;
+    border-radius:0;
+    box-shadow:none;
+  }
+  #pearson-sites-embed .hero{
+    padding:18px 14px;
+  }
+  #pearson-sites-embed h1{
+    font-size:clamp(1.55rem,8vw,2.2rem);
+    line-height:1.08;
+  }
+  #pearson-sites-embed .subtitle{
+    font-size:1rem;
+  }
+  #pearson-sites-embed .lead{
+    font-size:.96rem;
+  }
+  #pearson-sites-embed .hero-chips,
+  #pearson-sites-embed .btn-row{
+    gap:8px;
+  }
+  #pearson-sites-embed .hero-chip,
+  #pearson-sites-embed .pill,
+  #pearson-sites-embed .badge{
+    font-size:.78rem;
+    padding:7px 9px;
+  }
+  #pearson-sites-embed .main{
+    padding:12px;
+    gap:14px;
+  }
+  #pearson-sites-embed .section{
+    border-radius:20px;
+  }
+  #pearson-sites-embed .section-head,
+  #pearson-sites-embed .section-body{
+    padding:14px;
+  }
+  #pearson-sites-embed .section-head h2{
+    font-size:1.18rem;
+  }
+  #pearson-sites-embed .card{
+    padding:14px;
+    border-radius:18px;
+  }
+  #pearson-sites-embed .concept{
+    min-height:auto;
+  }
+  #pearson-sites-embed .method-panel{
+    padding:14px;
+    border-radius:20px;
+  }
+  #pearson-sites-embed .mini-square{
+    padding:12px;
+    border-radius:18px;
+  }
+  #pearson-sites-embed .mini-grid{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  #pearson-sites-embed .mini-center{
+    width:94px;
+    height:94px;
+    margin:0 auto;
+  }
+  #pearson-sites-embed .input-grid,
+  #pearson-sites-embed .input-grid.three{
+    grid-template-columns:1fr !important;
+    gap:10px;
+  }
+  #pearson-sites-embed input,
+  #pearson-sites-embed select,
+  #pearson-sites-embed button{
+    font-size:1rem;
+    min-height:46px;
+  }
+  #pearson-sites-embed button{
+    width:100%;
+  }
+  #pearson-sites-embed .pearson-box{
+    min-height:0;
+    overflow:visible;
+    padding:14px;
+    border-radius:20px;
+  }
+  #pearson-sites-embed .pearson-canvas{
+    display:flex !important;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+    height:auto !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0;
+    position:relative;
+  }
+  #pearson-sites-embed .line{
+    display:none !important;
+  }
+  #pearson-sites-embed .node{
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+    width:100% !important;
+    min-width:0 !important;
+    padding:12px;
+    border-radius:18px;
+  }
+  #pearson-sites-embed .node.a{order:1;}
+  #pearson-sites-embed .node.target{
+    order:2;
+    align-self:center;
+    width:min(230px,100%) !important;
+    height:auto !important;
+    min-height:150px;
+    aspect-ratio:1 / 1;
+    display:grid;
+    place-items:center;
+    border-radius:24px !important;
+    margin:2px auto;
+  }
+  #pearson-sites-embed .node.b{order:3;}
+  #pearson-sites-embed .node.partsA{order:4;}
+  #pearson-sites-embed .node.partsB{order:5;}
+  #pearson-sites-embed .node span{
+    font-size:1.18rem;
+  }
+  #pearson-sites-embed .node.target span{
+    font-size:1.35rem;
+  }
+  #pearson-sites-embed .result-panel{
+    padding:15px;
+    border-radius:20px;
+  }
+  #pearson-sites-embed .result-main{
+    font-size:1.25rem;
+    line-height:1.25;
+  }
+  #pearson-sites-embed .calc-box{
+    font-size:.84rem;
+    max-height:360px;
+  }
+  #pearson-sites-embed .kpis{
+    grid-template-columns:1fr !important;
+  }
+  #pearson-sites-embed .bar-title{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  #pearson-sites-embed table{
+    min-width:640px;
+  }
+  #pearson-sites-embed .footer{
+    padding:0 14px 18px;
+    font-size:.82rem;
+  }
+}
+
+@media (max-width:390px){
+  #pearson-sites-embed .main{
+    padding:8px;
+  }
+  #pearson-sites-embed .hero,
+  #pearson-sites-embed .section-head,
+  #pearson-sites-embed .section-body{
+    padding:12px;
+  }
+  #pearson-sites-embed .node.target{
+    width:min(200px,100%) !important;
+    min-height:138px;
+  }
 }
 
 </style>
