@@ -3,288 +3,773 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Quadrado de Pearson com Ingredientes Pré-Fixados</title>
+<title>Quadrado de Pearson com ingredientes pré-fixados</title>
 <style>
 :root{
-  --bg:#eef3f7;--paper:#fff;--ink:#142b44;--muted:#65788b;--blue:#123d66;--blue2:#1e5d8e;
-  --orange:#f28c28;--orange2:#ffb463;--green:#1f8b57;--red:#c44b4b;--line:#d9e5ef;
-  --soft:#f5f9fc;--warn:#fff8ee;--shadow:0 18px 45px rgba(11,38,70,.12);--shadow2:0 10px 24px rgba(11,38,70,.07)
+  --bg:#eef3f7;
+  --paper:#ffffff;
+  --ink:#142b44;
+  --muted:#64788b;
+  --blue:#123d66;
+  --blue2:#1e5d8e;
+  --orange:#f28c28;
+  --orange2:#ffb463;
+  --green:#1f8b57;
+  --red:#c44b4b;
+  --line:#d9e5ef;
+  --soft:#f5f9fd;
+  --shadow:0 18px 42px rgba(11,38,70,.12);
+  --shadow2:0 10px 24px rgba(11,38,70,.08);
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-body{overflow-x:hidden}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif;line-height:1.45}
+body{
+  background:
+    radial-gradient(circle at top left,rgba(242,140,40,.13),transparent 30%),
+    radial-gradient(circle at top right,rgba(18,61,102,.13),transparent 36%),
+    linear-gradient(135deg,#eef3f7,#fbfdff 55%,#edf4fa);
+}
 .app{width:min(1500px,100%);margin:0 auto;background:rgba(255,255,255,.96);box-shadow:var(--shadow);min-height:100vh}
 .ribbon{height:10px;background:linear-gradient(90deg,var(--blue),var(--blue2),var(--orange),#ffd6a1)}
-.hero{padding:28px;background:linear-gradient(120deg,rgba(18,61,102,.98),rgba(30,91,139,.94));color:#fff;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;right:-100px;top:-100px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 64%)}
-.hero-grid{display:grid;grid-template-columns:1.25fr .85fr;gap:24px;align-items:center;position:relative;z-index:1}
-.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:8px 13px;border-radius:999px;font-weight:900;color:#eaf5ff;margin-bottom:14px}
-h1{margin:0;font-size:clamp(2rem,3vw,3.4rem);line-height:1.05;letter-spacing:-.03em}
-.subtitle{margin:12px 0 12px;color:#ffd7aa;font-size:clamp(1.05rem,1.5vw,1.25rem);font-weight:950}.lead{color:#d9e8f5;max-width:82ch;margin:0;font-size:1.02rem}.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.chip{padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-weight:850}
-.mini-square{background:#fff;color:var(--blue);border-radius:22px;padding:18px;box-shadow:0 14px 32px rgba(0,0,0,.16)}
-.mini-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;text-align:center;font-weight:950}.mini-cell{border-radius:15px;padding:10px;background:#f4f8fc;border:1px solid var(--line)}
-.mini-target{display:grid;place-items:center;width:82px;height:82px;border-radius:18px;background:linear-gradient(180deg,var(--orange),#df740e);color:#fff;box-shadow:0 12px 22px rgba(242,140,40,.25)}
-.main{padding:20px;display:grid;gap:20px}.section{background:var(--paper);border:1px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:var(--shadow2)}
-.section-head{padding:19px 21px;background:linear-gradient(180deg,#fff,#f7fbff);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.tag{display:inline-block;padding:6px 10px;background:#e9f1f9;border:1px solid #d2e2f0;color:var(--blue);border-radius:999px;font-weight:950;font-size:.8rem;margin-bottom:8px}.section-head h2{margin:0 0 6px;color:var(--blue);font-size:1.45rem}.section-head p{margin:0;color:var(--muted);max-width:980px}.badge{background:#fff3e6;border:1px solid #ffd1a0;color:#96570f;border-radius:999px;padding:7px 12px;font-weight:950;font-size:.84rem}.section-body{padding:20px;display:grid;gap:18px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:linear-gradient(180deg,#fff,#f8fbfe);border:1px solid var(--line);border-radius:22px;padding:18px;overflow:hidden}.card h3,.card h4{margin:0 0 10px;color:var(--blue)}.muted{color:var(--muted)}
-.input-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.input-grid.three{grid-template-columns:repeat(3,1fr)}.field{display:grid;gap:7px}label{font-weight:850;color:var(--blue);font-size:.93rem}input,select{width:100%;border:1px solid var(--line);border-radius:15px;padding:12px 13px;font-size:1rem;color:var(--ink);background:#fff;outline:none;transition:.18s ease;min-height:48px}input:focus,select:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(242,140,40,.14)}button{border:0;border-radius:15px;padding:12px 16px;font-weight:950;cursor:pointer;font-size:.96rem;transition:.18s ease}.primary{color:#fff;background:linear-gradient(180deg,var(--orange),#df740e);box-shadow:0 12px 24px rgba(242,140,40,.24)}.secondary{color:var(--blue);background:#edf4fb;border:1px solid #d2e2f0}.danger{color:#fff;background:var(--red)}button:hover{transform:translateY(-1px)}.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-.toggle{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:18px;background:#f8fbff}.toggle input{width:22px;height:22px;min-height:0;accent-color:var(--orange)}
-.pref-row{display:grid;grid-template-columns:1.15fr .7fr .7fr 42px;gap:8px;align-items:end;margin-bottom:9px}.pref-row button{padding:12px 0}
-.pearson-box{min-height:370px;background:radial-gradient(circle at center,rgba(242,140,40,.08),transparent 34%),linear-gradient(180deg,#fff,#f8fbff);border:1px solid var(--line);border-radius:26px;padding:18px}.pearson-canvas{position:relative;height:330px;max-width:600px;min-width:560px;margin:0 auto}.node{position:absolute;min-width:142px;border-radius:22px;padding:12px 10px;text-align:center;border:1px solid var(--line);background:#fff;box-shadow:0 12px 25px rgba(11,38,70,.08);z-index:2}.node strong{display:block;color:var(--blue);font-size:1rem;margin-bottom:4px}.node span{display:block;font-size:1.26rem;font-weight:1000;color:var(--orange)}.node small{display:block;color:var(--muted);font-size:.8rem;margin-top:4px}.node.a{left:0;top:18px}.node.b{left:0;bottom:18px}.node.target{left:50%;top:50%;transform:translate(-50%,-50%);width:158px;height:158px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(180deg,var(--blue),var(--blue2));color:#fff;border:0}.node.target strong,.node.target span,.node.target small{color:#fff}.node.target span{color:#ffd3a1;font-size:1.38rem}.node.partsA{right:0;bottom:18px}.node.partsB{right:0;top:18px}.line{position:absolute;height:4px;background:linear-gradient(90deg,rgba(242,140,40,.2),var(--orange),rgba(242,140,40,.2));transform-origin:left center;border-radius:999px;z-index:1}.line.l1{left:114px;top:90px;width:360px;transform:rotate(33deg)}.line.l2{left:114px;bottom:90px;width:360px;transform:rotate(-33deg)}
-.result-panel{border-radius:26px;padding:20px;background:linear-gradient(180deg,#123d66,#1e5d8e);color:#fff;box-shadow:0 18px 34px rgba(18,61,102,.18)}.result-panel h3{margin:0 0 10px;color:#fff}.result-main{font-size:1.8rem;font-weight:1000;color:#ffd3a1;margin-bottom:10px;letter-spacing:-.03em}.calc-box{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.20);border-radius:18px;padding:13px;font-family:"Consolas","Courier New",monospace;white-space:pre-line;color:#edf7ff;font-size:.93rem;overflow:auto}.status{margin-top:12px;padding:12px 14px;border-radius:16px;font-weight:850;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.20)}.status.good{background:rgba(31,139,87,.18);border-color:rgba(208,255,228,.3)}.status.bad{background:rgba(196,75,75,.20);border-color:rgba(255,210,210,.35)}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{padding:15px;border-radius:20px;background:#fff;border:1px solid var(--line);text-align:center;box-shadow:0 8px 18px rgba(11,38,70,.04)}.kpi span{display:block;color:var(--muted);font-weight:850;font-size:.82rem;margin-bottom:6px}.kpi strong{font-size:1.08rem;color:var(--blue)}
-.table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);background:#fff}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:12px;border-bottom:1px solid #e8eef5;text-align:left;font-size:.94rem;vertical-align:top}th{color:var(--blue);background:#f3f8fd}tr:last-child td{border-bottom:0}.warning{border-radius:20px;padding:14px;background:#fff8ee;border:1px solid #ffd7a8;color:#73502c}.warning strong{color:#8a4d14}.formula-box{padding:14px;border-radius:18px;background:#f8fbff;border:1px solid var(--line);border-left:6px solid var(--orange);font-family:"Consolas","Courier New",monospace;font-weight:850;color:var(--blue);white-space:pre-wrap}.footer{padding:0 20px 24px;color:var(--muted);font-size:.9rem}
-@media(max-width:900px){.hero-grid,.grid-2,.grid-3,.input-grid,.input-grid.three,.kpis{grid-template-columns:1fr}.hero,.main,.section-head,.section-body{padding:16px}.pref-row{grid-template-columns:1fr 1fr}.pref-row .pref-name{grid-column:1/-1}.pearson-canvas{height:520px;min-width:0;max-width:100%}.node{position:absolute;min-width:min(210px,78vw)}.node.a{left:50%;top:0;transform:translateX(-50%)}.node.b{left:50%;top:112px;bottom:auto;transform:translateX(-50%)}.node.target{left:50%;top:258px;transform:translate(-50%,-50%);width:150px;height:150px}.node.partsB{right:auto;left:50%;top:350px;transform:translateX(-50%)}.node.partsA{right:auto;left:50%;top:444px;bottom:auto;transform:translateX(-50%)}.line{display:none}.result-main{font-size:1.45rem}.mini-grid{grid-template-columns:1fr}.mini-target{margin:0 auto}.app{box-shadow:none}.table-wrap{margin-left:-2px;margin-right:-2px}}
-@media(max-width:520px){h1{font-size:1.85rem}.section{border-radius:18px}.card,.result-panel,.pearson-box{border-radius:18px}.pref-row{grid-template-columns:1fr}.pref-row button{width:100%}.btn-row button{width:100%}.hero{padding:15px}.main{padding:12px}.section-head,.section-body{padding:14px}.lead{font-size:.96rem}.node.target{border-radius:18px}.kpi strong{font-size:1rem}}
-@media print{body{background:#fff}.app{box-shadow:none}.hero{background:#123d66!important}.btn-row,.pref-row button{display:none}.section{page-break-inside:avoid}}
+.hero{padding:28px;background:linear-gradient(120deg,rgba(18,61,102,.98),rgba(30,91,139,.94));color:#fff}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:center}
+.pill{display:inline-flex;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:8px 13px;border-radius:999px;font-weight:850;color:#eaf5ff;margin-bottom:14px}
+h1{margin:0;font-size:clamp(2rem,3.2vw,3.35rem);line-height:1.05;letter-spacing:-.03em}
+.subtitle{margin:12px 0 0;font-size:clamp(1.02rem,1.5vw,1.2rem);color:#ffd7aa;font-weight:900}
+.lead{margin:12px 0 0;color:#d9e8f5;max-width:88ch}
+.hero-card{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);border-radius:26px;padding:18px;box-shadow:0 18px 34px rgba(0,0,0,.14)}
+.hero-card h3{margin:0 0 10px;color:#fff}
+.mini-square{background:#fff;color:var(--blue);border-radius:20px;padding:14px;box-shadow:0 12px 24px rgba(0,0,0,.16)}
+.mini-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;text-align:center;font-weight:950}
+.mini-cell{border-radius:15px;padding:10px;background:#f4f8fc;border:1px solid var(--line);font-size:.9rem}
+.mini-center{display:grid;place-items:center;width:76px;height:76px;border-radius:18px;color:#fff;background:linear-gradient(180deg,var(--orange),#df740e);box-shadow:0 14px 26px rgba(242,140,40,.25)}
+.mini-note{display:block;color:var(--muted);font-size:.82rem;font-weight:700;margin-top:10px;text-align:center}
+main{padding:18px;display:grid;gap:18px}
+.section{background:var(--paper);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow2);overflow:hidden}
+.section-head{padding:18px 20px;background:linear-gradient(180deg,#fff,#f7fbff);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.tag{display:inline-block;padding:6px 10px;background:#e9f1f9;border:1px solid #d2e2f0;color:var(--blue);border-radius:999px;font-weight:950;font-size:.78rem;margin-bottom:8px}
+.section-head h2{margin:0 0 6px;color:var(--blue);font-size:1.38rem}
+.section-head p{margin:0;color:var(--muted);max-width:980px}
+.badge{background:#fff3e6;border:1px solid #ffd1a0;color:#96570f;border-radius:999px;padding:7px 12px;font-weight:950;font-size:.82rem}
+.section-body{padding:18px;display:grid;gap:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:linear-gradient(180deg,#fff,#f8fbfe);border:1px solid var(--line);border-radius:22px;padding:16px;overflow:hidden}
+.card h3,.card h4{margin:0 0 10px;color:var(--blue)}
+.muted{color:var(--muted)}
+.input-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.input-grid.three{grid-template-columns:repeat(3,1fr)}
+.field{display:grid;gap:7px}
+label{font-weight:850;color:var(--blue);font-size:.92rem}
+input,select,button{font-family:inherit}
+input,select{
+  width:100%;border:1px solid var(--line);border-radius:15px;padding:11px 12px;min-height:46px;
+  font-size:1rem;color:var(--ink);background:#fff;outline:none;transition:.18s ease
+}
+input:focus,select:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(242,140,40,.14)}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+button{border:0;border-radius:15px;padding:12px 15px;font-weight:950;cursor:pointer;font-size:.94rem;transition:.18s ease}
+.primary{color:#fff;background:linear-gradient(180deg,var(--orange),#df740e);box-shadow:0 12px 22px rgba(242,140,40,.24)}
+.secondary{color:var(--blue);background:#edf4fb;border:1px solid #d2e2f0}
+.danger{color:#fff;background:linear-gradient(180deg,#d15a5a,#a33c3c)}
+button:hover{transform:translateY(-1px)}
+.formula-box{padding:13px;border-radius:18px;background:#f8fbff;border:1px solid var(--line);border-left:6px solid var(--orange);font-family:"Consolas","Courier New",monospace;font-weight:850;color:var(--blue);white-space:pre-wrap;overflow:auto}
+.warning{border-radius:20px;padding:14px;background:#fff8ee;border:1px solid #ffd7a8;color:#73502c}
+.warning strong{color:#8a4d14}
+.ok{border-radius:20px;padding:14px;background:#eefaf4;border:1px solid #bce7ce;color:#1d6840}
+.bad{border-radius:20px;padding:14px;background:#fff0f0;border:1px solid #ffcaca;color:#8a2727}
+.pref-table-wrap,.table-wrap{overflow-x:auto;border-radius:18px;border:1px solid var(--line);background:#fff}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:10px;border-bottom:1px solid #e8eef5;text-align:left;font-size:.92rem;vertical-align:top}
+th{color:var(--blue);background:#f3f8fd}
+tr:last-child td{border-bottom:0}
+.pref-table input,.pref-table select{min-width:130px}
+.pref-table .small-input{min-width:95px}
+.remove-btn{padding:9px 11px;border-radius:12px;background:#fff1f1;color:#a33c3c;border:1px solid #ffd2d2}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{padding:14px;border-radius:20px;background:#fff;border:1px solid var(--line);text-align:center;box-shadow:0 8px 18px rgba(11,38,70,.04)}
+.kpi span{display:block;color:var(--muted);font-weight:850;font-size:.8rem;margin-bottom:6px}
+.kpi strong{font-size:1.12rem;color:var(--blue)}
+.pearson-box{min-height:390px;background:radial-gradient(circle at center,rgba(242,140,40,.08),transparent 36%),linear-gradient(180deg,#fff,#f8fbff);border:1px solid var(--line);border-radius:24px;padding:16px;overflow:visible}
+.pearson-canvas{position:relative;height:330px;max-width:600px;min-width:560px;margin:0 auto}
+.node{position:absolute;min-width:142px;border-radius:22px;padding:12px 10px;text-align:center;border:1px solid var(--line);background:#fff;box-shadow:0 12px 24px rgba(11,38,70,.08);z-index:2}
+.node strong{display:block;color:var(--blue);font-size:.96rem;margin-bottom:4px}
+.node span{display:block;font-size:1.26rem;font-weight:1000;color:var(--orange)}
+.node small{display:block;color:var(--muted);font-size:.78rem;margin-top:4px}
+.node.a{left:0;top:18px}
+.node.b{left:0;bottom:18px}
+.node.target{
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  width:158px;height:158px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(180deg,var(--blue),var(--blue2));color:#fff;border:0
+}
+.node.target strong,.node.target span,.node.target small{color:#fff}
+.node.target span{color:#ffd3a1;font-size:1.36rem}
+.node.partsA{right:0;bottom:18px}
+.node.partsB{right:0;top:18px}
+.line{position:absolute;height:4px;background:linear-gradient(90deg,rgba(242,140,40,.2),var(--orange),rgba(242,140,40,.2));transform-origin:left center;border-radius:999px;z-index:1}
+.line.l1{left:114px;top:90px;width:360px;transform:rotate(33deg)}
+.line.l2{left:114px;bottom:90px;width:360px;transform:rotate(-33deg)}
+.result-panel{border-radius:24px;padding:18px;background:linear-gradient(180deg,#123d66,#1e5d8e);color:#fff;box-shadow:0 18px 34px rgba(18,61,102,.18)}
+.result-panel h3{margin:0 0 10px;color:#fff}
+.result-main{font-size:1.65rem;font-weight:1000;color:#ffd3a1;margin-bottom:10px;letter-spacing:-.03em}
+.calc-box{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.20);border-radius:18px;padding:13px;font-family:"Consolas","Courier New",monospace;white-space:pre-line;color:#edf7ff;font-size:.9rem;overflow:auto}
+.status{margin-top:12px;padding:12px 14px;border-radius:16px;font-weight:850;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.20)}
+.status.good{background:rgba(31,139,87,.18);border-color:rgba(208,255,228,.3)}
+.status.bad{background:rgba(196,75,75,.20);border-color:rgba(255,210,210,.35)}
+.barbox{padding:14px;border-radius:20px;background:#fff;border:1px solid var(--line)}
+.bar-title{display:flex;justify-content:space-between;font-weight:900;color:var(--blue);margin-bottom:8px;gap:10px}
+.bar{height:18px;border-radius:999px;background:#e5edf5;overflow:hidden}
+.fill{height:100%;border-radius:999px;transition:width .8s ease;background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.footer{padding:0 18px 24px;color:var(--muted);font-size:.9rem}
+@media(max-width:900px){
+  .hero-grid,.grid-2,.grid-3,.input-grid,.input-grid.three,.kpis{grid-template-columns:1fr}
+  .hero{padding:18px}
+  main{padding:12px}
+  .section-head,.section-body{padding:14px}
+  .card{padding:14px}
+  .pearson-canvas{height:auto;min-width:0;max-width:none;display:grid;gap:10px}
+  .line{display:none}
+  .node{position:static;transform:none!important;width:100%;min-width:0}
+  .node.target{position:static;transform:none;width:100%;height:auto;min-height:110px;border-radius:22px}
+  .node.a{order:1}.node.partsA{order:2}.node.target{order:3}.node.partsB{order:4}.node.b{order:5}
+  .result-main{font-size:1.35rem}
+}
+@media(max-width:560px){
+  .app{box-shadow:none}
+  h1{font-size:1.78rem}
+  .subtitle{font-size:1rem}
+  .lead{font-size:.94rem}
+  .hero-card{padding:13px}
+  .mini-grid{grid-template-columns:1fr}
+  .mini-center{width:100%;height:auto;min-height:72px}
+  button{width:100%}
+  .kpi{text-align:left}
+  table{min-width:680px}
+}
+@media print{
+  body{background:white}
+  .app{box-shadow:none}
+  button{display:none}
+  .section{break-inside:avoid}
+}
 </style>
 </head>
 <body>
-<div class="app" id="pearson-pref-app">
+<div class="app">
   <div class="ribbon"></div>
   <header class="hero">
     <div class="hero-grid">
       <div>
         <div class="pill">🐔 Infográfico interativo • Nutrição Animal</div>
         <h1>Quadrado de Pearson com ingredientes pré-fixados</h1>
-        <div class="subtitle">Calcule dois ingredientes variáveis e reserve parte da fórmula para premix, farelo ou outros componentes</div>
-        <p class="lead">Use o modo simples para trabalhar apenas com dois ingredientes, ou ative os pré-fixados para reservar uma porcentagem da fórmula. O sistema corrige a meta para a fração restante e aplica o Quadrado de Pearson somente sobre essa parte.</p>
-        <div class="chips"><span class="chip">2 ingredientes variáveis</span><span class="chip">pré-fixados opcionais</span><span class="chip">custo final</span><span class="chip">responsivo para celular</span></div>
+        <div class="subtitle">Use 2 ingredientes variáveis e acrescente premix, núcleo ou outros alimentos fixos</div>
+        <p class="lead">Nesta versão, os ingredientes pré-fixados ocupam uma parte da fórmula. O programa calcula a meta corrigida para a fração restante e aplica o Quadrado de Pearson apenas sobre os dois ingredientes variáveis.</p>
       </div>
-      <div class="mini-square">
-        <div class="mini-grid">
-          <div class="mini-cell">Premix<br>3%</div>
-          <div class="mini-target">Meta<br><b>18%</b></div>
-          <div class="mini-cell">Farelo trigo<br>10%</div>
-          <div class="mini-cell">Restante<br>87%</div>
-          <div></div>
-          <div class="mini-cell">Pearson<br>A + B</div>
+      <div class="hero-card">
+        <h3>Ideia central</h3>
+        <div class="mini-square">
+          <div class="mini-grid">
+            <div class="mini-cell">Pré-fixados<br>13%</div>
+            <div class="mini-center">Meta corrigida<br>para 87%</div>
+            <div class="mini-cell">2 ingredientes<br>variáveis</div>
+          </div>
+          <small class="mini-note">Exemplo: 3% premix + 10% farelo de trigo = o Pearson calcula os 87% restantes.</small>
         </div>
-        <small class="muted" style="display:block;text-align:center;margin-top:12px">A meta é recalculada para os 87% restantes antes do Pearson.</small>
       </div>
     </div>
   </header>
 
-  <main class="main">
+  <main>
     <section class="section">
       <div class="section-head">
-        <div><span class="tag">CONCEITO</span><h2>Como entram os ingredientes pré-fixados?</h2><p>Primeiro o programa separa a porcentagem fixa da mistura. Depois calcula qual teor o restante precisa ter para que a fórmula completa atinja a meta final.</p></div>
-        <span class="badge">Modo simples + modo avançado</span>
+        <div>
+          <span class="tag">ENTRADAS</span>
+          <h2>1. Defina o nutriente, a quantidade final e os dois ingredientes variáveis</h2>
+          <p>Escolha alimentos da lista suspensa. Os teores são preenchidos automaticamente, mas continuam editáveis caso você tenha uma análise bromatológica própria.</p>
+        </div>
+        <span class="badge">Lista editável</span>
       </div>
       <div class="section-body">
-        <div class="grid-3">
-          <div class="card"><h3>1. Fórmula final</h3><p class="muted">É a mistura completa: ingredientes fixos + dois ingredientes calculados pelo Pearson.</p></div>
-          <div class="card"><h3>2. Pré-fixados</h3><p class="muted">Exemplo: 3% de premix, 10% de farelo de trigo, 1% de núcleo mineral etc.</p></div>
-          <div class="card"><h3>3. Fração restante</h3><p class="muted">Se os fixos somam 13%, o Pearson calcula apenas os outros 87% da fórmula.</p></div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Dados gerais</h3>
+            <div class="input-grid three">
+              <div class="field">
+                <label for="nutriente">Nutriente calculado</label>
+                <select id="nutriente"></select>
+              </div>
+              <div class="field">
+                <label for="meta">Meta final da ração</label>
+                <input id="meta" type="number" step="0.01" value="18">
+              </div>
+              <div class="field">
+                <label for="quantidade">Quantidade final da mistura (kg)</label>
+                <input id="quantidade" type="number" step="0.01" value="100">
+              </div>
+            </div>
+
+            <div style="height:14px"></div>
+            <div class="warning"><strong>Onde colocar os outros alimentos?</strong> Na seção 2, em “Ingredientes pré-fixados”. Ali você informa o alimento, o percentual fixo na fórmula, o teor do nutriente e o custo.</div>
+
+            <div class="btn-row">
+              <button class="primary" onclick="calcularPearson()">Calcular formulação</button>
+              <button class="secondary" onclick="carregarExemplo('premix')">Exemplo com premix</button>
+              <button class="secondary" onclick="carregarExemplo('simples')">Exemplo simples</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Como a meta corrigida é calculada</h3>
+            <div class="formula-box">Meta corrigida =
+[(Meta final × 100) − Σ(% fixo × teor fixo)] ÷ % restante</div>
+            <p class="muted" style="margin-bottom:0">Depois disso, o Quadrado de Pearson usa a meta corrigida para calcular apenas a fração restante da fórmula.</p>
+          </div>
         </div>
-        <div class="formula-box">Meta corrigida para a parte variável = [(Meta final × 100) − Σ(% fixo × teor fixo)] ÷ % restante</div>
-        <div class="warning"><strong>Importante:</strong> o cálculo continua ajustando apenas um nutriente principal por vez. Para formular ração com várias restrições simultâneas, o ideal é usar Solver ou software de formulação.</div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Ingrediente variável A</h3>
+            <div class="input-grid">
+              <div class="field">
+                <label for="selectA">Alimento</label>
+                <select id="selectA" onchange="aplicarAlimento('A')"></select>
+              </div>
+              <div class="field">
+                <label for="nomeA">Nome editável</label>
+                <input id="nomeA" type="text" value="Milho moído">
+              </div>
+              <div class="field">
+                <label for="teorA">Teor do nutriente</label>
+                <input id="teorA" type="number" step="0.01" value="8.5">
+              </div>
+              <div class="field">
+                <label for="custoA">Custo (R$/kg)</label>
+                <input id="custoA" type="number" step="0.01" value="1.50">
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Ingrediente variável B</h3>
+            <div class="input-grid">
+              <div class="field">
+                <label for="selectB">Alimento</label>
+                <select id="selectB" onchange="aplicarAlimento('B')"></select>
+              </div>
+              <div class="field">
+                <label for="nomeB">Nome editável</label>
+                <input id="nomeB" type="text" value="Farelo de soja">
+              </div>
+              <div class="field">
+                <label for="teorB">Teor do nutriente</label>
+                <input id="teorB" type="number" step="0.01" value="45">
+              </div>
+              <div class="field">
+                <label for="custoB">Custo (R$/kg)</label>
+                <input id="custoB" type="number" step="0.01" value="2.80">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="section">
       <div class="section-head">
-        <div><span class="tag">CALCULADORA</span><h2>Monte sua mistura</h2><p>Preencha a meta final, os dois ingredientes variáveis e, se quiser, adicione ingredientes com inclusão fixa.</p></div>
-        <span class="badge">Funciona offline</span>
+        <div>
+          <span class="tag">PRÉ-FIXADOS</span>
+          <h2>2. Ingredientes fixos da fórmula</h2>
+          <p>Use esta parte para premix, núcleo, sal, calcário, fosfato, óleo ou algum alimento que você decidiu deixar fixo. Se não quiser usar pré-fixados, deixe a tabela vazia.</p>
+        </div>
+        <span class="badge">Ex.: 3% + 10%</span>
       </div>
       <div class="section-body">
-        <div class="grid-2">
-          <div class="card">
-            <h3>Dados principais</h3>
-            <div class="input-grid">
-              <div class="field"><label for="nutriente">Nutriente calculado</label><select id="nutriente"><option>Proteína Bruta</option><option>Energia</option><option>Cálcio</option><option>Fósforo</option><option>Outro nutriente</option></select></div>
-              <div class="field"><label for="quantidade">Quantidade final da mistura (kg)</label><input id="quantidade" type="number" step="0.01" value="100"></div>
-            </div>
-            <div style="height:12px"></div>
-            <div class="input-grid three">
-              <div class="field"><label for="meta">Meta final da mistura (%)</label><input id="meta" type="number" step="0.01" value="18"></div>
-              <div class="field"><label for="nomeA">Ingrediente A</label><input id="nomeA" type="text" value="Milho"></div>
-              <div class="field"><label for="teorA">Teor A (%)</label><input id="teorA" type="number" step="0.01" value="8.5"></div>
-            </div>
-            <div style="height:12px"></div>
-            <div class="input-grid three">
-              <div class="field"><label for="nomeB">Ingrediente B</label><input id="nomeB" type="text" value="Farelo de soja"></div>
-              <div class="field"><label for="teorB">Teor B (%)</label><input id="teorB" type="number" step="0.01" value="45"></div>
-              <div class="field"><label for="custoA">Custo A (R$/kg)</label><input id="custoA" type="number" step="0.01" value="1.50"></div>
-            </div>
-            <div style="height:12px"></div>
-            <div class="input-grid">
-              <div class="field"><label for="custoB">Custo B (R$/kg)</label><input id="custoB" type="number" step="0.01" value="2.80"></div>
-              <div class="field"><label>&nbsp;</label><button class="primary" onclick="calcularPearson()">Calcular mistura</button></div>
-            </div>
-            <div class="btn-row"><button class="secondary" onclick="carregarExemplo('simples')">Exemplo simples</button><button class="secondary" onclick="carregarExemplo('fixos')">Exemplo com pré-fixados</button><button class="secondary" onclick="limparFixos()">Remover pré-fixados</button></div>
-          </div>
-
-          <div class="card">
-            <h3>Ingredientes pré-fixados</h3>
-            <label class="toggle"><input type="checkbox" id="usarFixos" checked onchange="calcularPearson()"><span><b>Usar ingredientes pré-fixados</b><br><small class="muted">Desative para usar somente os dois ingredientes do Pearson.</small></span></label>
-            <div style="height:12px"></div>
-            <div id="fixosList"></div>
-            <button class="secondary" onclick="addFixo()">+ adicionar ingrediente fixo</button>
-            <div class="warning" style="margin-top:14px"><strong>Exemplo:</strong> 3% de premix e 10% de farelo de trigo deixam 87% da fórmula para milho e farelo de soja. O Pearson calcula a proporção dentro desses 87%.</div>
-          </div>
+        <div class="btn-row" style="margin-top:0">
+          <button class="secondary" onclick="adicionarPref()">+ Adicionar ingrediente pré-fixado</button>
+          <button class="secondary" onclick="adicionarPref('Premix vitamínico-mineral',3)">+ Premix 3%</button>
+          <button class="secondary" onclick="adicionarPref('Farelo de trigo',10)">+ Farelo de trigo 10%</button>
+          <button class="danger" onclick="limparPrefs()">Limpar pré-fixados</button>
         </div>
 
+        <div class="pref-table-wrap">
+          <table class="pref-table">
+            <thead>
+              <tr>
+                <th>Alimento</th>
+                <th>Nome editável</th>
+                <th>% fixo na fórmula</th>
+                <th>Teor do nutriente</th>
+                <th>Custo (R$/kg)</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="prefBody"></tbody>
+          </table>
+        </div>
+
+        <div id="prefResumo" class="warning"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="tag">VISUAL</span>
+          <h2>3. Quadrado de Pearson aplicado à fração restante</h2>
+          <p>A meta aparece em um quadrado, para reforçar o nome e a lógica visual do método.</p>
+        </div>
+        <span class="badge">Meta quadrada</span>
+      </div>
+      <div class="section-body">
         <div class="grid-2">
           <div class="pearson-box">
             <h3 style="color:var(--blue);margin:0 0 10px">Quadrado de Pearson visual</h3>
             <div class="pearson-canvas">
               <div class="line l1"></div><div class="line l2"></div>
-              <div class="node a"><strong id="labelA">Milho</strong><span id="visualA">8,50%</span><small>Ingrediente A</small></div>
-              <div class="node b"><strong id="labelB">Farelo de soja</strong><span id="visualB">45,00%</span><small>Ingrediente B</small></div>
-              <div class="node target"><div><strong>Meta corrigida</strong><span id="visualMeta">18,00%</span><small id="visualNutriente">Proteína Bruta</small></div></div>
+              <div class="node a"><strong id="labelA">Milho moído</strong><span id="visualA">8,50</span><small>Ingrediente A</small></div>
+              <div class="node b"><strong id="labelB">Farelo de soja</strong><span id="visualB">45,00</span><small>Ingrediente B</small></div>
+              <div class="node target"><div><strong>Meta corrigida</strong><span id="visualMetaCorr">18,00</span><small id="visualNutriente">Proteína Bruta (%)</small></div></div>
               <div class="node partsB"><strong id="labelPartesB">Partes de B</strong><span id="visualPartesB">9,50</span><small>Meta − A</small></div>
               <div class="node partsA"><strong id="labelPartesA">Partes de A</strong><span id="visualPartesA">27,00</span><small>B − Meta</small></div>
             </div>
           </div>
-          <div class="result-panel" id="resultado"></div>
-        </div>
 
-        <div class="card">
-          <h3>Painel de quantidade e custo</h3>
-          <div class="kpis">
-            <div class="kpi"><span>% pré-fixados</span><strong id="kpiFixos">13,00%</strong></div>
-            <div class="kpi"><span>% restante</span><strong id="kpiRestante">87,00%</strong></div>
-            <div class="kpi"><span>Custo total</span><strong id="custoTotal">R$ 192,28</strong></div>
-            <div class="kpi"><span>Custo por kg</span><strong id="custoKg">R$ 1,923</strong></div>
+          <div class="result-panel" id="resultado">
+            <h3>Resultado principal</h3>
+            <div class="result-main">Preencha os dados</div>
+            <div class="calc-box">O resultado aparecerá aqui.</div>
+            <div class="status">Aguardando cálculo.</div>
           </div>
         </div>
 
         <div class="card">
-          <h3>Resultado em tabela</h3>
-          <div class="table-wrap"><table><thead><tr><th>Ingrediente</th><th>Tipo</th><th>Teor do nutriente</th><th>% na fórmula final</th><th>Kg na mistura</th><th>Contribuição no nutriente</th><th>Custo</th></tr></thead><tbody id="tabelaResultado"></tbody></table></div>
+          <h3>Painel rápido</h3>
+          <div class="kpis">
+            <div class="kpi"><span>% pré-fixado</span><strong id="kpiPref">0,00%</strong></div>
+            <div class="kpi"><span>% restante para Pearson</span><strong id="kpiRestante">100,00%</strong></div>
+            <div class="kpi"><span>Meta final</span><strong id="kpiMetaFinal">18,00</strong></div>
+            <div class="kpi"><span>Meta corrigida</span><strong id="kpiMetaCorr">18,00</strong></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Distribuição dos dois ingredientes variáveis</h3>
+            <div class="barbox"><div class="bar-title"><span id="barNomeA">Milho moído</span><span id="barPctA">73,97%</span></div><div class="bar"><div class="fill" id="barA" style="width:73.97%"></div></div></div>
+            <div style="height:12px"></div>
+            <div class="barbox"><div class="bar-title"><span id="barNomeB">Farelo de soja</span><span id="barPctB">26,03%</span></div><div class="bar"><div class="fill" id="barB" style="width:26.03%"></div></div></div>
+          </div>
+
+          <div class="card">
+            <h3>Custo e quantidade</h3>
+            <div class="kpis">
+              <div class="kpi"><span id="kpiNomeA">Milho moído</span><strong id="kgA">73,97 kg</strong></div>
+              <div class="kpi"><span id="kpiNomeB">Farelo de soja</span><strong id="kgB">26,03 kg</strong></div>
+              <div class="kpi"><span>Custo total</span><strong id="custoTotal">R$ 183,87</strong></div>
+              <div class="kpi"><span>Custo/kg</span><strong id="custoKg">R$ 1,839</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Formulação final</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ingrediente</th>
+                  <th>Tipo</th>
+                  <th>Teor do nutriente</th>
+                  <th>% na fórmula final</th>
+                  <th>Kg na mistura</th>
+                  <th>Custo</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaResultado"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="tag">BANCO DE ALIMENTOS</span>
+          <h2>Teores usados na lista suspensa</h2>
+          <p>Valores médios didáticos. Sempre que tiver uma análise bromatológica, edite o teor diretamente nos campos do ingrediente.</p>
+        </div>
+        <span class="badge">Editável no campo</span>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Alimento</th>
+                <th>PB (%)</th>
+                <th>Energia metabolizável</th>
+                <th>Cálcio (%)</th>
+                <th>Fósforo total (%)</th>
+                <th>Fibra bruta (%)</th>
+                <th>Custo padrão</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaBanco"></tbody>
+          </table>
         </div>
       </div>
     </section>
   </main>
-  <div class="footer">Infográfico HTML, CSS e JavaScript • Quadrado de Pearson com ingredientes pré-fixados • Ideal para aula técnica e Google Sites.</div>
+
+  <div class="footer">Infográfico HTML/CSS/JS • Quadrado de Pearson com pré-fixados • Responsivo para celular, tablet, notebook e Google Sites.</div>
 </div>
+
 <script>
-let fixos = [
-  {nome:'Premix vitamínico-mineral', pct:3, teor:0, custo:8.00},
-  {nome:'Farelo de trigo', pct:10, teor:15, custo:1.40}
+const nutrientes = [
+  {key:"pb", label:"Proteína Bruta (%)", unidade:"%"},
+  {key:"em", label:"Energia metabolizável (kcal/kg)", unidade:"kcal/kg"},
+  {key:"calcio", label:"Cálcio (%)", unidade:"%"},
+  {key:"fosforo", label:"Fósforo total (%)", unidade:"%"},
+  {key:"fibra", label:"Fibra bruta (%)", unidade:"%"}
 ];
-function br(n,d=2){if(!isFinite(n))return '-';return Number(n).toFixed(d).replace('.',',')}
-function valor(id){const el=document.getElementById(id); const v=parseFloat(String(el.value).replace(',','.'));return isNaN(v)?0:v}
-function txt(id){return document.getElementById(id).value.trim()||'-'}
-function renderFixos(){
-  const box=document.getElementById('fixosList'); box.innerHTML='';
-  fixos.forEach((f,i)=>{
-    const row=document.createElement('div'); row.className='pref-row';
-    row.innerHTML=`
-      <div class="field pref-name"><label>Ingrediente fixo</label><input value="${f.nome}" oninput="fixos[${i}].nome=this.value;calcularPearson()"></div>
-      <div class="field"><label>% fixo</label><input type="number" step="0.01" value="${f.pct}" oninput="fixos[${i}].pct=parseFloat(this.value)||0;calcularPearson()"></div>
-      <div class="field"><label>Teor (%)</label><input type="number" step="0.01" value="${f.teor}" oninput="fixos[${i}].teor=parseFloat(this.value)||0;calcularPearson()"></div>
-      <button class="danger" title="Remover" onclick="fixos.splice(${i},1);renderFixos();calcularPearson()">×</button>`;
-    box.appendChild(row);
+
+const alimentos = [
+  {nome:"Milho moído", pb:8.5, em:3350, calcio:0.03, fosforo:0.28, fibra:2.2, custo:1.50},
+  {nome:"Sorgo moído", pb:9.0, em:3200, calcio:0.04, fosforo:0.28, fibra:2.7, custo:1.35},
+  {nome:"Farelo de soja 45%", pb:45.0, em:2450, calcio:0.30, fosforo:0.65, fibra:6.0, custo:2.80},
+  {nome:"Farelo de soja 48%", pb:48.0, em:2500, calcio:0.30, fosforo:0.68, fibra:4.0, custo:3.00},
+  {nome:"Farelo de trigo", pb:15.5, em:1700, calcio:0.12, fosforo:1.05, fibra:10.0, custo:1.25},
+  {nome:"Trigo integral moído", pb:12.0, em:3000, calcio:0.05, fosforo:0.35, fibra:2.7, custo:1.55},
+  {nome:"Farelo de arroz", pb:13.0, em:2500, calcio:0.08, fosforo:1.50, fibra:11.0, custo:1.20},
+  {nome:"Quirera de arroz", pb:8.0, em:3100, calcio:0.04, fosforo:0.25, fibra:1.0, custo:1.45},
+  {nome:"Farinha de carne e ossos", pb:45.0, em:2200, calcio:10.0, fosforo:5.0, fibra:0.0, custo:3.20},
+  {nome:"Farinha de peixe", pb:55.0, em:2900, calcio:5.0, fosforo:3.0, fibra:0.0, custo:5.00},
+  {nome:"Óleo vegetal", pb:0.0, em:8800, calcio:0.0, fosforo:0.0, fibra:0.0, custo:5.50},
+  {nome:"Calcário calcítico", pb:0.0, em:0, calcio:38.0, fosforo:0.0, fibra:0.0, custo:0.70},
+  {nome:"Fosfato bicálcico", pb:0.0, em:0, calcio:22.0, fosforo:18.0, fibra:0.0, custo:4.50},
+  {nome:"Sal comum", pb:0.0, em:0, calcio:0.0, fosforo:0.0, fibra:0.0, custo:0.80},
+  {nome:"Premix vitamínico-mineral", pb:0.0, em:0, calcio:0.0, fosforo:0.0, fibra:0.0, custo:8.00},
+  {nome:"Núcleo mineral/proteico", pb:20.0, em:1200, calcio:5.0, fosforo:2.0, fibra:4.0, custo:4.00},
+  {nome:"Outro alimento / análise própria", pb:0.0, em:0, calcio:0.0, fosforo:0.0, fibra:0.0, custo:0.00}
+];
+
+let prefRows = [];
+
+function br(n,d=2){
+  if(!isFinite(n)) return "-";
+  return Number(n).toFixed(d).replace(".",",");
+}
+function valor(id){
+  const el=document.getElementById(id);
+  if(!el) return 0;
+  const v=parseFloat(String(el.value).replace(",","."));
+  return isNaN(v)?0:v;
+}
+function txt(id){
+  const el=document.getElementById(id);
+  return el ? (el.value.trim()||"-") : "-";
+}
+function nutrienteAtual(){
+  const key=document.getElementById("nutriente").value;
+  return nutrientes.find(n=>n.key===key) || nutrientes[0];
+}
+function alimentoPorNome(nome){
+  return alimentos.find(a=>a.nome===nome) || alimentos[alimentos.length-1];
+}
+function valorAlimento(nome,key){
+  const a=alimentoPorNome(nome);
+  return Number(a[key]) || 0;
+}
+
+function setup(){
+  const selNut=document.getElementById("nutriente");
+  nutrientes.forEach(n=>{
+    const op=document.createElement("option");
+    op.value=n.key; op.textContent=n.label;
+    selNut.appendChild(op);
   });
+
+  ["selectA","selectB"].forEach(id=>{
+    const sel=document.getElementById(id);
+    alimentos.forEach(a=>{
+      const op=document.createElement("option");
+      op.value=a.nome; op.textContent=a.nome;
+      sel.appendChild(op);
+    });
+  });
+
+  document.getElementById("selectA").value="Milho moído";
+  document.getElementById("selectB").value="Farelo de soja 45%";
+  aplicarAlimento("A", false);
+  aplicarAlimento("B", false);
+
+  renderBanco();
+  adicionarPref("Premix vitamínico-mineral",3,false);
+  adicionarPref("Farelo de trigo",10,false);
+  renderPrefs();
+
+  ["nutriente","meta","quantidade","nomeA","teorA","custoA","nomeB","teorB","custoB"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",calcularPearson);
+    document.getElementById(id).addEventListener("change",calcularPearson);
+  });
+  document.getElementById("nutriente").addEventListener("change",()=>{
+    aplicarAlimento("A", false);
+    aplicarAlimento("B", false);
+    prefRows=prefRows.map(r=>({...r, teor: valorAlimento(r.alimento, nutrienteAtual().key)}));
+    renderPrefs();
+  });
+  calcularPearson();
 }
-function addFixo(){fixos.push({nome:'Novo ingrediente fixo',pct:0,teor:0,custo:0});renderFixos();calcularPearson()}
-function limparFixos(){fixos=[];document.getElementById('usarFixos').checked=false;renderFixos();calcularPearson()}
-function atualizarVisual(nomeA,nomeB,teorA,teorB,metaCorrigida,nutriente,partesA=0,partesB=0){
-  document.getElementById('labelA').textContent=nomeA;
-  document.getElementById('labelB').textContent=nomeB;
-  document.getElementById('visualA').textContent=br(teorA,2)+'%';
-  document.getElementById('visualB').textContent=br(teorB,2)+'%';
-  document.getElementById('visualMeta').textContent=br(metaCorrigida,2)+'%';
-  document.getElementById('visualNutriente').textContent=nutriente;
-  document.getElementById('visualPartesA').textContent=br(partesA,2);
-  document.getElementById('visualPartesB').textContent=br(partesB,2);
-  document.getElementById('labelPartesA').textContent='Partes de '+nomeA;
-  document.getElementById('labelPartesB').textContent='Partes de '+nomeB;
+
+function alimentoOptions(selected){
+  return alimentos.map(a=>`<option value="${a.nome}" ${a.nome===selected?'selected':''}>${a.nome}</option>`).join("");
 }
-function mostrarErro(msg){
-  document.getElementById('resultado').innerHTML=`<h3>Resultado principal</h3><div class="result-main">Não foi possível calcular</div><div class="calc-box">${msg}</div><div class="status bad">Revise os dados de entrada.</div>`;
+
+function aplicarAlimento(letra, recalcular=true){
+  const n=nutrienteAtual();
+  const sel=document.getElementById("select"+letra);
+  const a=alimentoPorNome(sel.value);
+  document.getElementById("nome"+letra).value=a.nome;
+  document.getElementById("teor"+letra).value=a[n.key];
+  document.getElementById("custo"+letra).value=a.custo;
+  if(recalcular) calcularPearson();
 }
+
+function adicionarPref(nome="Outro alimento / análise própria", pct=0, rerender=true){
+  const n=nutrienteAtual();
+  const a=alimentoPorNome(nome);
+  prefRows.push({
+    alimento:a.nome,
+    nome:a.nome,
+    pct:Number(pct)||0,
+    teor:Number(a[n.key])||0,
+    custo:Number(a.custo)||0
+  });
+  if(rerender) renderPrefs();
+}
+
+function limparPrefs(){
+  prefRows=[];
+  renderPrefs();
+}
+
+function updatePref(i, field, value){
+  if(!prefRows[i]) return;
+  if(field==="alimento"){
+    const n=nutrienteAtual();
+    const a=alimentoPorNome(value);
+    prefRows[i].alimento=a.nome;
+    prefRows[i].nome=a.nome;
+    prefRows[i].teor=Number(a[n.key])||0;
+    prefRows[i].custo=Number(a.custo)||0;
+  }else if(field==="nome"){
+    prefRows[i].nome=value;
+  }else{
+    prefRows[i][field]=parseFloat(String(value).replace(",","."))||0;
+  }
+  renderPrefs(false);
+}
+
+function renderPrefs(recalc=true){
+  const body=document.getElementById("prefBody");
+  body.innerHTML="";
+  prefRows.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td><select onchange="updatePref(${i},'alimento',this.value)">${alimentoOptions(r.alimento)}</select></td>
+      <td><input value="${r.nome}" onchange="updatePref(${i},'nome',this.value)"></td>
+      <td><input class="small-input" type="number" step="0.01" value="${r.pct}" onchange="updatePref(${i},'pct',this.value)" oninput="updatePref(${i},'pct',this.value)"></td>
+      <td><input class="small-input" type="number" step="0.01" value="${r.teor}" onchange="updatePref(${i},'teor',this.value)" oninput="updatePref(${i},'teor',this.value)"></td>
+      <td><input class="small-input" type="number" step="0.01" value="${r.custo}" onchange="updatePref(${i},'custo',this.value)" oninput="updatePref(${i},'custo',this.value)"></td>
+      <td><button class="remove-btn" onclick="prefRows.splice(${i},1);renderPrefs()">Remover</button></td>
+    `;
+    body.appendChild(tr);
+  });
+  if(recalc) calcularPearson();
+}
+
+function renderBanco(){
+  const tbody=document.getElementById("tabelaBanco");
+  tbody.innerHTML=alimentos.map(a=>`
+    <tr>
+      <td><strong>${a.nome}</strong></td>
+      <td>${br(a.pb,2)}</td>
+      <td>${br(a.em,0)}</td>
+      <td>${br(a.calcio,2)}</td>
+      <td>${br(a.fosforo,2)}</td>
+      <td>${br(a.fibra,2)}</td>
+      <td>R$ ${br(a.custo,2)}</td>
+    </tr>
+  `).join("");
+}
+
 function calcularPearson(){
-  const usarFixos=document.getElementById('usarFixos').checked;
-  const nutriente=document.getElementById('nutriente').value;
-  const nomeA=txt('nomeA'), nomeB=txt('nomeB');
-  const teorA=valor('teorA'), teorB=valor('teorB'), meta=valor('meta'), quantidade=valor('quantidade'), custoA=valor('custoA'), custoB=valor('custoB');
-  const fixosAtivos=usarFixos?fixos:[];
-  const somaFixos=fixosAtivos.reduce((s,f)=>s+(Number(f.pct)||0),0);
-  const restante=100-somaFixos;
-  const contribuicaoFixos=fixosAtivos.reduce((s,f)=>s+((Number(f.pct)||0)*(Number(f.teor)||0)),0);
-  const metaCorrigida=restante>0?((meta*100)-contribuicaoFixos)/restante:0;
-  atualizarVisual(nomeA,nomeB,teorA,teorB,metaCorrigida,nutriente,0,0);
-  if(quantidade<=0){mostrarErro('A quantidade final precisa ser maior que zero.');return}
-  if(restante<=0){mostrarErro('A soma dos ingredientes pré-fixados precisa ser menor que 100%. Soma atual: '+br(somaFixos,2)+'%.');return}
-  if(somaFixos<0){mostrarErro('A soma dos ingredientes pré-fixados não pode ser negativa.');return}
-  if(teorA===teorB){mostrarErro('Os dois ingredientes variáveis possuem o mesmo teor. O Quadrado de Pearson precisa de dois teores diferentes.');return}
+  const nut=nutrienteAtual();
+  const meta=valor("meta");
+  const quantidade=valor("quantidade");
+  const nomeA=txt("nomeA"), nomeB=txt("nomeB");
+  const teorA=valor("teorA"), teorB=valor("teorB");
+  const custoA=valor("custoA"), custoB=valor("custoB");
+
+  const totalPref=prefRows.reduce((s,r)=>s+(Number(r.pct)||0),0);
+  const restante=100-totalPref;
+  const contribPref=prefRows.reduce((s,r)=>s+((Number(r.pct)||0)*(Number(r.teor)||0)/100),0);
+  const metaCorrigida = restante>0 ? ((meta - contribPref)*100/restante) : 0;
+
+  atualizarResumoPrefs(totalPref, restante, contribPref, metaCorrigida, nut);
+
+  document.getElementById("kpiPref").textContent=br(totalPref,2)+"%";
+  document.getElementById("kpiRestante").textContent=br(restante,2)+"%";
+  document.getElementById("kpiMetaFinal").textContent=br(meta,2)+" "+nut.unidade;
+  document.getElementById("kpiMetaCorr").textContent=br(metaCorrigida,2)+" "+nut.unidade;
+
+  atualizarVisualBasico(nomeA,nomeB,teorA,teorB,metaCorrigida,nut.label);
+
+  if(quantidade<=0){mostrarErro("A quantidade final precisa ser maior que zero."); return;}
+  if(totalPref>=100){mostrarErro("A soma dos ingredientes pré-fixados precisa ser menor que 100%. Hoje ela está em "+br(totalPref,2)+"%."); return;}
+  if(restante<=0){mostrarErro("Não há percentual restante para aplicar o Quadrado de Pearson."); return;}
+  if(teorA===teorB){mostrarErro("Os dois ingredientes variáveis possuem o mesmo teor. O Quadrado de Pearson precisa de dois teores diferentes."); return;}
+
   const menor=Math.min(teorA,teorB), maior=Math.max(teorA,teorB);
   if(metaCorrigida<menor || metaCorrigida>maior){
-    mostrarErro('Com os pré-fixados informados, a parte variável precisaria ter '+br(metaCorrigida,2)+'% de '+nutriente+'. Esse valor precisa ficar entre '+br(menor,2)+'% e '+br(maior,2)+'%, que são os teores dos dois ingredientes variáveis.');return
+    mostrarErro("A meta corrigida precisa ficar entre os teores dos dois ingredientes variáveis. Meta corrigida: "+br(metaCorrigida,2)+" "+nut.unidade+". Intervalo possível: "+br(menor,2)+" a "+br(maior,2)+".");
+    return;
   }
-  const partesA=Math.abs(teorB-metaCorrigida), partesB=Math.abs(metaCorrigida-teorA), totalPartes=partesA+partesB;
-  const pctAdentro=partesA/totalPartes*100, pctBdentro=partesB/totalPartes*100;
-  const pctAfinal=restante*pctAdentro/100, pctBfinal=restante*pctBdentro/100;
-  const kgA=quantidade*pctAfinal/100, kgB=quantidade*pctBfinal/100;
-  const custoTotalA=kgA*custoA, custoTotalB=kgB*custoB;
-  let linhas=[];
-  let custoFixos=0, kgFixos=0, teorFinalSoma=0;
-  fixosAtivos.forEach(f=>{
-    const pct=Number(f.pct)||0, teor=Number(f.teor)||0, custo=Number(f.custo)||0;
-    const kg=quantidade*pct/100, ct=kg*custo, contrib=pct*teor/100;
-    custoFixos+=ct; kgFixos+=kg; teorFinalSoma+=contrib;
-    linhas.push(`<tr><td>${f.nome||'-'}</td><td>Pré-fixado</td><td>${br(teor,2)}%</td><td>${br(pct,2)}%</td><td>${br(kg,2)} kg</td><td>${br(contrib,3)} ponto percentual</td><td>${custo?('R$ '+br(ct,2)):'-'}</td></tr>`);
-  });
-  const contribA=pctAfinal*teorA/100, contribB=pctBfinal*teorB/100;
-  teorFinalSoma+=contribA+contribB;
-  const custoTotal=custoFixos+custoTotalA+custoTotalB, custoKg=custoTotal/quantidade;
-  atualizarVisual(nomeA,nomeB,teorA,teorB,metaCorrigida,nutriente,partesA,partesB);
-  document.getElementById('resultado').innerHTML=`<h3>Resultado principal</h3>
-  <div class="result-main">${nomeA} = ${br(pctAfinal,2)}% | ${nomeB} = ${br(pctBfinal,2)}%</div>
-  <div class="calc-box">Meta final da fórmula = ${br(meta,2)}% de ${nutriente}
-Pré-fixados = ${br(somaFixos,2)}%
-Parte restante para o Pearson = ${br(restante,2)}%
 
-Meta corrigida da parte variável:
-[(${br(meta,2)} × 100) − Σ(% fixo × teor fixo)] ÷ ${br(restante,2)} = ${br(metaCorrigida,2)}%
+  const partesA=Math.abs(teorB-metaCorrigida);
+  const partesB=Math.abs(metaCorrigida-teorA);
+  const totalPartes=partesA+partesB;
+  const pctA_noRestante=partesA/totalPartes*100;
+  const pctB_noRestante=partesB/totalPartes*100;
+  const pctA_final=pctA_noRestante*restante/100;
+  const pctB_final=pctB_noRestante*restante/100;
+  const kgA=quantidade*pctA_final/100;
+  const kgB=quantidade*pctB_final/100;
+  const custoTotalA=kgA*custoA;
+  const custoTotalB=kgB*custoB;
+
+  const prefCalcs=prefRows.map(r=>({
+    ...r,
+    kg:quantidade*(Number(r.pct)||0)/100,
+    custoTotal:quantidade*(Number(r.pct)||0)/100*(Number(r.custo)||0)
+  }));
+  const custoPref=prefCalcs.reduce((s,r)=>s+r.custoTotal,0);
+  const custoTotal=custoTotalA+custoTotalB+custoPref;
+  const custoKg=custoTotal/quantidade;
+
+  const teorFinal = prefRows.reduce((s,r)=>s+((Number(r.pct)||0)*(Number(r.teor)||0)/100),0) +
+    (pctA_final*teorA/100) + (pctB_final*teorB/100);
+
+  document.getElementById("visualPartesA").textContent=br(partesA,2);
+  document.getElementById("visualPartesB").textContent=br(partesB,2);
+  document.getElementById("labelPartesA").textContent="Partes de "+nomeA;
+  document.getElementById("labelPartesB").textContent="Partes de "+nomeB;
+
+  document.getElementById("resultado").innerHTML=`<h3>Resultado principal</h3>
+  <div class="result-main">${nomeA} = ${br(pctA_final,2)}% | ${nomeB} = ${br(pctB_final,2)}%</div>
+  <div class="calc-box">Pré-fixados = ${br(totalPref,2)}% da fórmula
+Restante para o Quadrado de Pearson = ${br(restante,2)}%
+
+Contribuição dos pré-fixados no nutriente = ${br(contribPref,3)} ${nut.unidade}
+Meta final desejada = ${br(meta,2)} ${nut.unidade}
+Meta corrigida para os ${br(restante,2)}% restantes = ${br(metaCorrigida,2)} ${nut.unidade}
 
 Partes de ${nomeA} = |${br(teorB,2)} − ${br(metaCorrigida,2)}| = ${br(partesA,2)}
 Partes de ${nomeB} = |${br(metaCorrigida,2)} − ${br(teorA,2)}| = ${br(partesB,2)}
 Total de partes = ${br(totalPartes,2)}
 
-Dentro dos ${br(restante,2)}% restantes:
-${nomeA} = ${br(pctAdentro,2)}% da parte variável → ${br(pctAfinal,2)}% da fórmula final
-${nomeB} = ${br(pctBdentro,2)}% da parte variável → ${br(pctBfinal,2)}% da fórmula final
+Dentro da fração restante:
+${nomeA} = ${br(pctA_noRestante,2)}%
+${nomeB} = ${br(pctB_noRestante,2)}%
 
-Teor final calculado = ${br(teorFinalSoma,2)}% de ${nutriente}</div>
+Na fórmula final:
+${nomeA} = ${br(pctA_final,2)}% = ${br(kgA,2)} kg
+${nomeB} = ${br(pctB_final,2)}% = ${br(kgB,2)} kg
+
+Teor final calculado = ${br(teorFinal,2)} ${nut.unidade}</div>
   <div class="status good">Mistura válida: a meta corrigida está entre os teores dos dois ingredientes variáveis.</div>`;
-  document.getElementById('kpiFixos').textContent=br(somaFixos,2)+'%';
-  document.getElementById('kpiRestante').textContent=br(restante,2)+'%';
-  document.getElementById('custoTotal').textContent='R$ '+br(custoTotal,2);
-  document.getElementById('custoKg').textContent='R$ '+br(custoKg,3);
-  linhas.push(`<tr><td>${nomeA}</td><td>Calculado pelo Pearson</td><td>${br(teorA,2)}%</td><td>${br(pctAfinal,2)}%</td><td>${br(kgA,2)} kg</td><td>${br(contribA,3)} ponto percentual</td><td>R$ ${br(custoTotalA,2)}</td></tr>`);
-  linhas.push(`<tr><td>${nomeB}</td><td>Calculado pelo Pearson</td><td>${br(teorB,2)}%</td><td>${br(pctBfinal,2)}%</td><td>${br(kgB,2)} kg</td><td>${br(contribB,3)} ponto percentual</td><td>R$ ${br(custoTotalB,2)}</td></tr>`);
-  linhas.push(`<tr><td><b>Total</b></td><td>-</td><td><b>${br(teorFinalSoma,2)}%</b></td><td><b>${br(somaFixos+pctAfinal+pctBfinal,2)}%</b></td><td><b>${br(kgFixos+kgA+kgB,2)} kg</b></td><td><b>${br(teorFinalSoma,3)} ponto percentual</b></td><td><b>R$ ${br(custoTotal,2)}</b></td></tr>`);
-  document.getElementById('tabelaResultado').innerHTML=linhas.join('');
+
+  document.getElementById("kpiNomeA").textContent=nomeA;
+  document.getElementById("kpiNomeB").textContent=nomeB;
+  document.getElementById("kgA").textContent=br(kgA,2)+" kg";
+  document.getElementById("kgB").textContent=br(kgB,2)+" kg";
+  document.getElementById("custoTotal").textContent="R$ "+br(custoTotal,2);
+  document.getElementById("custoKg").textContent="R$ "+br(custoKg,3);
+
+  document.getElementById("barNomeA").textContent=nomeA+" na fórmula final";
+  document.getElementById("barNomeB").textContent=nomeB+" na fórmula final";
+  document.getElementById("barPctA").textContent=br(pctA_final,2)+"%";
+  document.getElementById("barPctB").textContent=br(pctB_final,2)+"%";
+  document.getElementById("barA").style.width=Math.max(0,Math.min(100,pctA_final))+"%";
+  document.getElementById("barB").style.width=Math.max(0,Math.min(100,pctB_final))+"%";
+
+  const linhas = [
+    ...prefCalcs.map(r=>`<tr><td><strong>${r.nome}</strong></td><td>Pré-fixado</td><td>${br(r.teor,2)} ${nut.unidade}</td><td>${br(r.pct,2)}%</td><td>${br(r.kg,2)} kg</td><td>R$ ${br(r.custoTotal,2)}</td></tr>`),
+    `<tr><td><strong>${nomeA}</strong></td><td>Variável pelo Pearson</td><td>${br(teorA,2)} ${nut.unidade}</td><td>${br(pctA_final,2)}%</td><td>${br(kgA,2)} kg</td><td>R$ ${br(custoTotalA,2)}</td></tr>`,
+    `<tr><td><strong>${nomeB}</strong></td><td>Variável pelo Pearson</td><td>${br(teorB,2)} ${nut.unidade}</td><td>${br(pctB_final,2)}%</td><td>${br(kgB,2)} kg</td><td>R$ ${br(custoTotalB,2)}</td></tr>`,
+    `<tr><td><strong>Total</strong></td><td>—</td><td>${br(teorFinal,2)} ${nut.unidade}</td><td>100,00%</td><td>${br(quantidade,2)} kg</td><td>R$ ${br(custoTotal,2)}</td></tr>`
+  ];
+  document.getElementById("tabelaResultado").innerHTML=linhas.join("");
 }
+
+function atualizarResumoPrefs(totalPref, restante, contribPref, metaCorrigida, nut){
+  const box=document.getElementById("prefResumo");
+  if(prefRows.length===0){
+    box.innerHTML="<strong>Sem pré-fixados:</strong> o Quadrado de Pearson calculará 100% da mistura usando apenas os dois ingredientes variáveis.";
+    return;
+  }
+  const classe = totalPref>=100 ? "bad" : "warning";
+  box.className=classe;
+  box.innerHTML=`<strong>Resumo dos pré-fixados:</strong> eles ocupam ${br(totalPref,2)}% da fórmula. Restam ${br(restante,2)}% para os dois ingredientes variáveis. A contribuição dos pré-fixados para o nutriente é ${br(contribPref,3)} ${nut.unidade}; por isso, a meta corrigida para a fração restante é ${br(metaCorrigida,2)} ${nut.unidade}.`;
+}
+
+function atualizarVisualBasico(nomeA,nomeB,teorA,teorB,metaCorrigida,nutLabel){
+  document.getElementById("labelA").textContent=nomeA;
+  document.getElementById("labelB").textContent=nomeB;
+  document.getElementById("visualA").textContent=br(teorA,2);
+  document.getElementById("visualB").textContent=br(teorB,2);
+  document.getElementById("visualMetaCorr").textContent=br(metaCorrigida,2);
+  document.getElementById("visualNutriente").textContent=nutLabel;
+}
+
+function mostrarErro(msg){
+  document.getElementById("resultado").innerHTML=`<h3>Resultado principal</h3><div class="result-main">Não foi possível calcular</div><div class="calc-box">${msg}
+
+Condições do método:
+1. A soma dos pré-fixados deve ser menor que 100%.
+2. A meta corrigida deve ficar entre o teor do ingrediente A e o teor do ingrediente B.
+3. Os dois ingredientes variáveis precisam ter teores diferentes.</div><div class="status bad">Revise os dados de entrada.</div>`;
+}
+
 function carregarExemplo(tipo){
-  if(tipo==='simples'){
-    document.getElementById('usarFixos').checked=false;
-    document.getElementById('nutriente').value='Proteína Bruta';
-    document.getElementById('quantidade').value=100;
-    document.getElementById('meta').value=18;
-    document.getElementById('nomeA').value='Milho';document.getElementById('teorA').value=8.5;document.getElementById('custoA').value=1.50;
-    document.getElementById('nomeB').value='Farelo de soja';document.getElementById('teorB').value=45;document.getElementById('custoB').value=2.80;
+  if(tipo==="premix"){
+    document.getElementById("nutriente").value="pb";
+    document.getElementById("meta").value=18;
+    document.getElementById("quantidade").value=100;
+    document.getElementById("selectA").value="Milho moído";
+    document.getElementById("selectB").value="Farelo de soja 45%";
+    aplicarAlimento("A", false);
+    aplicarAlimento("B", false);
+    prefRows=[];
+    adicionarPref("Premix vitamínico-mineral",3,false);
+    adicionarPref("Farelo de trigo",10,false);
+    renderPrefs();
   }
-  if(tipo==='fixos'){
-    document.getElementById('usarFixos').checked=true;
-    document.getElementById('nutriente').value='Proteína Bruta';
-    document.getElementById('quantidade').value=100;
-    document.getElementById('meta').value=18;
-    document.getElementById('nomeA').value='Milho';document.getElementById('teorA').value=8.5;document.getElementById('custoA').value=1.50;
-    document.getElementById('nomeB').value='Farelo de soja';document.getElementById('teorB').value=45;document.getElementById('custoB').value=2.80;
-    fixos=[{nome:'Premix vitamínico-mineral',pct:3,teor:0,custo:8.00},{nome:'Farelo de trigo',pct:10,teor:15,custo:1.40}];
-    renderFixos();
+  if(tipo==="simples"){
+    document.getElementById("nutriente").value="pb";
+    document.getElementById("meta").value=18;
+    document.getElementById("quantidade").value=100;
+    document.getElementById("selectA").value="Milho moído";
+    document.getElementById("selectB").value="Farelo de soja 45%";
+    aplicarAlimento("A", false);
+    aplicarAlimento("B", false);
+    prefRows=[];
+    renderPrefs();
   }
-  calcularPearson();
 }
-['nutriente','quantidade','meta','nomeA','teorA','nomeB','teorB','custoA','custoB'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',calcularPearson);
-  document.getElementById(id).addEventListener('change',calcularPearson);
-});
-renderFixos();calcularPearson();
+
+setup();
 </script>
 </body>
 </html>
