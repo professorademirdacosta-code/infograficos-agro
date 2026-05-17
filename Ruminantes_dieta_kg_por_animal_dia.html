@@ -418,6 +418,67 @@ tr:last-child td{border-bottom:0}
   .kpi strong{font-size:1.1rem}
   table{min-width:760px}
 }
+
+.live-summary{
+  position:sticky;
+  top:64px;
+  z-index:8;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:12px;
+  box-shadow:0 12px 28px rgba(24,50,34,.10);
+  backdrop-filter:blur(6px);
+}
+.live-item{
+  background:#f7fbf6;
+  border:1px solid #d8e7d7;
+  border-radius:16px;
+  padding:10px;
+  text-align:center;
+}
+.live-item span{
+  display:block;
+  font-size:.76rem;
+  font-weight:850;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+.live-item strong{
+  display:block;
+  font-size:1.02rem;
+  color:var(--dark);
+}
+.auto-note{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--green);
+  font-weight:900;
+  font-size:.9rem;
+  margin-top:10px;
+}
+@media(max-width:900px){
+  .live-summary{
+    position:static;
+    grid-template-columns:repeat(2,1fr);
+  }
+  .live-item:last-child{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:560px){
+  .live-summary{
+    grid-template-columns:1fr;
+  }
+  .live-item:last-child{
+    grid-column:auto;
+  }
+}
+
 @media print{
   body{background:#fff}
   .nav,.btn-row,.remove{display:none!important}
@@ -539,11 +600,20 @@ tr:last-child td{border-bottom:0}
           <strong>Importante:</strong> os teores são valores médios para uso didático. Silagens e volumosos variam muito conforme ponto de corte, conservação, solo, adubação e manejo.
         </div>
 
+        <div class="live-summary" id="resumoRapido">
+          <div class="live-item"><span>MN/animal/dia</span><strong id="quickMN">-</strong></div>
+          <div class="live-item"><span>MS/animal/dia</span><strong id="quickMS">-</strong></div>
+          <div class="live-item"><span>PB na MS</span><strong id="quickPB">-</strong></div>
+          <div class="live-item"><span>NDT na MS</span><strong id="quickNDT">-</strong></div>
+          <div class="live-item"><span>Custo/animal/dia</span><strong id="quickCusto">-</strong></div>
+        </div>
+        <div class="auto-note">✓ Cálculo atualizado automaticamente ao alterar qualquer valor. Para ver o detalhamento completo, role até “Resultados”.</div>
+
         <div id="listaAlimentos"></div>
 
         <div class="btn-row">
           <button class="primary" onclick="adicionarLinha()">+ adicionar alimento</button>
-          <button class="secondary" onclick="calcular()">Recalcular dieta</button>
+          <button class="secondary" onclick="calcular()">Atualizar / conferir cálculo</button>
           <button class="secondary" onclick="imprimir()">Salvar em PDF / imprimir</button>
         </div>
       </div>
@@ -858,6 +928,15 @@ function calcular(){
   document.getElementById("outPB").textContent = br(pbPct,2)+"%";
   document.getElementById("outNDT").textContent = br(ndtPct,2)+"%";
   document.getElementById("outCusto").textContent = "R$ "+br(totalCusto,2);
+
+  const quickMN = document.getElementById("quickMN");
+  if(quickMN){
+    document.getElementById("quickMN").textContent = br(totalMN,2)+" kg";
+    document.getElementById("quickMS").textContent = br(totalMS,2)+" kg";
+    document.getElementById("quickPB").textContent = br(pbPct,2)+"%";
+    document.getElementById("quickNDT").textContent = br(ndtPct,2)+"%";
+    document.getElementById("quickCusto").textContent = "R$ "+br(totalCusto,2);
+  }
 
   setKpi("kpiConsumo", totalMS>=msEsperada*0.9 && totalMS<=msEsperada*1.1 ? "good" : "warn");
   setKpi("kpiPB", Math.abs(pbPct-metaPB)<=1 ? "good" : (pbPct<metaPB ? "bad" : "warn"));
