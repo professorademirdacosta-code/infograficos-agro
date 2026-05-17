@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruminantes — Dieta em kg por animal/dia</title>
+<style>
+:root{
+  --bg:#eef3ed;
+  --paper:#ffffff;
+  --ink:#1f2b24;
+  --muted:#66756c;
+  --line:#dce7dc;
+  --green:#2f6f46;
+  --green2:#4f8f63;
+  --dark:#183222;
+  --soft:#f3f8f2;
+  --amber:#f6a13a;
+  --amberSoft:#fff3df;
+  --blue:#2c5d86;
+  --red:#b84a4a;
+  --shadow:0 18px 45px rgba(24,50,34,.12);
+  --shadow2:0 10px 25px rgba(24,50,34,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:var(--ink);}
+body{line-height:1.45}
+.app{
+  width:min(1500px,100%);
+  margin:0 auto;
+  background:linear-gradient(180deg,#fff,#f8fbf7);
+  min-height:100vh;
+}
+.hero{
+  background:
+    radial-gradient(circle at 12% 12%,rgba(246,161,58,.18),transparent 28%),
+    linear-gradient(120deg,#173321,#315f40);
+  color:#fff;
+  padding:28px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  right:-120px;
+  top:-100px;
+  width:340px;
+  height:340px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:24px;
+  align-items:center;
+  position:relative;
+  z-index:1;
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border-radius:999px;
+  padding:8px 13px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.22);
+  color:#f2fff5;
+  font-weight:800;
+  font-size:.9rem;
+}
+h1{
+  font-size:clamp(2rem,4vw,4rem);
+  line-height:1.02;
+  margin:14px 0 10px;
+  letter-spacing:-.04em;
+}
+.subtitle{
+  font-size:clamp(1.02rem,1.5vw,1.28rem);
+  color:#ffe3b7;
+  font-weight:800;
+  margin:0 0 12px;
+}
+.lead{
+  color:#e1efe5;
+  max-width:78ch;
+  margin:0;
+  font-size:1.02rem;
+}
+.hero-card{
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:26px;
+  padding:18px;
+  box-shadow:0 18px 36px rgba(0,0,0,.15);
+}
+.hero-card h3{margin:0 0 8px;color:#fff}
+.hero-list{display:grid;gap:8px;margin-top:10px}
+.hero-item{
+  display:flex;
+  gap:10px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  padding:10px;
+  color:#f1fff4;
+  font-weight:700;
+}
+.nav{
+  display:flex;
+  gap:8px;
+  padding:12px 18px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:10;
+  overflow-x:auto;
+}
+.nav button{
+  border:1px solid var(--line);
+  background:#f7faf6;
+  color:var(--dark);
+  border-radius:999px;
+  padding:10px 13px;
+  cursor:pointer;
+  font-weight:800;
+  white-space:nowrap;
+}
+.nav button.active{
+  background:var(--green);
+  color:#fff;
+  border-color:var(--green);
+}
+.main{
+  padding:22px;
+  display:grid;
+  gap:20px;
+}
+.section{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow:var(--shadow2);
+  overflow:hidden;
+}
+.section-head{
+  padding:20px 22px;
+  background:linear-gradient(180deg,#fff,#f5faf4);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+}
+.tag{
+  display:inline-flex;
+  background:#eaf5ec;
+  color:var(--green);
+  border:1px solid #cfe5d3;
+  font-weight:900;
+  font-size:.78rem;
+  border-radius:999px;
+  padding:6px 10px;
+  margin-bottom:8px;
+}
+.section-head h2{
+  margin:0 0 5px;
+  color:var(--dark);
+  font-size:1.45rem;
+}
+.section-head p{
+  margin:0;
+  color:var(--muted);
+  max-width:980px;
+}
+.badge{
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--amberSoft);
+  color:#8b530f;
+  border:1px solid #ffd49d;
+  font-weight:900;
+  font-size:.85rem;
+  white-space:nowrap;
+}
+.section-body{
+  padding:22px;
+  display:grid;
+  gap:18px;
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{
+  background:linear-gradient(180deg,#fff,#f9fcf8);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 8px 18px rgba(24,50,34,.04);
+}
+.card h3,.card h4{margin:0 0 10px;color:var(--dark)}
+.muted{color:var(--muted)}
+.input-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.input-grid.two{grid-template-columns:repeat(2,1fr)}
+.input-grid.four{grid-template-columns:repeat(4,1fr)}
+.field{display:grid;gap:6px}
+label{
+  font-size:.88rem;
+  font-weight:850;
+  color:var(--dark);
+}
+input,select{
+  width:100%;
+  border:1px solid #cedbcc;
+  border-radius:14px;
+  padding:11px 12px;
+  min-height:46px;
+  background:#fff;
+  color:var(--ink);
+  font-size:1rem;
+  outline:none;
+}
+input:focus,select:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 4px rgba(47,111,70,.14);
+}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+button{
+  border:0;
+  border-radius:14px;
+  padding:12px 15px;
+  font-size:.96rem;
+  font-weight:900;
+  cursor:pointer;
+}
+.primary{
+  background:linear-gradient(180deg,var(--green2),var(--green));
+  color:#fff;
+  box-shadow:0 12px 24px rgba(47,111,70,.22);
+}
+.secondary{
+  color:var(--green);
+  background:#eef7ef;
+  border:1px solid #cfe5d3;
+}
+.danger{
+  color:#9b3030;
+  background:#fff0f0;
+  border:1px solid #f2c4c4;
+}
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.kpi{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:15px;
+  text-align:center;
+}
+.kpi span{
+  display:block;
+  color:var(--muted);
+  font-weight:800;
+  font-size:.82rem;
+  margin-bottom:6px;
+}
+.kpi strong{
+  display:block;
+  color:var(--dark);
+  font-size:1.25rem;
+}
+.kpi.good strong{color:var(--green)}
+.kpi.warn strong{color:#a4660d}
+.kpi.bad strong{color:var(--red)}
+.food-row{
+  display:grid;
+  grid-template-columns:1.35fr .9fr repeat(5,.72fr) 42px;
+  gap:8px;
+  align-items:end;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fbfdfb;
+  margin-bottom:10px;
+}
+.food-row .remove{
+  height:46px;
+  padding:0;
+}
+.small-note{
+  font-size:.85rem;
+  color:var(--muted);
+}
+.warning{
+  background:#fff8ed;
+  border:1px solid #ffd6a4;
+  color:#704c19;
+  border-radius:18px;
+  padding:14px;
+}
+.warning strong{color:#8a4d14}
+.result-panel{
+  background:linear-gradient(180deg,#173321,#315f40);
+  color:#fff;
+  border-radius:26px;
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+.result-panel h3{margin:0 0 10px;color:#fff}
+.result-main{
+  color:#ffe0ad;
+  font-weight:1000;
+  font-size:clamp(1.45rem,3vw,2.4rem);
+  letter-spacing:-.03em;
+  margin-bottom:10px;
+}
+.calc-box{
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  padding:14px;
+  color:#f2fff5;
+  white-space:pre-line;
+  font-family:Consolas, "Courier New", monospace;
+  overflow:auto;
+  font-size:.93rem;
+}
+.table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line)}
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  min-width:850px;
+}
+th,td{
+  padding:11px;
+  border-bottom:1px solid #e8efe7;
+  text-align:left;
+  vertical-align:top;
+  font-size:.93rem;
+}
+th{
+  background:#f2f8f1;
+  color:var(--dark);
+}
+tr:last-child td{border-bottom:0}
+.barbox{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:14px;
+}
+.bar-title{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--dark);
+  font-weight:900;
+  margin-bottom:8px;
+}
+.bar{
+  height:18px;
+  border-radius:999px;
+  background:#e4eee3;
+  overflow:hidden;
+}
+.fill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--green2),var(--amber));
+  transition:width .5s ease;
+}
+.summary{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:18px;
+}
+.check-list{display:grid;gap:10px}
+.check{
+  display:flex;
+  gap:10px;
+  padding:12px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:#fbfdfb;
+}
+.check b{color:var(--green)}
+.footer{
+  padding:0 22px 26px;
+  color:var(--muted);
+  font-size:.88rem;
+}
+@media(max-width:1050px){
+  .hero-grid,.grid-2,.summary{grid-template-columns:1fr}
+  .grid-4,.kpis{grid-template-columns:repeat(2,1fr)}
+  .food-row{
+    grid-template-columns:1fr 1fr;
+  }
+  .food-row .remove{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .hero{padding:18px}
+  .main{padding:14px}
+  .section,.card,.result-panel{border-radius:20px}
+  .section-head{padding:16px;display:block}
+  .section-body{padding:16px}
+  .badge{display:inline-flex;margin-top:10px}
+  .grid-3,.grid-4,.kpis,.input-grid,.input-grid.two,.input-grid.four{grid-template-columns:1fr}
+  .food-row{grid-template-columns:1fr;padding:10px}
+  .nav{padding:10px}
+  .nav button{padding:9px 11px;font-size:.88rem}
+  .hero-card{border-radius:20px}
+  .kpi strong{font-size:1.1rem}
+  table{min-width:760px}
+}
+@media print{
+  body{background:#fff}
+  .nav,.btn-row,.remove{display:none!important}
+  .app{width:100%}
+  .section{page-break-inside:avoid;box-shadow:none}
+  .hero{background:#173321!important;color:#fff}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero" id="inicio">
+    <div class="hero-grid">
+      <div>
+        <span class="pill">🐄 Infográfico interativo • Nutrição de Ruminantes</span>
+        <h1>Ruminantes — dieta em kg por animal/dia</h1>
+        <p class="subtitle">Monte dietas com silagem, milho, farelo de soja, mineral e outros alimentos</p>
+        <p class="lead">Esta calculadora trabalha com fornecimento diário por animal. Ela converte matéria natural em matéria seca, estima proteína bruta, NDT/energia, relação volumoso:concentrado, custo diário e quantidade total para o lote.</p>
+      </div>
+      <div class="hero-card">
+        <h3>Ideia central</h3>
+        <div class="hero-list">
+          <div class="hero-item">1. Informe espécie, categoria, peso e número de animais.</div>
+          <div class="hero-item">2. Escolha os alimentos e os kg fornecidos por animal/dia.</div>
+          <div class="hero-item">3. O app calcula MS, PB, energia, custo e relação volumoso:concentrado.</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <button class="active" onclick="irPara('inicio', this)">Início</button>
+    <button onclick="irPara('dados', this)">Dados do lote</button>
+    <button onclick="irPara('alimentos', this)">Alimentos</button>
+    <button onclick="irPara('resultadoSecao', this)">Resultados</button>
+    <button onclick="irPara('interpretacao', this)">Interpretação</button>
+  </nav>
+
+  <main class="main">
+    <section class="section" id="dados">
+      <div class="section-head">
+        <div>
+          <span class="tag">DADOS DO LOTE</span>
+          <h2>Defina o animal, a meta e o consumo esperado</h2>
+          <p>Use estes campos para contextualizar a dieta. O consumo de matéria seca pode ser estimado como percentual do peso vivo ou informado manualmente.</p>
+        </div>
+        <span class="badge">kg/animal/dia</span>
+      </div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="card">
+            <h3>Informações gerais</h3>
+            <div class="input-grid two">
+              <div class="field">
+                <label>Espécie</label>
+                <select id="especie" onchange="atualizarCategorias(); calcular()">
+                  <option value="bovinos">Bovinos</option>
+                  <option value="ovinos">Ovinos</option>
+                  <option value="caprinos">Caprinos</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Categoria</label>
+                <select id="categoria" onchange="aplicarCategoria(); calcular()"></select>
+              </div>
+              <div class="field">
+                <label>Número de animais</label>
+                <input id="numAnimais" type="number" value="20" step="1" oninput="calcular()">
+              </div>
+              <div class="field">
+                <label>Peso vivo médio (kg)</label>
+                <input id="pesoVivo" type="number" value="450" step="1" oninput="calcular()">
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="secondary" onclick="carregarExemplo('leite')">Exemplo vaca leiteira</button>
+              <button class="secondary" onclick="carregarExemplo('corte')">Exemplo corte</button>
+              <button class="secondary" onclick="carregarExemplo('ovinos')">Exemplo ovinos</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Metas didáticas</h3>
+            <div class="input-grid two">
+              <div class="field">
+                <label>Consumo estimado de MS (% do PV)</label>
+                <input id="consumoPctPV" type="number" value="2.5" step="0.1" oninput="calcular()">
+              </div>
+              <div class="field">
+                <label>Meta de PB na dieta (% da MS)</label>
+                <input id="metaPB" type="number" value="13" step="0.1" oninput="calcular()">
+              </div>
+              <div class="field">
+                <label>Meta de NDT/energia (% da MS)</label>
+                <input id="metaNDT" type="number" value="65" step="0.1" oninput="calcular()">
+              </div>
+              <div class="field">
+                <label>Máximo de concentrado (% da MS)</label>
+                <input id="maxConcentrado" type="number" value="50" step="1" oninput="calcular()">
+              </div>
+            </div>
+            <p class="small-note">As metas são didáticas e editáveis. Para formulação final, conferir exigências conforme categoria, produção, fase fisiológica e condição corporal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="alimentos">
+      <div class="section-head">
+        <div>
+          <span class="tag">COMPOSIÇÃO DA DIETA</span>
+          <h2>Informe os alimentos e os kg fornecidos por animal/dia</h2>
+          <p>Escolha um alimento da lista para preencher valores médios. Se tiver análise bromatológica, edite MS, PB, NDT e custo diretamente.</p>
+        </div>
+        <span class="badge">Editável</span>
+      </div>
+      <div class="section-body">
+        <div class="warning">
+          <strong>Importante:</strong> os teores são valores médios para uso didático. Silagens e volumosos variam muito conforme ponto de corte, conservação, solo, adubação e manejo.
+        </div>
+
+        <div id="listaAlimentos"></div>
+
+        <div class="btn-row">
+          <button class="primary" onclick="adicionarLinha()">+ adicionar alimento</button>
+          <button class="secondary" onclick="calcular()">Recalcular dieta</button>
+          <button class="secondary" onclick="imprimir()">Salvar em PDF / imprimir</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="resultadoSecao">
+      <div class="section-head">
+        <div>
+          <span class="tag">RESULTADOS</span>
+          <h2>Resumo nutricional da dieta</h2>
+          <p>O painel mostra o resultado por animal/dia e o total para o lote.</p>
+        </div>
+        <span class="badge">Matéria seca</span>
+      </div>
+      <div class="section-body">
+        <div class="kpis">
+          <div class="kpi" id="kpiConsumo"><span>Consumo MS</span><strong id="outMS">-</strong></div>
+          <div class="kpi" id="kpiPB"><span>PB na MS</span><strong id="outPB">-</strong></div>
+          <div class="kpi" id="kpiNDT"><span>NDT/energia</span><strong id="outNDT">-</strong></div>
+          <div class="kpi" id="kpiCusto"><span>Custo/animal/dia</span><strong id="outCusto">-</strong></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="result-panel">
+            <h3>Resultado principal</h3>
+            <div class="result-main" id="resultadoPrincipal">-</div>
+            <div class="calc-box" id="memoriaCalculo">-</div>
+          </div>
+
+          <div class="card">
+            <h3>Relação volumoso : concentrado</h3>
+            <div class="barbox">
+              <div class="bar-title"><span>Volumoso na MS</span><span id="pctVolumoso">-</span></div>
+              <div class="bar"><div class="fill" id="barVol" style="width:0%"></div></div>
+            </div>
+            <div style="height:12px"></div>
+            <div class="barbox">
+              <div class="bar-title"><span>Concentrado na MS</span><span id="pctConcentrado">-</span></div>
+              <div class="bar"><div class="fill" id="barConc" style="width:0%"></div></div>
+            </div>
+            <div class="warning" style="margin-top:14px" id="alertaConcentrado">-</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Resultado por alimento</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Alimento</th>
+                  <th>Tipo</th>
+                  <th>kg MN/animal/dia</th>
+                  <th>kg MS/animal/dia</th>
+                  <th>PB fornecida</th>
+                  <th>NDT fornecido</th>
+                  <th>Custo/animal/dia</th>
+                  <th>Total para o lote/dia</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaResultado"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="interpretacao">
+      <div class="section-head">
+        <div>
+          <span class="tag">INTERPRETAÇÃO DIDÁTICA</span>
+          <h2>Como usar em aula</h2>
+          <p>Esta seção ajuda o aluno a interpretar se a dieta está coerente antes de pensar em formulação de custo mínimo.</p>
+        </div>
+        <span class="badge">Discussão técnica</span>
+      </div>
+      <div class="section-body">
+        <div class="summary">
+          <div class="card">
+            <h3>Checklist de discussão</h3>
+            <div class="check-list" id="checklist">
+              <div class="check"><b>•</b><span>Preencha a dieta para gerar as verificações.</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Diferença em relação a aves e suínos</h3>
+            <p class="muted">Em monogástricos, a formulação costuma ser expressa como porcentagem da ração completa. Em ruminantes, é muito comum trabalhar com kg por animal por dia, separando volumosos, concentrados e suplementos. Por isso, a matéria seca é o ponto central da interpretação.</p>
+            <div class="warning" style="margin-top:12px">
+              O Quadrado de Pearson ainda pode ser usado para formular o concentrado, mas a dieta total precisa considerar a silagem, o feno, a pastagem e os suplementos já fornecidos.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">
+    Infográfico HTML, CSS e JavaScript • Ruminantes — dieta em kg/animal/dia • Valores médios editáveis • Uso didático.
+  </div>
+</div>
+
+<script>
+const categorias = {
+  bovinos:[
+    {nome:"Vaca leiteira em lactação", peso:550, cms:3.2, pb:16, ndt:68, maxConc:60},
+    {nome:"Vaca seca / gestante", peso:500, cms:2.0, pb:11, ndt:58, maxConc:35},
+    {nome:"Boi em terminação", peso:450, cms:2.5, pb:13, ndt:70, maxConc:70},
+    {nome:"Novilha recria", peso:300, cms:2.4, pb:12, ndt:62, maxConc:45},
+    {nome:"Bezerro desmamado", peso:180, cms:2.7, pb:15, ndt:68, maxConc:55}
+  ],
+  ovinos:[
+    {nome:"Ovelha manutenção", peso:55, cms:2.4, pb:10, ndt:58, maxConc:35},
+    {nome:"Ovelha lactação", peso:60, cms:3.5, pb:15, ndt:65, maxConc:50},
+    {nome:"Cordeiro terminação", peso:35, cms:3.3, pb:16, ndt:70, maxConc:65}
+  ],
+  caprinos:[
+    {nome:"Cabra manutenção", peso:45, cms:2.6, pb:10, ndt:58, maxConc:35},
+    {nome:"Cabra leiteira", peso:55, cms:4.0, pb:15, ndt:66, maxConc:55},
+    {nome:"Cabrito crescimento", peso:25, cms:3.5, pb:16, ndt:68, maxConc:60}
+  ]
+};
+
+const banco = [
+  {nome:"Silagem de milho", tipo:"Volumoso", ms:32, pb:7, ndt:65, custo:0.28},
+  {nome:"Silagem de sorgo", tipo:"Volumoso", ms:30, pb:6.5, ndt:60, custo:0.24},
+  {nome:"Cana-de-açúcar picada", tipo:"Volumoso", ms:28, pb:3, ndt:58, custo:0.20},
+  {nome:"Capim elefante verde", tipo:"Volumoso", ms:22, pb:8, ndt:55, custo:0.12},
+  {nome:"Feno de tifton", tipo:"Volumoso", ms:88, pb:10, ndt:55, custo:1.10},
+  {nome:"Pré-secado", tipo:"Volumoso", ms:45, pb:12, ndt:58, custo:0.65},
+  {nome:"Milho moído", tipo:"Concentrado energético", ms:88, pb:9, ndt:88, custo:1.35},
+  {nome:"Farelo de soja", tipo:"Concentrado proteico", ms:89, pb:45, ndt:78, custo:2.70},
+  {nome:"Farelo de trigo", tipo:"Concentrado", ms:88, pb:16, ndt:70, custo:1.20},
+  {nome:"Polpa cítrica", tipo:"Concentrado energético", ms:90, pb:7, ndt:78, custo:1.30},
+  {nome:"Casca de soja", tipo:"Concentrado fibroso", ms:90, pb:12, ndt:72, custo:1.45},
+  {nome:"Caroço de algodão", tipo:"Concentrado proteico/energético", ms:92, pb:23, ndt:88, custo:2.00},
+  {nome:"Ureia pecuária", tipo:"Suplemento nitrogenado", ms:99, pb:281, ndt:0, custo:4.50},
+  {nome:"Núcleo mineral", tipo:"Suplemento mineral", ms:95, pb:0, ndt:0, custo:3.50},
+  {nome:"Sal mineral", tipo:"Suplemento mineral", ms:95, pb:0, ndt:0, custo:2.20},
+  {nome:"Óleo vegetal", tipo:"Suplemento energético", ms:100, pb:0, ndt:180, custo:5.50},
+  {nome:"Outro alimento", tipo:"Editar", ms:88, pb:10, ndt:60, custo:1.00}
+];
+
+let linhas = [];
+
+function br(n,d=2){
+  if(!isFinite(n)) return "-";
+  return Number(n).toFixed(d).replace(".",",");
+}
+function valor(id){
+  const el = document.getElementById(id);
+  const n = parseFloat(String(el.value).replace(",","."));
+  return isNaN(n) ? 0 : n;
+}
+function irPara(id, btn){
+  document.getElementById(id).scrollIntoView({behavior:"smooth", block:"start"});
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+function atualizarCategorias(){
+  const esp = document.getElementById("especie").value;
+  const sel = document.getElementById("categoria");
+  sel.innerHTML = "";
+  categorias[esp].forEach((c,i)=>{
+    const op = document.createElement("option");
+    op.value = i;
+    op.textContent = c.nome;
+    sel.appendChild(op);
+  });
+  aplicarCategoria();
+}
+function aplicarCategoria(){
+  const esp = document.getElementById("especie").value;
+  const idx = Number(document.getElementById("categoria").value) || 0;
+  const c = categorias[esp][idx];
+  document.getElementById("pesoVivo").value = c.peso;
+  document.getElementById("consumoPctPV").value = c.cms;
+  document.getElementById("metaPB").value = c.pb;
+  document.getElementById("metaNDT").value = c.ndt;
+  document.getElementById("maxConcentrado").value = c.maxConc;
+}
+function alimentoOptions(selected){
+  return banco.map((a,i)=>`<option value="${i}" ${i===selected?"selected":""}>${a.nome}</option>`).join("");
+}
+function adicionarLinha(alimentoIndex=0, kg=1){
+  const a = banco[alimentoIndex];
+  linhas.push({
+    alimentoIndex,
+    nome:a.nome,
+    tipo:a.tipo,
+    kgMN:kg,
+    ms:a.ms,
+    pb:a.pb,
+    ndt:a.ndt,
+    custo:a.custo
+  });
+  renderLinhas();
+  calcular();
+}
+function removerLinha(i){
+  linhas.splice(i,1);
+  renderLinhas();
+  calcular();
+}
+function selecionarAlimento(i, idx){
+  const a = banco[Number(idx)];
+  linhas[i].alimentoIndex = Number(idx);
+  linhas[i].nome = a.nome;
+  linhas[i].tipo = a.tipo;
+  linhas[i].ms = a.ms;
+  linhas[i].pb = a.pb;
+  linhas[i].ndt = a.ndt;
+  linhas[i].custo = a.custo;
+  renderLinhas();
+  calcular();
+}
+function atualizarLinha(i, campo, val){
+  let v = campo==="tipo" || campo==="nome" ? val : parseFloat(String(val).replace(",","."));
+  if(typeof v === "number" && isNaN(v)) v = 0;
+  linhas[i][campo] = v;
+  calcular();
+}
+function renderLinhas(){
+  const box = document.getElementById("listaAlimentos");
+  box.innerHTML = "";
+  linhas.forEach((l,i)=>{
+    const div = document.createElement("div");
+    div.className = "food-row";
+    div.innerHTML = `
+      <div class="field">
+        <label>Alimento</label>
+        <select onchange="selecionarAlimento(${i}, this.value)">${alimentoOptions(l.alimentoIndex)}</select>
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select onchange="atualizarLinha(${i}, 'tipo', this.value)">
+          ${["Volumoso","Concentrado energético","Concentrado proteico","Concentrado","Concentrado fibroso","Suplemento mineral","Suplemento nitrogenado","Suplemento energético","Editar"].map(t=>`<option ${l.tipo===t?"selected":""}>${t}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field">
+        <label>kg MN/dia</label>
+        <input type="number" step="0.01" value="${l.kgMN}" oninput="atualizarLinha(${i}, 'kgMN', this.value)">
+      </div>
+      <div class="field">
+        <label>MS %</label>
+        <input type="number" step="0.1" value="${l.ms}" oninput="atualizarLinha(${i}, 'ms', this.value)">
+      </div>
+      <div class="field">
+        <label>PB % MS</label>
+        <input type="number" step="0.1" value="${l.pb}" oninput="atualizarLinha(${i}, 'pb', this.value)">
+      </div>
+      <div class="field">
+        <label>NDT % MS</label>
+        <input type="number" step="0.1" value="${l.ndt}" oninput="atualizarLinha(${i}, 'ndt', this.value)">
+      </div>
+      <div class="field">
+        <label>R$/kg MN</label>
+        <input type="number" step="0.01" value="${l.custo}" oninput="atualizarLinha(${i}, 'custo', this.value)">
+      </div>
+      <button class="danger remove" onclick="removerLinha(${i})">×</button>
+    `;
+    box.appendChild(div);
+  });
+}
+function tipoEhVolumoso(tipo){
+  return String(tipo).toLowerCase().includes("volumoso");
+}
+function tipoEhConcentrado(tipo){
+  const t = String(tipo).toLowerCase();
+  return t.includes("concentrado") || t.includes("suplemento");
+}
+function setKpi(id, status){
+  const el = document.getElementById(id);
+  el.classList.remove("good","warn","bad");
+  if(status) el.classList.add(status);
+}
+function calcular(){
+  const num = valor("numAnimais");
+  const peso = valor("pesoVivo");
+  const consumoPct = valor("consumoPctPV");
+  const metaPB = valor("metaPB");
+  const metaNDT = valor("metaNDT");
+  const maxConc = valor("maxConcentrado");
+  const msEsperada = peso * consumoPct / 100;
+
+  let totalMN=0, totalMS=0, totalPBkg=0, totalNDTkg=0, totalCusto=0, msVol=0, msConc=0;
+
+  const rows = linhas.map(l=>{
+    const kgMN = Number(l.kgMN)||0;
+    const kgMS = kgMN * (Number(l.ms)||0) / 100;
+    const pbKg = kgMS * (Number(l.pb)||0) / 100;
+    const ndtKg = kgMS * (Number(l.ndt)||0) / 100;
+    const custo = kgMN * (Number(l.custo)||0);
+    totalMN += kgMN;
+    totalMS += kgMS;
+    totalPBkg += pbKg;
+    totalNDTkg += ndtKg;
+    totalCusto += custo;
+    if(tipoEhVolumoso(l.tipo)) msVol += kgMS;
+    else if(tipoEhConcentrado(l.tipo)) msConc += kgMS;
+    return {l,kgMN,kgMS,pbKg,ndtKg,custo};
+  });
+
+  const pbPct = totalMS>0 ? totalPBkg/totalMS*100 : 0;
+  const ndtPct = totalMS>0 ? totalNDTkg/totalMS*100 : 0;
+  const pctVol = totalMS>0 ? msVol/totalMS*100 : 0;
+  const pctConc = totalMS>0 ? msConc/totalMS*100 : 0;
+  const custoLote = totalCusto * num;
+  const mnLote = totalMN * num;
+  const msLote = totalMS * num;
+
+  document.getElementById("outMS").textContent = br(totalMS,2)+" kg";
+  document.getElementById("outPB").textContent = br(pbPct,2)+"%";
+  document.getElementById("outNDT").textContent = br(ndtPct,2)+"%";
+  document.getElementById("outCusto").textContent = "R$ "+br(totalCusto,2);
+
+  setKpi("kpiConsumo", totalMS>=msEsperada*0.9 && totalMS<=msEsperada*1.1 ? "good" : "warn");
+  setKpi("kpiPB", Math.abs(pbPct-metaPB)<=1 ? "good" : (pbPct<metaPB ? "bad" : "warn"));
+  setKpi("kpiNDT", Math.abs(ndtPct-metaNDT)<=3 ? "good" : (ndtPct<metaNDT ? "bad" : "warn"));
+  setKpi("kpiCusto", "good");
+
+  document.getElementById("resultadoPrincipal").textContent =
+    `${br(totalMN,2)} kg MN e ${br(totalMS,2)} kg MS por animal/dia`;
+
+  document.getElementById("memoriaCalculo").textContent =
+`Consumo esperado de MS = Peso vivo × %PV
+Consumo esperado = ${br(peso,2)} × ${br(consumoPct,2)}% = ${br(msEsperada,2)} kg MS/dia
+
+Dieta informada:
+Matéria natural total = ${br(totalMN,2)} kg/animal/dia
+Matéria seca total = ${br(totalMS,2)} kg/animal/dia
+Proteína bruta fornecida = ${br(totalPBkg,3)} kg PB/dia
+PB na dieta = ${br(pbPct,2)}% da MS
+NDT/energia estimada = ${br(ndtPct,2)}% da MS
+
+Para ${br(num,0)} animais:
+Matéria natural total = ${br(mnLote,2)} kg/dia
+Matéria seca total = ${br(msLote,2)} kg/dia
+Custo estimado do lote = R$ ${br(custoLote,2)} por dia`;
+
+  document.getElementById("pctVolumoso").textContent = br(pctVol,1)+"%";
+  document.getElementById("pctConcentrado").textContent = br(pctConc,1)+"%";
+  document.getElementById("barVol").style.width = Math.min(100,pctVol)+"%";
+  document.getElementById("barConc").style.width = Math.min(100,pctConc)+"%";
+
+  let alerta = "";
+  if(pctConc > maxConc){
+    alerta = `<strong>Atenção:</strong> o concentrado representa ${br(pctConc,1)}% da MS, acima do limite didático informado de ${br(maxConc,1)}%. Avalie risco de acidose, fibra efetiva e adaptação.`;
+  } else {
+    alerta = `<strong>Relação dentro da meta informada:</strong> concentrado em ${br(pctConc,1)}% da MS, abaixo do limite didático de ${br(maxConc,1)}%.`;
+  }
+  document.getElementById("alertaConcentrado").innerHTML = alerta;
+
+  document.getElementById("tabelaResultado").innerHTML = rows.map(r=>`
+    <tr>
+      <td><b>${r.l.nome}</b></td>
+      <td>${r.l.tipo}</td>
+      <td>${br(r.kgMN,2)} kg</td>
+      <td>${br(r.kgMS,2)} kg</td>
+      <td>${br(r.pbKg,3)} kg</td>
+      <td>${br(r.ndtKg,3)} kg</td>
+      <td>R$ ${br(r.custo,2)}</td>
+      <td>${br(r.kgMN*num,2)} kg MN</td>
+    </tr>
+  `).join("");
+
+  gerarChecklist(msEsperada,totalMS,pbPct,metaPB,ndtPct,metaNDT,pctConc,maxConc,totalCusto);
+}
+function gerarChecklist(msEsp,totalMS,pb,metaPB,ndt,metaNDT,pctConc,maxConc,custo){
+  const itens = [];
+  const difMS = totalMS - msEsp;
+  if(Math.abs(difMS) <= msEsp*0.1){
+    itens.push(["✓","Consumo de matéria seca próximo ao esperado para o peso e categoria informados."]);
+  } else if(difMS < 0){
+    itens.push(["!","A dieta está abaixo do consumo de MS estimado. Pode faltar alimento ou a estimativa de consumo precisa ser ajustada."]);
+  } else {
+    itens.push(["!","A dieta está acima do consumo de MS estimado. Verifique se o animal realmente consumiria essa quantidade."]);
+  }
+
+  if(pb < metaPB){
+    itens.push(["!","Proteína bruta abaixo da meta. Avalie aumentar fonte proteica, como farelo de soja, ou rever volumoso."]);
+  } else if(pb > metaPB + 2){
+    itens.push(["!","Proteína bruta acima da meta. Pode haver custo desnecessário ou excesso de nitrogênio."]);
+  } else {
+    itens.push(["✓","Proteína bruta próxima da meta didática."]);
+  }
+
+  if(ndt < metaNDT){
+    itens.push(["!","Energia/NDT abaixo da meta. Avalie fonte energética, qualidade do volumoso e nível de concentrado."]);
+  } else {
+    itens.push(["✓","Energia/NDT atende ou supera a meta informada."]);
+  }
+
+  if(pctConc > maxConc){
+    itens.push(["!","Concentrado acima do limite didático. Em ruminantes, aumentos bruscos podem elevar risco de distúrbios digestivos."]);
+  } else {
+    itens.push(["✓","Proporção de concentrado respeita o limite didático informado."]);
+  }
+
+  itens.push(["R$","Custo estimado por animal/dia: R$ "+br(custo,2)+". Compare com desempenho esperado antes de decidir."]);
+
+  document.getElementById("checklist").innerHTML = itens.map(i=>`
+    <div class="check"><b>${i[0]}</b><span>${i[1]}</span></div>
+  `).join("");
+}
+function carregarExemplo(tipo){
+  linhas = [];
+  if(tipo==="leite"){
+    document.getElementById("especie").value="bovinos";
+    atualizarCategorias();
+    document.getElementById("categoria").value=0;
+    aplicarCategoria();
+    document.getElementById("numAnimais").value=20;
+    linhas = [
+      {...banco[0], alimentoIndex:0, kgMN:25},
+      {...banco[6], alimentoIndex:6, kgMN:4},
+      {...banco[7], alimentoIndex:7, kgMN:2},
+      {...banco[13], alimentoIndex:13, kgMN:0.12}
+    ];
+  }
+  if(tipo==="corte"){
+    document.getElementById("especie").value="bovinos";
+    atualizarCategorias();
+    document.getElementById("categoria").value=2;
+    aplicarCategoria();
+    document.getElementById("numAnimais").value=40;
+    linhas = [
+      {...banco[0], alimentoIndex:0, kgMN:18},
+      {...banco[6], alimentoIndex:6, kgMN:5},
+      {...banco[7], alimentoIndex:7, kgMN:0.8},
+      {...banco[13], alimentoIndex:13, kgMN:0.10}
+    ];
+  }
+  if(tipo==="ovinos"){
+    document.getElementById("especie").value="ovinos";
+    atualizarCategorias();
+    document.getElementById("categoria").value=2;
+    aplicarCategoria();
+    document.getElementById("numAnimais").value=30;
+    linhas = [
+      {...banco[4], alimentoIndex:4, kgMN:0.7},
+      {...banco[6], alimentoIndex:6, kgMN:0.45},
+      {...banco[7], alimentoIndex:7, kgMN:0.18},
+      {...banco[14], alimentoIndex:14, kgMN:0.015}
+    ];
+  }
+  renderLinhas();
+  calcular();
+}
+function imprimir(){
+  window.print();
+}
+atualizarCategorias();
+carregarExemplo("leite");
+</script>
+</body>
+</html>
