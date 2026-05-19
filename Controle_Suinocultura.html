@@ -595,6 +595,19 @@ th{background:#ddebf7;color:#0f3150}
 .eventos-compactos th:nth-child(3),
 .eventos-compactos td:nth-child(3){width:53%}
 
+
+/* --- v35: teor de PB das rações --- */
+.pb-nota{
+  font-size:.82rem;
+  color:#64748b;
+}
+@media print{
+  .compact-table th,
+  .compact-table td{
+    line-height:1.02!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -796,7 +809,7 @@ th{background:#ddebf7;color:#0f3150}
   <section id="nutricao" class="section">
     <div class="panel">
       <div class="title-row">
-        <div><h2>Roteiro nutricional</h2><p>Base inicial de ração para matrizes e lotes.</p></div>
+        <div><h2>Roteiro nutricional</h2><p>Base inicial de ração para matrizes e lotes, com teor de proteína bruta (PB) de referência.</p></div>
       </div>
       <div class="ruler">
         <div class="rseg g" style="width:23%">Gestação</div>
@@ -1045,6 +1058,27 @@ const PARAMS = {
   vermifuga1AposDesmame:7, vermifuga2AposCreche:14, vazioDescarteAposDesmame:45
 };
 
+
+const PB_RACOES = {
+  "Ração gestação": "13% PB",
+  "Ração pré-lactação": "15% PB",
+  "Ração lactação": "16% PB",
+  "Leite materno": "—",
+  "Creep feed / pré-inicial": "20% PB",
+  "Pré-inicial": "20% PB",
+  "Inicial I": "18% PB",
+  "Inicial II": "16% PB",
+  "Ração recria": "15% PB",
+  "Ração terminação": "13% PB",
+  "Água + açúcar / conforme manejo": "—",
+  "Verificar fase": "—",
+  "Aguardar nascimento": "—"
+};
+
+function pbRacao(nome){
+  return PB_RACOES[nome] || "—";
+}
+
 const RACAO_MATRIZ = [
   ["Cobertura","25 dias","Cobertura / início gestação","Ração gestação","1,5 kg/dia"],
   ["26 dias","60 dias","Gestação média","Ração gestação","2,5 kg/dia"],
@@ -1242,6 +1276,7 @@ function periodosNutricionaisDoLote(r){
      idade:`${x.min} a ${x.max} dias`,
      fase:x.fase,
      racao:x.racao,
+     pb:pbRacao(x.racao),
      consumo:`${perfIni.consumo} a ${perfFim.consumo} kg/semana/animal`,
      peso:`${perfIni.peso} até ${perfFim.peso} kg`,
      manejo:x.manejo
@@ -1783,8 +1818,8 @@ function renderFichaLote(){
              <div><strong>Parto/Nascimento</strong>${fmt(r.partoBaseDt)}</div>
              <div><strong>Idade atual</strong>${sl?sl.idade+" dias":"—"}</div>
              <div><strong>Fase atual</strong>${sl?sl.fase:"—"}</div>
-             <div><strong>Ração atual</strong>${sl?sl.racao:"—"}</div>
-             <div><strong>Referência atual</strong>${perf?`Peso: ${perf.peso}; consumo: ${perf.consumo} kg/semana/animal; ração: ${perf.racao}`:"—"}</div>
+             <div><strong>Ração atual</strong>${sl?`${sl.racao}<br><span class="small">${pbRacao(sl.racao)}</span>`:"—"}</div>
+             <div><strong>Referência atual</strong>${perf?`Peso: ${perf.peso}; consumo: ${perf.consumo} kg/semana/animal; ração: ${perf.racao}; PB: ${pbRacao(perf.racao)}`:"—"}</div>
            </div>
          </div>
        </div>
@@ -1808,13 +1843,14 @@ function renderFichaLote(){
        <div class="card" style="margin-bottom:0">
          <h3 style="margin:0 0 5px 0">Períodos nutricionais do lote</h3>
          <div class="table-wrap"><table class="compact-table">
-           <thead><tr><th>Período</th><th>Idade</th><th>Fase</th><th>Ração</th><th>Consumo ref.</th><th>Peso ref.</th><th>Manejo</th></tr></thead>
+           <thead><tr><th>Período</th><th>Idade</th><th>Fase</th><th>Ração</th><th>PB</th><th>Consumo ref.</th><th>Peso ref.</th><th>Manejo</th></tr></thead>
            <tbody>
            ${periodos.map(p=>`<tr style="${classePeriodoAtual(p.inicio,p.fim)}">
              <td>${fmt(p.inicio)} a ${fmt(p.fim)}</td>
              <td>${p.idade}</td>
              <td>${p.fase}</td>
              <td><b>${p.racao}</b></td>
+             <td>${p.pb||pbRacao(p.racao)}</td>
              <td>${p.consumo}</td>
              <td>${p.peso}</td>
              <td>${p.manejo}</td>
@@ -1858,10 +1894,11 @@ function renderFichaLote(){
 }
 
 function renderNutricao(){
- $("#tRacaoMatriz").innerHTML=`<thead><tr><th>Início</th><th>Fim</th><th>Fase</th><th>Ração</th><th>Quantidade</th></tr></thead><tbody>`+
- RACAO_MATRIZ.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td>${x[2]}</td><td><b>${x[3]}</b></td><td>${x[4]}</td></tr>`).join("")+`</tbody>`;
- $("#tRacaoLote").innerHTML=`<thead><tr><th>Idade</th><th>Fase</th><th>Ração</th><th>Manejo</th></tr></thead><tbody>`+
- RACAO_LOTE.map(x=>`<tr><td>${x.min} a ${x.max} dias</td><td>${x.fase}</td><td><b>${x.racao}</b></td><td>${x.manejo}</td></tr>`).join("")+`</tbody>`;
+ $("#tRacaoMatriz").innerHTML=`<thead><tr><th>Início</th><th>Fim</th><th>Fase</th><th>Ração</th><th>PB</th><th>Quantidade</th></tr></thead><tbody>`+
+ RACAO_MATRIZ.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td>${x[2]}</td><td><b>${x[3]}</b></td><td>${pbRacao(x[3])}</td><td>${x[4]}</td></tr>`).join("")+`</tbody>`;
+
+ $("#tRacaoLote").innerHTML=`<thead><tr><th>Idade</th><th>Fase</th><th>Ração</th><th>PB</th><th>Manejo</th></tr></thead><tbody>`+
+ RACAO_LOTE.map(x=>`<tr><td>${x.min} a ${x.max} dias</td><td>${x.fase}</td><td><b>${x.racao}</b></td><td>${pbRacao(x.racao)}</td><td>${x.manejo}</td></tr>`).join("")+`</tbody>`;
 }
 
 function parseCSV(text){
@@ -2128,7 +2165,7 @@ function periodosRacaoMatriz(r){
 
  function add(inicio, fim, fase, racao, qtd, obs=""){
    if(!inicio || !fim) return;
-   items.push({inicio, fim, fase, racao, qtd, obs});
+   items.push({inicio, fim, fase, racao, pb:pbRacao(racao), qtd, obs});
  }
 
  add(cob, addDays(cob,25), "Cobertura / início da gestação", "Ração gestação", "1,5 kg/dia", "Da cobertura até 25 dias.");
@@ -2323,15 +2360,16 @@ function renderFichaMatriz(){
        <div class="card ficha-card" style="margin-bottom:8px">
          <h3>Cronograma de ração da matriz</h3>
          <div class="table-wrap"><table class="compact-table">
-           <thead><tr><th>Período</th><th>Fase</th><th>Ração</th><th>Quantidade</th><th>Observação</th></tr></thead>
+           <thead><tr><th>Período</th><th>Fase</th><th>Ração</th><th>PB</th><th>Quantidade</th><th>Observação</th></tr></thead>
            <tbody>
            ${periodos.length ? periodos.map(p=>`<tr style="${classePeriodoAtual(p.inicio,p.fim)}">
              <td>${fmt(p.inicio)} a ${fmt(p.fim)}</td>
              <td>${p.fase}</td>
              <td><b>${p.racao}</b></td>
+             <td>${p.pb||pbRacao(p.racao)}</td>
              <td><b>${p.qtd}</b></td>
              <td>${p.obs}</td>
-           </tr>`).join("") : `<tr><td colspan="5">Sem cobertura registrada para gerar cronograma nutricional.</td></tr>`}
+           </tr>`).join("") : `<tr><td colspan="6">Sem cobertura registrada para gerar cronograma nutricional.</td></tr>`}
            </tbody>
          </table></div>
        </div>
