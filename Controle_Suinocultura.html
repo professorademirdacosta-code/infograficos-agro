@@ -175,6 +175,426 @@ th{background:#ddebf7;color:#0f3150}
   .sync-resumo,.mini-reload{display:none!important}
 }
 
+
+.today-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.today-card{border:1px solid var(--linha);border-radius:14px;background:#fff;padding:12px}
+.today-card span{display:block;color:#64748b;font-weight:800}
+.today-card b{font-size:1.8rem;color:var(--azul)}
+.ficha-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:2px solid var(--azul);padding-bottom:8px;margin-bottom:10px}
+.ficha-head h2{margin:0;color:var(--azul)}
+.ficha-head p{margin:2px 0 0;color:#475569}
+.ficha-tag{white-space:nowrap}
+.ficha-kv{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:10px}
+.ficha-card{margin-bottom:10px;box-shadow:none}
+.ficha-card h3{margin:0 0 6px 0;color:var(--azul)}
+.ficha-matriz-a4{background:white}
+@media(max-width:900px){
+ .today-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ficha-kv{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ .today-cards{grid-template-columns:1fr}
+ .ficha-kv{grid-template-columns:1fr}
+ .title-row select{width:100%;max-width:none!important}
+}
+@media print{
+ header,.controls,.no-print,nav,.sync-resumo,.mini-reload{display:none!important}
+ body{background:white}
+ main{max-width:none;padding:0}
+ .panel{box-shadow:none;border:0;margin:0;padding:0}
+ .section{display:none!important}
+ #fichamatriz.active,#fichalote.active,#calendario.active,#hoje.active{display:block!important}
+ .ficha-matriz-a4{page-break-inside:avoid}
+ .ficha-head h2{font-size:14pt}
+ .ficha-head p{font-size:8pt}
+ .ficha-kv{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .ficha-kv div{font-size:7pt;padding:4px}
+ .ficha-card h3{font-size:9pt!important}
+ .compact-table th,.compact-table td{font-size:6pt!important;padding:2.5px 3px!important}
+ .compact-timeline .tdate,.compact-timeline .tdesc{font-size:6pt!important;padding:2.5px!important}
+ @page{size:A4 portrait;margin:7mm}
+}
+
+
+.ficha-topo{
+  display:grid;
+  grid-template-columns:118px 1fr;
+  gap:10px;
+  align-items:stretch;
+}
+.foto-matriz,.foto-animal{
+  width:118px;
+  height:118px;
+  object-fit:cover;
+  border:1px solid var(--linha);
+  border-radius:12px;
+  background:#f1f5f9;
+}
+.sem-foto{
+  width:118px;
+  height:118px;
+  border:1px dashed var(--linha);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#64748b;
+  font-size:.78rem;
+  text-align:center;
+  background:#f8fafc;
+}
+.eventos-compactos{min-width:0!important}
+.eventos-compactos th,.eventos-compactos td{font-size:.68rem!important;padding:4px 5px!important}
+.ficha-matriz-a4 .ficha-grid,
+.print-one-page .ficha-grid{
+  grid-template-columns:1fr 1fr;
+  align-items:start;
+}
+.ficha-matriz-a4 .card,
+.print-one-page .card{
+  margin-bottom:7px!important;
+}
+.ficha-card h3,
+.print-one-page h3{
+  margin-bottom:4px!important;
+}
+.ficha-matriz-a4 .table-wrap,
+.print-one-page .table-wrap{
+  max-height:none;
+}
+@media(max-width:700px){
+ .ficha-topo{grid-template-columns:1fr}
+ .foto-matriz,.foto-animal,.sem-foto{width:100%;height:180px}
+}
+@media print{
+ .ficha-topo{grid-template-columns:82px 1fr;gap:6px}
+ .foto-matriz,.foto-animal,.sem-foto{width:82px;height:82px;border-radius:8px;font-size:6pt}
+ .ficha-kv{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .ficha-matriz-a4 .ficha-grid,
+ .print-one-page .ficha-grid{grid-template-columns:1fr 1fr!important;gap:6px}
+ .ficha-matriz-a4 .card,
+ .print-one-page .card{margin-bottom:4px!important;padding:5px!important}
+ .eventos-compactos th,.eventos-compactos td{font-size:5.5pt!important;padding:2px 2.5px!important}
+ .ficha-head{padding-bottom:4px;margin-bottom:5px}
+ .ficha-head h2{font-size:12pt!important}
+ .ficha-head p{font-size:6pt!important}
+ .compact-table th,.compact-table td{font-size:5.5pt!important;padding:2px 2.5px!important}
+ .print-one-page .kv div,.ficha-kv div{font-size:5.8pt!important;padding:3px!important}
+ @page{size:A4 portrait;margin:6mm}
+}
+
+
+/* --- v26: fichas em paisagem com coluna lateral direita --- */
+.ficha-paisagem .ficha-layout-landscape{
+  display:grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap:10px;
+  align-items:start;
+}
+.ficha-paisagem .ficha-main,
+.ficha-paisagem .ficha-side{
+  min-width:0;
+}
+.ficha-paisagem .ficha-side .card{
+  height:auto;
+}
+.ficha-paisagem .compact-table th,
+.ficha-paisagem .compact-table td{
+  font-size:.72rem;
+}
+@media(max-width:900px){
+  .ficha-paisagem .ficha-layout-landscape{
+    grid-template-columns:1fr;
+  }
+}
+@media print{
+  #fichamatriz.active,#fichalote.active{display:block!important}
+  @page{size:A4 landscape;margin:6mm}
+  .ficha-paisagem .ficha-layout-landscape{
+    grid-template-columns: 1.62fr 1fr !important;
+    gap:6px !important;
+  }
+  .ficha-paisagem .card{padding:5px!important}
+  .ficha-paisagem .compact-table th,
+  .ficha-paisagem .compact-table td{
+    font-size:5.6pt!important;
+    padding:2px 2.5px!important;
+  }
+  .ficha-paisagem .small{font-size:5.8pt!important}
+  .ficha-paisagem .kv div{font-size:5.9pt!important}
+  .ficha-paisagem .ficha-head h2{font-size:12pt!important}
+}
+
+
+/* --- v27: correção de impressão para não cortar conteúdo por barra de rolagem --- */
+.ficha-paisagem .table-wrap{
+  overflow:visible;
+}
+.ficha-paisagem table{
+  width:100%;
+}
+.ficha-paisagem .compact-table{
+  min-width:0 !important;
+  table-layout:fixed;
+}
+.ficha-paisagem .compact-table th,
+.ficha-paisagem .compact-table td{
+  white-space:normal;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+}
+
+@media print{
+  .ficha-paisagem{
+    width:100% !important;
+    max-width:100% !important;
+    overflow:visible !important;
+  }
+
+  .ficha-paisagem .table-wrap{
+    overflow:visible !important;
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  .ficha-paisagem table,
+  .ficha-paisagem .compact-table,
+  .ficha-paisagem .eventos-compactos{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    table-layout:fixed !important;
+  }
+
+  .ficha-paisagem th,
+  .ficha-paisagem td{
+    white-space:normal !important;
+    word-break:break-word !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .ficha-paisagem .ficha-layout-landscape{
+    grid-template-columns: 1.55fr 1fr !important;
+    width:100% !important;
+  }
+
+  .ficha-paisagem .ficha-main,
+  .ficha-paisagem .ficha-side{
+    overflow:visible !important;
+    min-width:0 !important;
+  }
+
+  .ficha-paisagem .foto-matriz,
+  .ficha-paisagem .foto-animal,
+  .ficha-paisagem .sem-foto{
+    width:72px !important;
+    height:72px !important;
+  }
+
+  .ficha-paisagem .ficha-topo{
+    grid-template-columns:72px 1fr !important;
+  }
+
+  .ficha-paisagem .kv{
+    gap:3px !important;
+  }
+
+  .ficha-paisagem .kv div{
+    padding:2.5px !important;
+  }
+
+  .ficha-paisagem .card{
+    padding:4px !important;
+    margin-bottom:4px !important;
+  }
+
+  .ficha-paisagem h3{
+    font-size:7.5pt !important;
+    margin-bottom:2px !important;
+  }
+
+  .ficha-paisagem .compact-table th,
+  .ficha-paisagem .compact-table td{
+    font-size:5.1pt !important;
+    line-height:1.05 !important;
+    padding:1.6px 2px !important;
+  }
+
+  .ficha-paisagem .badge{
+    font-size:5.1pt !important;
+    padding:1px 3px !important;
+  }
+
+  @page{
+    size:A4 landscape;
+    margin:5mm;
+  }
+}
+
+
+/* --- v28: calendário mensal sempre em uma página A4 paisagem --- */
+@media print{
+  #calendario.active{
+    display:block !important;
+  }
+
+  #calendario.active .panel{
+    padding:0 !important;
+    margin:0 !important;
+    border:0 !important;
+    box-shadow:none !important;
+  }
+
+  #calendario.active .calendar-layout{
+    width:100% !important;
+    max-width:100% !important;
+    height:185mm !important;
+    max-height:185mm !important;
+    overflow:hidden !important;
+    display:grid !important;
+    grid-template-columns: 1fr 24mm !important;
+    grid-template-rows: 9mm 7mm 1fr !important;
+    border:1px solid #777 !important;
+    page-break-inside:avoid !important;
+  }
+
+  #calendario.active .cal-head{
+    grid-column:1/2 !important;
+    grid-row:1/2 !important;
+    font-size:13pt !important;
+    padding:2mm !important;
+    line-height:1 !important;
+  }
+
+  #calendario.active .cal-date{
+    grid-column:2/3 !important;
+    grid-row:1/2 !important;
+    font-size:7pt !important;
+  }
+
+  #calendario.active .cal-date div{
+    padding:1mm !important;
+    line-height:1.05 !important;
+  }
+
+  #calendario.active .weekdays{
+    grid-column:1/2 !important;
+    grid-row:2/3 !important;
+    min-width:0 !important;
+  }
+
+  #calendario.active .wd{
+    font-size:7pt !important;
+    padding:1mm !important;
+    line-height:1 !important;
+  }
+
+  #calendario.active .calendar{
+    grid-column:1/2 !important;
+    grid-row:3/4 !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:repeat(7,1fr) !important;
+    grid-template-rows:repeat(6,1fr) !important;
+    height:100% !important;
+    max-height:169mm !important;
+    overflow:hidden !important;
+  }
+
+  #calendario.active .day{
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:1mm !important;
+    overflow:hidden !important;
+  }
+
+  #calendario.active .day-num{
+    font-size:6.2pt !important;
+    margin-bottom:0.5mm !important;
+    line-height:1 !important;
+  }
+
+  #calendario.active .event{
+    font-size:5.2pt !important;
+    line-height:1.04 !important;
+    padding:0.4mm 0.7mm !important;
+    margin:0.35mm 0 !important;
+    border-left-width:2px !important;
+    border-radius:2px !important;
+    max-height:12mm !important;
+    overflow:hidden !important;
+  }
+
+  #calendario.active .legend{
+    grid-column:2/3 !important;
+    grid-row:2/4 !important;
+    display:grid !important;
+    grid-template-rows:repeat(6,1fr) !important;
+    font-size:6.5pt !important;
+    min-width:0 !important;
+  }
+
+  #calendario.active .leg-item{
+    grid-template-columns:6mm 1fr !important;
+    font-size:6.2pt !important;
+    line-height:1 !important;
+  }
+
+  #calendario.active .leg-color{
+    width:6mm !important;
+  }
+
+  body:has(#calendario.active){
+    overflow:hidden !important;
+  }
+
+  @page{
+    size:A4 landscape;
+    margin:5mm;
+  }
+}
+
+
+/* --- v29: campos de mortalidade e venda na ficha do lote --- */
+.tabela-registro-lote th,
+.tabela-registro-lote td{
+  font-size:.66rem!important;
+}
+@media print{
+  .tabela-registro-lote th,
+  .tabela-registro-lote td{
+    font-size:5.1pt!important;
+    padding:1.6px 2px!important;
+    line-height:1!important;
+  }
+  .ficha-side .card{
+    margin-top:4px!important;
+  }
+}
+
+
+/* --- v30: classificação etária das matrizes --- */
+.ficha-kv .small{
+  display:block;
+  margin-top:2px;
+  line-height:1.15;
+}
+@media print{
+  .ficha-kv .small{
+    font-size:5pt!important;
+  }
+}
+
+
+/* --- v33: menus por idade e cronogramas laterais sem coluna de lote repetida --- */
+.eventos-compactos th:nth-child(1),
+.eventos-compactos td:nth-child(1){width:22%}
+.eventos-compactos th:nth-child(2),
+.eventos-compactos td:nth-child(2){width:25%}
+.eventos-compactos th:nth-child(3),
+.eventos-compactos td:nth-child(3){width:53%}
+
 </style>
 </head>
 <body>
@@ -191,11 +611,14 @@ th{background:#ddebf7;color:#0f3150}
   </div>
   <nav>
     <button class="tab active" data-tab="painel">Painel</button>
+    <button class="tab" data-tab="hoje">Hoje / 7 dias</button>
     <button class="tab" data-tab="calendario">Calendário</button>
     <button class="tab" data-tab="cadastro">Cadastro</button>
     <button class="tab" data-tab="matrizes">Matrizes</button>
+    <button class="tab" data-tab="fichamatriz">Ficha da matriz</button>
     <button class="tab" data-tab="reprodutores">Reprodutores</button>
     <button class="tab" data-tab="fichalote">Ficha do lote</button>
+    <button class="tab" data-tab="relatorios">Relatórios</button>
     <button class="tab" data-tab="nutricao">Nutrição</button>
   </nav>
 </header>
@@ -236,7 +659,7 @@ th{background:#ddebf7;color:#0f3150}
       <button class="btn" id="btnHoje">Hoje</button>
       <button class="btn" onclick="window.print()">Imprimir / Salvar PDF</button>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div id="syncResumo" class="sync-resumo">Sincronizando dados com a planilha...</div><button class="btn mini-reload" onclick="carregarDadosAppsScript(false)">Atualizar dados</button></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div id="syncResumo" class="sync-resumo">Sincronizando dados com a planilha...</div><button class="btn mini-reload" onclick="if(typeof carregarDadosAppsScript==='function'){carregarDadosAppsScript(false)}">Atualizar dados</button></div>
     <div class="sheet-box tecnico-sync">
       <div>
         <label>URL do Apps Script Web App — método recomendado</label>
@@ -277,6 +700,49 @@ th{background:#ddebf7;color:#0f3150}
     </div>
   </section>
 
+  
+  <section id="hoje" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Hoje e próximos 7 dias</h2>
+          <p>Tela simplificada para uso diário no celular ou no setor.</p>
+        </div>
+      </div>
+      <div id="cardsHoje" class="today-cards"></div>
+      <div class="table-wrap" style="margin-top:12px"><table id="tHoje"></table></div>
+    </div>
+  </section>
+
+  <section id="fichamatriz" class="section">
+    <div class="panel">
+      <div class="title-row no-print">
+        <div>
+          <h2>Ficha individual da matriz</h2>
+          <p>Ficha A4 para imprimir e anexar no setor, com cronograma de manejo e ração.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+          <select id="selMatrizFicha" style="min-width:320px"></select>
+          <button class="btn" onclick="window.print()">Imprimir / Salvar PDF</button>
+        </div>
+      </div>
+      <div id="fichaMatriz"></div>
+    </div>
+  </section>
+
+  <section id="relatorios" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Relatórios zootécnicos</h2>
+          <p>Indicadores automáticos com base no cadastro, coberturas, partos e lotes.</p>
+        </div>
+      </div>
+      <div class="grid metrics" id="metricasRelatorio"></div>
+      <div class="table-wrap" style="margin-top:12px"><table id="tRelatorioMatrizes"></table></div><div class="table-wrap" style="margin-top:12px"><table id="tRelatorioIdade"></table></div>
+    </div>
+  </section>
+
   <section id="calendario" class="section">
     <div class="panel">
       <div class="title-row no-print">
@@ -302,7 +768,7 @@ th{background:#ddebf7;color:#0f3150}
   <section id="matrizes" class="section">
     <div class="panel">
       <div class="title-row">
-        <div><h2>Controle reprodutivo por matriz</h2><p>Cobertura, previsão de parto, parto real, lote e ração atual. O ciclo mais recente aparece como atual; os anteriores ficam como histórico reprodutivo. No filtro, cada matriz aparece apenas uma vez.</p></div>
+        <div><h2>Controle reprodutivo por matriz</h2><p>Cobertura, previsão de parto, parto real, lote e ração atual. As matrizes são exibidas da mais velha para a mais jovem. Cada matriz aparece apenas uma vez, mostrando o ciclo/situação atual. Os ciclos anteriores ficam no histórico da ficha individual.</p></div>
       </div>
       <div class="table-wrap"><table id="tMatrizes"></table></div>
     </div>
@@ -658,6 +1124,34 @@ function idadeMesesNumero(r){
  return null;
 }
 
+function classificacaoEtariaMatriz(r){
+ const meses = idadeMesesNumero(r);
+ if(meses === null || meses === undefined) return {txt:"Idade não informada", cls:"b-info", obs:"Sem data de nascimento no cadastro."};
+
+ if(meses < 8){
+   return {txt:"Leitoa em recria", cls:"b-info", obs:"Fase de crescimento; ainda não deve entrar em reprodução."};
+ }
+ if(meses >= 8 && meses <= 12){
+   return {txt:"Leitoa apta / reposição", cls:"b-repro", obs:"Fase provável de primeira cobertura, conforme peso, idade e condição corporal."};
+ }
+ if(meses >= 13 && meses <= 24){
+   return {txt:"Matriz jovem", cls:"b-ok", obs:"Fêmea jovem, normalmente em consolidação produtiva."};
+ }
+ if(meses >= 25 && meses <= 60){
+   return {txt:"Matriz adulta", cls:"b-ok", obs:"Fase produtiva principal."};
+ }
+ if(meses >= 61 && meses <= 72){
+   return {txt:"Matriz madura", cls:"b-parto", obs:"Acompanhar desempenho, repetição de cio, leitegada e condição corporal."};
+ }
+ return {txt:"Matriz idosa / avaliar descarte", cls:"b-alerta", obs:"Avaliar permanência conforme produtividade, sanidade e histórico reprodutivo."};
+}
+
+function classificacaoEtariaHTML(r){
+ const c = classificacaoEtariaMatriz(r);
+ return `${badge(c.txt,c.cls)}<br><span class="small">${c.obs}</span>`;
+}
+
+
 function iso(d){return d?`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`:""}
 function addDays(d,n){if(!d)return null; const x=new Date(d); x.setDate(x.getDate()+n); return x}
 function diffDays(a,b){return Math.floor((a-b)/(1000*60*60*24))}
@@ -693,7 +1187,8 @@ function normalizar(r){
  const partoPrev=parseDate(r.parto_previsto)||addDays(cobertura,PARAMS.gestacao);
  const partoReal=parseDate(r.parto_real);
  const partoBase=partoReal||partoPrev;
- return {...r,coberturaDt:cobertura,partoPrevDt:partoPrev,partoRealDt:partoReal,partoBaseDt:partoBase,nascimentoDt:parseDate(r.nascimento)};
+ const confirmacao=parseDate(r.confirmacao);
+ return {...r,coberturaDt:cobertura,confirmacaoDt:confirmacao,partoPrevDt:partoPrev,partoRealDt:partoReal,partoBaseDt:partoBase,nascimentoDt:parseDate(r.nascimento)};
 }
 
 
@@ -840,7 +1335,7 @@ function preencherFiltrosSuspensos(){
 
  const rs = DATA.map(normalizar);
 
- // MATRIZES ÚNICAS: usa ID como chave principal para não repetir a mesma matriz
+ // MATRIZES ÚNICAS: usa ID como chave principal para não repetir a mesma matriz.
  const mapaMatrizes = new Map();
  rs.filter(isMatriz).forEach(r=>{
    const id = String(r.id || "").trim();
@@ -852,14 +1347,21 @@ function preencherFiltrosSuspensos(){
      mapaMatrizes.set(chave, {...r});
    } else {
      const atual = mapaMatrizes.get(chave);
-     ["nome","raca","nascimento","nascimentoDt","idadeMeses","categoria"].forEach(c=>{
+     ["nome","raca","nascimento","nascimentoDt","idadeMeses","categoria","statusAnimal","foto"].forEach(c=>{
        if(!atual[c] && r[c]) atual[c] = r[c];
      });
    }
  });
 
  const matrizes = [...mapaMatrizes.values()]
-   .sort((a,b)=>String(a.nome||a.id||"").localeCompare(String(b.nome||b.id||""),"pt-BR"));
+   .sort((a,b)=>{
+     const ia = idadeMesesNumero(a);
+     const ib = idadeMesesNumero(b);
+     if(ia !== null && ib !== null && ia !== ib) return ib - ia; // mais velhas primeiro
+     if(ia !== null && ib === null) return -1;
+     if(ia === null && ib !== null) return 1;
+     return String(a.nome||a.id||"").localeCompare(String(b.nome||b.id||""),"pt-BR");
+   });
 
  // REPRODUTORES ÚNICOS
  const mapaReps = new Map();
@@ -871,7 +1373,12 @@ function preencherFiltrosSuspensos(){
    if(!mapaReps.has(chave)) mapaReps.set(chave, {...r});
  });
  const reps = [...mapaReps.values()]
-   .sort((a,b)=>String(a.nome||a.id||"").localeCompare(String(b.nome||b.id||""),"pt-BR"));
+   .sort((a,b)=>{
+     const ia = idadeMesesNumero(a);
+     const ib = idadeMesesNumero(b);
+     if(ia !== null && ib !== null && ia !== ib) return ib - ia;
+     return String(a.nome||a.id||"").localeCompare(String(b.nome||b.id||""),"pt-BR");
+   });
 
  const lotes = [...new Set(rs.filter(isMatriz).map(r=>r.lote).filter(Boolean))]
    .sort((a,b)=>String(a).localeCompare(String(b),"pt-BR"));
@@ -934,16 +1441,65 @@ function filtrados(){
  });
 }
 
+
+function animaisUnicosPorCategoria(categoriaTexto){
+ const mapa = new Map();
+
+ DATA.map(normalizar).forEach(r=>{
+   const categoria = String(r.categoria || "").toLowerCase();
+   const querMatriz = categoriaTexto === "matriz";
+   const querReprodutor = categoriaTexto === "reprodutor";
+
+   if(querMatriz && !isMatriz(r)) return;
+   if(querReprodutor && !isReprodutor(r)) return;
+
+   const chave = r.id || r.nome;
+   if(!chave) return;
+
+   if(!mapa.has(chave)){
+     mapa.set(chave, {...r});
+   } else {
+     const atual = mapa.get(chave);
+     ["raca","nome","nascimento","nascimentoDt","idadeMeses","categoria","statusAnimal","foto"].forEach(c=>{
+       if(!atual[c] && r[c]) atual[c] = r[c];
+     });
+
+     // Mantém também o ciclo mais recente para indicadores de situação.
+     const dataR = r.coberturaDt || r.partoBaseDt || r.partoPrevDt || r.partoRealDt || null;
+     const dataA = atual.coberturaDt || atual.partoBaseDt || atual.partoPrevDt || atual.partoRealDt || null;
+     if(dataR && (!dataA || dataR > dataA)){
+       mapa.set(chave, {...atual, ...r});
+     }
+   }
+ });
+
+ return [...mapa.values()];
+}
+
 function renderMetricas(){
- const rs=DATA.map(normalizar);
- const matrizes=rs.filter(isMatriz), reps=rs.filter(isReprodutor);
- const lotes=matrizes.filter(x=>x.lote||x.partoBaseDt).length;
- const gest=matrizes.filter(x=>["Gestação","Pré-parto","A confirmar prenhez"].includes(situacaoMatriz(x).txt)).length;
- const lact=matrizes.filter(x=>situacaoMatriz(x).txt==="Lactação").length;
- const vazias=matrizes.filter(x=>situacaoMatriz(x).txt==="Vazia / possível descarte").length;
- const desm=matrizes.reduce((s,x)=>s+num(x.desmamados),0);
- const descartadas=matrizes.filter(animalDescartado).length;
- const m=[["Matrizes",matrizes.length],["Reprodutores",reps.length],["Gestantes",gest],["Lactação",lact],["Descartadas",descartadas],["Lotes",lotes]];
+ const regs = DATA.map(normalizar);
+
+ // Contagem correta: animais únicos, não lançamentos/ciclos.
+ const matrizesUnicas = animaisUnicosPorCategoria("matriz");
+ const repsUnicos = animaisUnicosPorCategoria("reprodutor");
+
+ // Situação atual das matrizes únicas.
+ const gest=matrizesUnicas.filter(x=>["Gestação","Pré-parto","A confirmar prenhez"].includes(situacaoMatriz(x).txt)).length;
+ const lact=matrizesUnicas.filter(x=>situacaoMatriz(x).txt==="Lactação").length;
+ const descartadas=matrizesUnicas.filter(animalDescartado).length;
+
+ // Lotes continuam sendo contados pelos lançamentos produtivos.
+ const lotes=[...new Set(regs.filter(isMatriz).map(x=>x.lote).filter(Boolean))].length;
+
+ const m=[
+   ["Matrizes",matrizesUnicas.length],
+   ["Reprodutores",repsUnicos.length],
+   ["Gestantes",gest],
+   ["Lactação",lact],
+   ["Descartadas",descartadas],
+   ["Lotes",lotes]
+ ];
+
  $("#metricas").innerHTML=m.map(x=>`<div class="metric"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
 }
 
@@ -1039,47 +1595,76 @@ function renderCadastro(){
  }).join("")+`</tbody>`;
 }
 
+
+function registroAtualPorMatriz(){
+ const mapa = new Map();
+
+ DATA.map(normalizar).filter(isMatriz).forEach(r=>{
+   const chave = r.id || r.nome;
+   if(!chave) return;
+
+   if(!mapa.has(chave)){
+     mapa.set(chave, r);
+     return;
+   }
+
+   const atual = mapa.get(chave);
+
+   // Prioridade: registro com cobertura mais recente.
+   const dataR = r.coberturaDt || r.partoBaseDt || r.partoPrevDt || r.partoRealDt || null;
+   const dataA = atual.coberturaDt || atual.partoBaseDt || atual.partoPrevDt || atual.partoRealDt || null;
+
+   if(dataR && (!dataA || dataR > dataA)){
+     mapa.set(chave, r);
+   } else {
+     // Se o registro atual tem dados fixos faltando, completa com dados do cadastro.
+     ["raca","nome","nascimento","nascimentoDt","idadeMeses","categoria","statusAnimal","foto"].forEach(c=>{
+       if(!atual[c] && r[c]) atual[c] = r[c];
+     });
+   }
+ });
+
+ return [...mapa.values()];
+}
+
 function renderMatrizes(){
  const q=$("#busca").value.trim().toLowerCase();
  const filtro=$("#filtroMatriz").value;
+ const fr = $("#filtroReprodutor") ? $("#filtroReprodutor").value : "";
+ const fl = $("#filtroLote") ? $("#filtroLote").value : "";
 
- let rs=DATA.map(normalizar).filter(r=>{
+ let rs=registroAtualPorMatriz().filter(r=>{
    if(!isMatriz(r)) return false;
-   if(filtro && String(r.id||r.nome)!==String(filtro) && String(r.nome||"")!==String(filtro)) return false;
-   if(q && ![r.id,r.nome,r.lote,r.obs].join(" ").toLowerCase().includes(q)) return false;
+   if(filtro && String(r.id||"")!==String(filtro) && String(r.nome||"")!==String(filtro)) return false;
+   if(fr && !String(r.reprodutor||"").toLowerCase().includes(String(fr).toLowerCase())) return false;
+   if(fl && String(r.lote||"") !== String(fl)) return false;
+   if(q && ![r.id,r.nome,r.lote,r.obs,r.reprodutor].join(" ").toLowerCase().includes(q)) return false;
    return true;
  });
 
  rs.sort((a,b)=>{
+   const ia = idadeMesesNumero(a);
+   const ib = idadeMesesNumero(b);
+
+   if(ia !== null && ib !== null && ia !== ib) return ib - ia;
+   if(ia !== null && ib === null) return -1;
+   if(ia === null && ib !== null) return 1;
+
    const da = a.coberturaDt ? a.coberturaDt.getTime() : 0;
    const db = b.coberturaDt ? b.coberturaDt.getTime() : 0;
    return db - da;
  });
 
- const ultimoPorMatriz = {};
- rs.forEach(r=>{
-   const chave = r.id || r.nome;
-   if(!ultimoPorMatriz[chave]) ultimoPorMatriz[chave] = r;
- });
-
  $("#tMatrizes").innerHTML=`<thead><tr>
- <th>ID</th><th>Nome</th><th>Idade</th><th>Status</th><th>Cobertura</th><th>Reprodutor</th><th>Confirmar prenhez</th><th>Parto previsto</th><th>Parto real</th><th>Lote</th><th>Situação</th><th>Ração matriz</th></tr></thead><tbody>`+
+ <th>ID</th><th>Nome</th><th>Idade</th><th>Classificação</th><th>Status</th><th>Cobertura atual</th><th>Reprodutor</th><th>Confirmar prenhez</th><th>Parto previsto</th><th>Parto real</th><th>Lote atual</th><th>Situação atual</th><th>Ração matriz</th></tr></thead><tbody>`+
  rs.map(r=>{
-   const atual = ultimoPorMatriz[r.id || r.nome] === r;
-   let st = situacaoMatriz(r);
-
-   if(!atual){
-     st = {
-       txt:"Histórico reprodutivo",
-       cls:"b-info",
-       racao:"Ciclo encerrado"
-     };
-   }
+   const st = situacaoMatriz(r);
 
    return `<tr>
    <td>${r.id||"—"}</td>
    <td><b>${r.nome||"—"}</b></td>
    <td>${idadeAnimalTexto(r)}</td>
+   <td>${badge(classificacaoEtariaMatriz(r).txt,classificacaoEtariaMatriz(r).cls)}</td>
    <td>${badgeStatusAnimal(r)}</td>
    <td>${fmt(r.coberturaDt)}</td>
    <td>${r.reprodutor||"—"}</td>
@@ -1175,66 +1760,98 @@ function renderFichaLote(){
  const totalNascidos = r.nasc_vivos || somaCampos(r.nasc_machos, r.nasc_femeas);
  const totalDesmamados = r.desmamados || somaCampos(r.desm_machos, r.desm_femeas);
 
- $("#fichaLote").innerHTML=`<div class="print-one-page">
-   <div class="card" style="margin-bottom:10px;background:#f8fafc">
-     <h3 style="margin:0 0 6px 0">Identificação do lote</h3>
-     <div class="small" style="margin-bottom:8px">${explicacao}${animalDescartado(r) ? "<br><b>Atenção:</b> matriz atualmente descartada/inativa; manter esta ficha apenas como histórico do lote." : ""}</div>
-     <div class="kv">
-       <div><strong>Lote</strong>${r.lote||"—"}</div>
-       <div><strong>Matriz / mãe</strong>${r.nome||"—"} ${r.id?`(${r.id})`:""}<br>${animalDescartado(r)?badgeStatusAnimal(r):""}</div>
-       <div><strong>Reprodutor</strong>${r.reprodutor||"—"}</div>
-       <div><strong>Parto/Nascimento</strong>${fmt(r.partoBaseDt)}</div>
-       <div><strong>Idade atual</strong>${sl?sl.idade+" dias":"—"}</div>
-       <div><strong>Fase atual</strong>${sl?sl.fase:"—"}</div>
-       <div><strong>Ração atual</strong>${sl?sl.racao:"—"}</div>
-       <div><strong>Referência atual</strong>${perf?`Peso: ${perf.peso}; consumo: ${perf.consumo} kg/semana/animal; ração: ${perf.racao}`:"—"}</div>
+ $("#fichaLote").innerHTML=`<div class="print-one-page ficha-paisagem">
+   <div class="ficha-head">
+     <div>
+       <h2>Ficha de acompanhamento do lote</h2>
+       <p>Sanidade, nutrição e manejo para impressão.</p>
      </div>
+     <div class="ficha-tag">${sl ? badge(sl.fase || "Lote", "b-info") : ""}</div>
    </div>
 
-   <div class="card" style="margin-bottom:10px;background:#fff">
-     <h3 style="margin:0 0 6px 0">Dados do parto e desmame</h3><div class="small" style="margin-bottom:6px">Mortalidade pré-desmame calculada por: (nascidos vivos − desmamados) ÷ nascidos vivos × 100.</div>
-     <div class="kv">
-       <div><strong>Nascidos machos</strong>${valorCampo(r.nasc_machos)}</div>
-       <div><strong>Nascidos fêmeas</strong>${valorCampo(r.nasc_femeas)}</div>
-       <div><strong>Total nascidos vivos</strong>${valorCampo(totalNascidos)}</div>
-       <div><strong>Natimortos / mortos ao parto</strong>${valorCampo(r.natimortos)}</div>
-       <div><strong>Desmamados machos</strong>${valorCampo(r.desm_machos)}</div>
-       <div><strong>Desmamados fêmeas</strong>${valorCampo(r.desm_femeas)}</div>
-       <div><strong>Total desmamados</strong>${valorCampo(totalDesmamados)}</div>
-       <div><strong>Mortes pré-desmame</strong>${mortesPreDesmameTexto(r)}</div>
-       <div><strong>Mortalidade pré-desmame</strong>${mortalidadeTexto(r)}</div>
-     </div>
-   </div>
+   <div class="ficha-layout-landscape">
+     <div class="ficha-main">
+       <div class="card" style="margin-bottom:8px;background:#f8fafc">
+         <h3 style="margin:0 0 5px 0">Identificação do lote</h3>
+         <div class="small" style="margin-bottom:6px">${explicacao}${animalDescartado(r) ? "<br><b>Atenção:</b> matriz atualmente descartada/inativa; manter esta ficha apenas como histórico do lote." : ""}</div>
+         <div class="ficha-topo">
+           <div>${imgAnimalHTML(r, "foto-matriz")}</div>
+           <div class="kv">
+             <div><strong>Lote</strong>${r.lote||"—"}</div>
+             <div><strong>Matriz / mãe</strong>${r.nome||"—"} ${r.id?`(${r.id})`:""}<br>${animalDescartado(r)?badgeStatusAnimal(r):""}</div>
+             <div><strong>Reprodutor</strong>${r.reprodutor||"—"}</div>
+             <div><strong>Parto/Nascimento</strong>${fmt(r.partoBaseDt)}</div>
+             <div><strong>Idade atual</strong>${sl?sl.idade+" dias":"—"}</div>
+             <div><strong>Fase atual</strong>${sl?sl.fase:"—"}</div>
+             <div><strong>Ração atual</strong>${sl?sl.racao:"—"}</div>
+             <div><strong>Referência atual</strong>${perf?`Peso: ${perf.peso}; consumo: ${perf.consumo} kg/semana/animal; ração: ${perf.racao}`:"—"}</div>
+           </div>
+         </div>
+       </div>
 
-   <div class="card" style="margin-bottom:10px">
-     <h3 style="margin:0 0 6px 0">Períodos nutricionais do lote</h3>
-     <div class="table-wrap"><table class="compact-table">
-       <thead><tr><th>Período</th><th>Idade</th><th>Fase</th><th>Ração</th><th>Consumo ref.</th><th>Peso ref.</th><th>Manejo</th></tr></thead>
-       <tbody>
-       ${periodos.map(p=>`<tr style="${classePeriodoAtual(p.inicio,p.fim)}">
-         <td>${fmt(p.inicio)} a ${fmt(p.fim)}</td>
-         <td>${p.idade}</td>
-         <td>${p.fase}</td>
-         <td><b>${p.racao}</b></td>
-         <td>${p.consumo}</td>
-         <td>${p.peso}</td>
-         <td>${p.manejo}</td>
-       </tr>`).join("")}
-       </tbody>
-     </table></div>
-   </div>
+       <div class="card" style="margin-bottom:8px;background:#fff">
+         <h3 style="margin:0 0 5px 0">Dados do parto e desmame</h3>
+         <div class="small" style="margin-bottom:5px">Mortalidade pré-desmame calculada por: (nascidos vivos − desmamados) ÷ nascidos vivos × 100.</div>
+         <div class="kv">
+           <div><strong>Nascidos machos</strong>${valorCampo(r.nasc_machos)}</div>
+           <div><strong>Nascidos fêmeas</strong>${valorCampo(r.nasc_femeas)}</div>
+           <div><strong>Total nascidos vivos</strong>${valorCampo(totalNascidos)}</div>
+           <div><strong>Natimortos / mortos ao parto</strong>${valorCampo(r.natimortos)}</div>
+           <div><strong>Desmamados machos</strong>${valorCampo(r.desm_machos)}</div>
+           <div><strong>Desmamados fêmeas</strong>${valorCampo(r.desm_femeas)}</div>
+           <div><strong>Total desmamados</strong>${valorCampo(totalDesmamados)}</div>
+           <div><strong>Mortes pré-desmame</strong>${mortesPreDesmameTexto(r)}</div>
+           <div><strong>Mortalidade pré-desmame</strong>${mortalidadeTexto(r)}</div>
+         </div>
+       </div>
 
-   <div class="grid two ficha-grid">
-     <div class="card">
-       <h3 style="margin:0 0 6px 0">Procedimentos programados</h3>
-       <div class="timeline compact-timeline">
-         ${evs.map(e=>`<div class="trow"><div class="tdate">${fmt(e.data)}</div><div class="tdesc">${badge(e.tipo,tipoCls(e.tipo))} <b>${e.acao}</b></div></div>`).join("")||"<div class='tdesc'>Sem eventos calculados para este lote.</div>"}
+       <div class="card" style="margin-bottom:0">
+         <h3 style="margin:0 0 5px 0">Períodos nutricionais do lote</h3>
+         <div class="table-wrap"><table class="compact-table">
+           <thead><tr><th>Período</th><th>Idade</th><th>Fase</th><th>Ração</th><th>Consumo ref.</th><th>Peso ref.</th><th>Manejo</th></tr></thead>
+           <tbody>
+           ${periodos.map(p=>`<tr style="${classePeriodoAtual(p.inicio,p.fim)}">
+             <td>${fmt(p.inicio)} a ${fmt(p.fim)}</td>
+             <td>${p.idade}</td>
+             <td>${p.fase}</td>
+             <td><b>${p.racao}</b></td>
+             <td>${p.consumo}</td>
+             <td>${p.peso}</td>
+             <td>${p.manejo}</td>
+           </tr>`).join("")}
+           </tbody>
+         </table></div>
        </div>
      </div>
-     <div class="card">
-       <h3 style="margin:0 0 6px 0">Preenchimento do colaborador</h3>
-       <table class="compact-table" style="min-width:0"><thead><tr><th>Data</th><th>Procedimento realizado</th><th>Resp.</th><th>Obs.</th></tr></thead><tbody>
-       ${Array.from({length:6},()=>"<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>").join("")}</tbody></table>
+
+     <div class="ficha-side">
+       <div class="card">
+         <h3 style="margin:0 0 5px 0">Procedimentos programados</h3>
+         ${tabelaEventosCompacta(evs, 12)}
+       </div>
+       <div class="card" style="margin-top:8px">
+         <h3 style="margin:0 0 5px 0">Registro de mortalidades do lote</h3>
+         <table class="compact-table tabela-registro-lote" style="min-width:0">
+           <thead><tr><th>Data</th><th>Qtd.</th><th>Sexo</th><th>Provável causa</th><th>Resp.</th><th>Obs.</th></tr></thead>
+           <tbody>${Array.from({length:5},()=>"<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>").join("")}</tbody>
+         </table>
+       </div>
+
+       <div class="card" style="margin-top:8px">
+         <h3 style="margin:0 0 5px 0">Registro de venda / saída do lote</h3>
+         <table class="compact-table tabela-registro-lote" style="min-width:0">
+           <thead><tr><th>Data</th><th>Qtd.</th><th>Peso médio</th><th>Peso total</th><th>Destino/comprador</th><th>Obs.</th></tr></thead>
+           <tbody>${Array.from({length:4},()=>"<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>").join("")}</tbody>
+         </table>
+       </div>
+
+       <div class="card" style="margin-top:8px">
+         <h3 style="margin:0 0 5px 0">Outras anotações do colaborador</h3>
+         <table class="compact-table tabela-registro-lote" style="min-width:0">
+           <thead><tr><th>Data</th><th>Procedimento / ocorrência</th><th>Resp.</th><th>Obs.</th></tr></thead>
+           <tbody>${Array.from({length:4},()=>"<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>").join("")}</tbody>
+         </table>
+       </div>
      </div>
    </div>
  </div>`;
@@ -1375,6 +1992,7 @@ function mapJSON(payload){
      idadeMeses:valorIdadeMeses(r),
      categoria:pegarExato(r,["Categoria","Tipo"]) || "",
      statusAnimal:pegarFlex(r,["Status","Situação","Situacao","Situação do animal","Situacao do animal","Status animal","Condição","Condicao"]),
+     foto:pegarFlex(r,["Foto","URL Foto","Url Foto","Link foto","Link da foto","Imagem","URL imagem","Url imagem"]),
 
      cobertura:pegarFlex(r,[
        "Data cobertura",
@@ -1456,7 +2074,9 @@ function mapJSON(payload){
      nome: d.nome || base.nome || "",
      nascimento: d.nascimento || base.nascimento || "",
      idadeMeses: d.idadeMeses || base.idadeMeses || "",
-     statusAnimal: d.statusAnimal || base.statusAnimal || ""
+     foto: d.foto || base.foto || "",
+     statusAnimal: d.statusAnimal || base.statusAnimal || "",
+     foto: d.foto || base.foto || ""
    });
  });
 
@@ -1474,22 +2094,356 @@ function mapJSON(payload){
  return saida;
 }
 
-function renderTudo(){
- dataRef=parseDate($("#dataRef").value)||new Date();
- preencherFiltrosSuspensos(); renderMetricas(); renderProximos(); renderCalendario(); renderCadastro(); renderMatrizes(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderNutricao();
+
+function registrosDaMatrizSelecionada(valor){
+ const rs = DATA.map(normalizar).filter(r=>isMatriz(r));
+ if(!valor) return rs;
+ return rs.filter(r => String(r.id||"")===String(valor) || String(r.nome||"")===String(valor));
 }
 
-$$(".tab").forEach(b=>b.addEventListener("click",()=>{$$(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");$$(".section").forEach(s=>s.classList.remove("active"));$("#"+b.dataset.tab).classList.add("active");}));
-$("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderCalendario();});
-$("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderCalendario();renderSelLote();renderFichaLote();});
-$("#filtroReprodutor").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderCalendario();renderSelLote();renderFichaLote();});
-$("#filtroLote").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderCalendario();renderSelLote();renderFichaLote();});
+function cicloAtualDaMatriz(valor){
+ const rs = registrosDaMatrizSelecionada(valor).filter(r=>r.coberturaDt || r.partoBaseDt);
+ rs.sort((a,b)=>{
+   const da = a.coberturaDt || rDataMin(a);
+   const db = b.coberturaDt || rDataMin(b);
+   return (db?db.getTime():0) - (da?da.getTime():0);
+ });
+ return rs[0] || registrosDaMatrizSelecionada(valor)[0] || null;
+}
+
+function rDataMin(r){
+ return r.partoBaseDt || r.partoPrevDt || r.partoRealDt || r.coberturaDt || null;
+}
+
+function matrizLabel(r){
+ return `${r.nome || "Matriz"}${r.id ? " ("+r.id+")" : ""}`;
+}
+
+function periodosRacaoMatriz(r){
+ if(!r || !r.coberturaDt) return [];
+ const cob = r.coberturaDt;
+ const parto = r.partoBaseDt || addDays(cob, PARAMS.gestacao);
+ const desmame = addDays(parto, PARAMS.desmame);
+ const items = [];
+
+ function add(inicio, fim, fase, racao, qtd, obs=""){
+   if(!inicio || !fim) return;
+   items.push({inicio, fim, fase, racao, qtd, obs});
+ }
+
+ add(cob, addDays(cob,25), "Cobertura / início da gestação", "Ração gestação", "1,5 kg/dia", "Da cobertura até 25 dias.");
+ add(addDays(cob,26), addDays(cob,60), "Gestação média", "Ração gestação", "2,5 kg/dia", "Ajustar se houver escore corporal inadequado.");
+ add(addDays(cob,61), addDays(cob,84), "Gestação média-final", "Ração gestação", "2,8 kg/dia", "Preparação para terço final da gestação.");
+ add(addDays(cob,85), addDays(cob,110), "Pré-lactação", "Ração pré-lactação", "3,5 kg/dia", "Período de aumento de exigência nutricional.");
+ add(addDays(cob,111), addDays(cob,111), "Pré-parto", "Ração pré-lactação", "3,0 kg/dia", "Redução gradual antes do parto.");
+ add(addDays(cob,112), addDays(cob,112), "Pré-parto", "Ração pré-lactação", "2,0 kg/dia", "Redução gradual antes do parto.");
+ add(addDays(cob,113), addDays(cob,113), "Pré-parto", "Ração pré-lactação", "1,0 kg/dia", "Redução gradual antes do parto.");
+ add(parto, parto, "Parto", "Água + açúcar / conforme manejo", "0,5 kg + açúcar", "Dia provável/real do parto.");
+
+ add(addDays(parto,1), addDays(parto,1), "Pós-parto", "Ração lactação", "2,0 kg/dia", "1º dia pós-parto.");
+ add(addDays(parto,2), addDays(parto,2), "Pós-parto", "Ração lactação", "2,5 kg/dia", "2º dia pós-parto.");
+ add(addDays(parto,3), addDays(parto,3), "Pós-parto", "Ração lactação", "3,0 kg/dia", "3º dia pós-parto.");
+ add(addDays(parto,4), addDays(parto,4), "Pós-parto", "Ração lactação", "3,5 kg/dia", "4º dia pós-parto.");
+ add(addDays(parto,5), addDays(parto,5), "Pós-parto", "Ração lactação", "4,0 kg/dia", "5º dia pós-parto.");
+ add(addDays(parto,6), addDays(desmame,-2), "Lactação", "Ração lactação", "À vontade", "Do 6º dia até antes do ajuste pré-desmame.");
+ add(addDays(desmame,-1), addDays(desmame,-1), "Pré-desmame", "Ração lactação", "2,5 kg/dia", "1 dia antes do desmame.");
+ add(desmame, addDays(desmame,5), "Pós-desmame / retorno ao cio", "Ração lactação", "2,0 kg/dia", "Até manifestação de cio ou nova cobertura.");
+
+ return items;
+}
+
+function manejosDaMatriz(r){
+ if(!r) return [];
+ const todos = eventos().filter(e => e.id===r.id || e.matriz===r.nome);
+ return todos.sort((a,b)=>a.data-b.data);
+}
+
+function eventosHojeSeteDias(){
+ const fim = addDays(dataRef, 7);
+ return eventos().filter(e => e.data >= dataRef && e.data <= fim);
+}
+
+function classePrazo(d){
+ const dias = diffDays(d, dataRef);
+ if(dias === 0) return "b-alerta";
+ if(dias <= 2) return "b-parto";
+ if(dias <= 7) return "b-info";
+ return "b-ok";
+}
+
+function prazoTexto(d){
+ const dias = diffDays(d, dataRef);
+ if(dias === 0) return "Hoje";
+ if(dias === 1) return "Amanhã";
+ return `Em ${dias} dias`;
+}
+
+function renderHoje(){
+ const evs = eventosHojeSeteDias();
+ const hoje = evs.filter(e=>diffDays(e.data,dataRef)===0).length;
+ const semana = evs.length;
+ const partos = evs.filter(e=>String(e.tipo).toLowerCase().includes("parto")).length;
+ const san = evs.filter(e=>String(e.tipo).toLowerCase().includes("san")).length;
+
+ $("#cardsHoje").innerHTML = [
+   ["Manejos hoje", hoje],
+   ["Próximos 7 dias", semana],
+   ["Partos no período", partos],
+   ["Sanidade no período", san]
+ ].map(x=>`<div class="today-card"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+
+ $("#tHoje").innerHTML = `<thead><tr><th>Prazo</th><th>Data</th><th>Tipo</th><th>Matriz</th><th>Lote</th><th>Ação</th></tr></thead><tbody>`+
+   evs.map(e=>`<tr>
+     <td>${badge(prazoTexto(e.data), classePrazo(e.data))}</td>
+     <td>${fmt(e.data)}</td>
+     <td>${e.tipo}</td>
+     <td>${e.matriz || "—"} ${e.id?`(${e.id})`:""}</td>
+     <td>${e.lote || "—"}</td>
+     <td><b>${e.acao}</b></td>
+   </tr>`).join("")+`</tbody>`;
+}
+
+function renderSelMatrizFicha(){
+ const sel = $("#selMatrizFicha");
+ if(!sel) return;
+ const atual = sel.value;
+ const matrizes = [];
+ const mapa = new Map();
+
+ DATA.map(normalizar).filter(isMatriz).forEach(r=>{
+   const chave = r.id || r.nome;
+   if(!chave) return;
+   if(!mapa.has(chave)) {
+     mapa.set(chave, {...r});
+   } else {
+     const atual = mapa.get(chave);
+     ["nome","raca","nascimento","nascimentoDt","idadeMeses","categoria","statusAnimal","foto"].forEach(c=>{
+       if(!atual[c] && r[c]) atual[c] = r[c];
+     });
+   }
+ });
+
+ mapa.forEach(v=>matrizes.push(v));
+ matrizes.sort((a,b)=>{
+   const ia = idadeMesesNumero(a);
+   const ib = idadeMesesNumero(b);
+   if(ia !== null && ib !== null && ia !== ib) return ib - ia; // mais velhas primeiro
+   if(ia !== null && ib === null) return -1;
+   if(ia === null && ib !== null) return 1;
+   return String(a.nome||"").localeCompare(String(b.nome||""),"pt-BR");
+ });
+
+ sel.innerHTML = matrizes.map(r=>`<option value="${r.id||r.nome}">${matrizLabel(r)}</option>`).join("");
+ if([...sel.options].some(o=>o.value===atual)) sel.value = atual;
+}
+
+
+function fotoAnimal(r){
+ let url = String(r.foto || r.urlFoto || "").trim();
+ if(!url) return "";
+
+ // Aceita links comuns do Google Drive e converte para thumbnail.
+ let id = "";
+ let m1 = url.match(/\/file\/d\/([^\/]+)/);
+ let m2 = url.match(/[?&]id=([^&]+)/);
+ if(m1) id = m1[1];
+ if(!id && m2) id = m2[1];
+
+ if(id){
+   return `https://drive.google.com/thumbnail?id=${id}&sz=w600`;
+ }
+
+ return url;
+}
+
+function imgAnimalHTML(r, classe="foto-animal"){
+ const url = fotoAnimal(r);
+ if(!url) return `<div class="${classe} sem-foto">Sem foto</div>`;
+ return `<img class="${classe}" src="${url}" alt="Foto de ${r.nome||"animal"}" onerror="this.outerHTML='<div class=&quot;${classe} sem-foto&quot;>Foto não carregada</div>'">`;
+}
+
+function tabelaEventosCompacta(evs, limite=12){
+ const lista = evs.slice(0, limite);
+ if(!lista.length) return "<div class='tdesc'>Sem manejos calculados.</div>";
+ return `<div class="table-wrap"><table class="compact-table eventos-compactos">
+   <thead><tr><th>Data</th><th>Tipo</th><th>Ação</th></tr></thead>
+   <tbody>${lista.map(e=>`<tr>
+     <td>${fmt(e.data)}</td>
+     <td>${badge(e.tipo,tipoCls(e.tipo))}</td>
+     <td><b>${e.acao}</b></td>
+   </tr>`).join("")}</tbody>
+ </table></div>${evs.length>limite?`<div class="small">+ ${evs.length-limite} manejos no histórico completo.</div>`:""}`;
+}
+
+function renderFichaMatriz(){
+ const sel = $("#selMatrizFicha");
+ if(!sel || !$("#fichaMatriz")) return;
+ const valor = sel.value;
+ const r = cicloAtualDaMatriz(valor);
+ if(!r){
+   $("#fichaMatriz").innerHTML = "<div class='card'>Nenhuma matriz encontrada.</div>";
+   return;
+ }
+
+ const st = situacaoMatriz(r);
+ const periodos = periodosRacaoMatriz(r);
+ const manejos = manejosDaMatriz(r);
+ const historico = registrosDaMatrizSelecionada(valor)
+   .filter(x=>x.coberturaDt || x.partoBaseDt)
+   .sort((a,b)=>(b.coberturaDt?b.coberturaDt.getTime():0)-(a.coberturaDt?a.coberturaDt.getTime():0));
+
+ $("#fichaMatriz").innerHTML = `<div class="ficha-matriz-a4 ficha-paisagem">
+   <div class="ficha-head">
+     <div>
+       <h2>Ficha individual da matriz</h2>
+       <p>Para acompanhamento de manejo, reprodução e nutrição no setor.</p>
+     </div>
+     <div class="ficha-tag">${badge(st.txt, st.cls)}</div>
+   </div>
+
+   <div class="ficha-layout-landscape">
+     <div class="ficha-main">
+       <div class="card" style="margin-bottom:8px;background:#f8fafc">
+         <div class="ficha-topo">
+           <div>${imgAnimalHTML(r, "foto-matriz")}</div>
+           <div class="kv ficha-kv">
+             <div><strong>Matriz</strong>${matrizLabel(r)}</div>
+             <div><strong>Raça</strong>${r.raca || "—"}</div>
+             <div><strong>Nascimento</strong>${fmt(r.nascimentoDt)}</div>
+             <div><strong>Idade</strong>${idadeAnimalTexto(r)}</div>
+             <div><strong>Classificação etária</strong>${classificacaoEtariaHTML(r)}</div>
+             <div><strong>Status do animal</strong>${badgeStatusAnimal(r)}</div>
+             <div><strong>Ciclo atual</strong>${r.coberturaDt ? "Cobertura em "+fmt(r.coberturaDt) : "Sem cobertura atual"}</div>
+             <div><strong>Reprodutor</strong>${r.reprodutor || "—"}</div>
+             <div><strong>Parto previsto/real</strong>${fmt(r.partoPrevDt)} / ${fmt(r.partoRealDt)}</div>
+           </div>
+         </div>
+       </div>
+
+       <div class="card ficha-card" style="margin-bottom:8px">
+         <h3>Cronograma de ração da matriz</h3>
+         <div class="table-wrap"><table class="compact-table">
+           <thead><tr><th>Período</th><th>Fase</th><th>Ração</th><th>Quantidade</th><th>Observação</th></tr></thead>
+           <tbody>
+           ${periodos.length ? periodos.map(p=>`<tr style="${classePeriodoAtual(p.inicio,p.fim)}">
+             <td>${fmt(p.inicio)} a ${fmt(p.fim)}</td>
+             <td>${p.fase}</td>
+             <td><b>${p.racao}</b></td>
+             <td><b>${p.qtd}</b></td>
+             <td>${p.obs}</td>
+           </tr>`).join("") : `<tr><td colspan="5">Sem cobertura registrada para gerar cronograma nutricional.</td></tr>`}
+           </tbody>
+         </table></div>
+       </div>
+
+       <div class="card ficha-card" style="margin-bottom:0">
+         <h3>Histórico reprodutivo</h3>
+         <div class="table-wrap"><table class="compact-table">
+           <thead><tr><th>Cobertura</th><th>Parto</th><th>Lote</th><th>Nascidos</th><th>Desmamados</th></tr></thead>
+           <tbody>${historico.map(h=>`<tr>
+             <td>${fmt(h.coberturaDt)}</td>
+             <td>${fmt(h.partoRealDt || h.partoPrevDt)}</td>
+             <td>${h.lote || "—"}</td>
+             <td>${h.nasc_vivos || somaCampos(h.nasc_machos,h.nasc_femeas)}</td>
+             <td>${h.desmamados || somaCampos(h.desm_machos,h.desm_femeas)}</td>
+           </tr>`).join("")}</tbody>
+         </table></div>
+       </div>
+     </div>
+
+     <div class="ficha-side">
+       <div class="card ficha-card">
+         <h3>Cronograma de manejo</h3>
+         ${tabelaEventosCompacta(manejos, 14)}
+       </div>
+       <div class="card ficha-card" style="margin-top:8px">
+         <h3>Anotações do colaborador</h3>
+         <table class="compact-table" style="min-width:0"><thead><tr><th>Data</th><th>Ocorrência / observação</th><th>Resp.</th></tr></thead><tbody>
+         ${Array.from({length:10},()=>"<tr><td>&nbsp;</td><td></td><td></td></tr>").join("")}
+         </tbody></table>
+       </div>
+     </div>
+   </div>
+ </div>`;
+}
+
+function renderRelatorios(){
+ const regs = DATA.map(normalizar);
+ const matrizes = regs.filter(isMatriz);
+ const reps = regs.filter(isReprodutor);
+ const partos = matrizes.filter(r=>r.partoRealDt || r.partoPrevDt);
+ const nascidos = matrizes.reduce((s,r)=>s+num(r.nasc_vivos || somaCampos(r.nasc_machos,r.nasc_femeas)),0);
+ const desm = matrizes.reduce((s,r)=>s+num(r.desmamados || somaCampos(r.desm_machos,r.desm_femeas)),0);
+ const mort = nascidos ? (((nascidos-desm)/nascidos)*100).toFixed(1).replace(".",",")+"%" : "—";
+
+ $("#metricasRelatorio").innerHTML = [
+   ["Matrizes cadastradas", animaisUnicosPorCategoria("matriz").length],
+   ["Reprodutores", animaisUnicosPorCategoria("reprodutor").length],
+   ["Ciclos/lançamentos", matrizes.filter(r=>r.coberturaDt || r.partoBaseDt).length],
+   ["Partos/lotes", partos.length],
+   ["Nascidos vivos", nascidos],
+   ["Mortalidade geral", mort]
+ ].map(x=>`<div class="metric"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+
+ const mapa = new Map();
+ matrizes.forEach(r=>{
+   const chave = r.id || r.nome;
+   if(!chave) return;
+   if(!mapa.has(chave)) mapa.set(chave, {id:r.id,nome:r.nome,ciclos:0,nasc:0,desm:0,partos:0,status:r.statusAnimal||"",reg:r});
+   const m = mapa.get(chave);
+   if(r.coberturaDt || r.partoBaseDt) m.ciclos++;
+   if(r.partoBaseDt) m.partos++;
+   m.nasc += num(r.nasc_vivos || somaCampos(r.nasc_machos,r.nasc_femeas));
+   m.desm += num(r.desmamados || somaCampos(r.desm_machos,r.desm_femeas));
+   if(r.statusAnimal) m.status = r.statusAnimal;
+ });
+
+ $("#tRelatorioMatrizes").innerHTML = `<thead><tr><th>Matriz</th><th>Ciclos</th><th>Partos/lotes</th><th>Nascidos vivos</th><th>Desmamados</th><th>Mortalidade</th><th>Status</th></tr></thead><tbody>`+
+ [...mapa.values()].sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||""),"pt-BR")).map(m=>{
+   const mortal = m.nasc ? (((m.nasc-m.desm)/m.nasc)*100).toFixed(1).replace(".",",")+"%" : "—";
+   return `<tr><td><b>${m.nome||"—"}</b> ${m.id?`(${m.id})`:""}</td><td>${m.ciclos}</td><td>${m.partos}</td><td>${m.nasc}</td><td>${m.desm}</td><td>${mortal}</td><td>${badgeStatusAnimal(m.reg)}</td></tr>`;
+ }).join("")+`</tbody>`;
+
+ const gruposIdade = {};
+ [...mapa.values()].forEach(m=>{
+   const c = classificacaoEtariaMatriz(m.reg);
+   if(!gruposIdade[c.txt]) gruposIdade[c.txt] = {qtd:0, obs:c.obs, cls:c.cls};
+   gruposIdade[c.txt].qtd++;
+ });
+
+ if($("#tRelatorioIdade")){
+   $("#tRelatorioIdade").innerHTML = `<thead><tr><th>Classificação etária</th><th>Quantidade</th><th>Observação técnica</th></tr></thead><tbody>`+
+   Object.entries(gruposIdade).map(([k,v])=>`<tr><td>${badge(k,v.cls)}</td><td>${v.qtd}</td><td>${v.obs}</td></tr>`).join("")+`</tbody>`;
+ }
+}
+
+function renderTudo(){
+ dataRef=parseDate($("#dataRef").value)||new Date();
+ preencherFiltrosSuspensos(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderRelatorios(); renderNutricao();
+}
+
+$$(".tab").forEach(b=>b.addEventListener("click",()=>{
+  $$(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  $$(".section").forEach(s=>s.classList.remove("active"));
+  const alvo = $("#"+b.dataset.tab);
+  if(alvo) alvo.classList.add("active");
+  if(b.dataset.tab==="fichamatriz") renderFichaMatriz();
+  if(b.dataset.tab==="fichalote") renderFichaLote();
+  if(b.dataset.tab==="hoje") renderHoje();
+  if(b.dataset.tab==="relatorios") renderRelatorios();
+}));
+$("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderRelatorios();});
+$("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#filtroReprodutor").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#filtroLote").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
 $("#dataRef").addEventListener("change",renderTudo);
-$("#mesCalendario").addEventListener("change",renderCalendario);
+$("#mesCalendario").addEventListener("change",()=>{renderCalendario();renderHoje();});
 $("#btnHoje").addEventListener("click",()=>{$("#dataRef").value=iso(new Date());renderTudo();});
 $("#mesAnterior").addEventListener("click",()=>{const [y,m]=$("#mesCalendario").value.split("-").map(Number);const d=new Date(y,m-2,1);$("#mesCalendario").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}`;renderCalendario();});
 $("#mesProximo").addEventListener("click",()=>{const [y,m]=$("#mesCalendario").value.split("-").map(Number);const d=new Date(y,m,1);$("#mesCalendario").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}`;renderCalendario();});
 $("#selLote").addEventListener("change",renderFichaLote);
+$("#selMatrizFicha").addEventListener("change",renderFichaMatriz);
 async function carregarDadosAppsScript(silencioso=false){
  try{
    const status = $("#statusCarga"); const syncResumo = $("#syncResumo");
