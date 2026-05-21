@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Classificador de Capacidade de Uso do Solo</title>
+  <style>
+    :root{
+      --bg:#f6f8f7; --card:#ffffff; --ink:#17221f; --muted:#647067; --line:#dce5df;
+      --green:#16a34a; --green-2:#dcfce7; --yellow:#facc15; --yellow-2:#fef9c3;
+      --orange:#f97316; --orange-2:#ffedd5; --red:#dc2626; --red-2:#fee2e2;
+      --blue:#0284c7; --blue-2:#e0f2fe; --dark:#111827; --soft:#f8fafc;
+      --accent:#0f766e; --accent2:#f4511e;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#eef7f0 0%,#f8fafc 50%,#fff7ed 100%);color:var(--ink)}
+    body{padding:18px}
+    .app{max-width:1366px;margin:auto;background:rgba(255,255,255,.84);border:1px solid rgba(15,118,110,.18);box-shadow:0 20px 60px rgba(15,23,42,.12);border-radius:28px;overflow:hidden;min-height:720px}
+    header{padding:22px 26px;background:linear-gradient(120deg,#073b35,#0f766e 58%,#f4511e);color:#fff;position:relative;overflow:hidden}
+    header:after{content:"";position:absolute;right:-80px;top:-80px;width:260px;height:260px;background:rgba(255,255,255,.12);border-radius:50%}
+    .topline{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;position:relative;z-index:1}
+    h1{margin:0 0 6px;font-size:clamp(24px,3vw,40px);letter-spacing:-.04em;line-height:1.05}
+    .subtitle{margin:0;max-width:850px;opacity:.93;font-size:15px;line-height:1.45}
+    .badge{white-space:nowrap;border:1px solid rgba(255,255,255,.35);padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;font-weight:800}
+    nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}
+    .tab{border:0;border-radius:999px;background:rgba(255,255,255,.18);color:#fff;padding:10px 14px;font-weight:800;cursor:pointer;transition:.2s}
+    .tab:hover,.tab.active{background:#fff;color:#0f766e;transform:translateY(-1px)}
+    main{padding:18px;display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+    @media(max-width:980px){main{grid-template-columns:1fr}.topline{flex-direction:column}.badge{white-space:normal}}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .panel h2{margin:0 0 12px;font-size:20px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+    .hint{font-size:13px;color:var(--muted);line-height:1.45;margin-top:-4px;margin-bottom:12px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
+    label{font-size:12px;color:#42504a;font-weight:900;text-transform:uppercase;letter-spacing:.045em;display:block;margin-bottom:5px}
+    input,select,textarea{width:100%;border:1px solid #cdd8d1;background:#fff;border-radius:14px;padding:11px 12px;font-size:14px;outline:none;transition:.15s;color:#14211c}
+    input:focus,select:focus,textarea:focus{border-color:#0f766e;box-shadow:0 0 0 4px rgba(15,118,110,.12)}
+    .field{margin-bottom:10px}
+    .factor-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:470px;overflow:auto;padding-right:4px}
+    @media(max-width:720px){.factor-list{grid-template-columns:1fr;max-height:none}}
+    .factor{border:1px solid #e2e8e3;border-radius:18px;padding:11px;background:#fbfdfc;position:relative;transition:.2s}
+    .factor:hover{border-color:#a7c7ba;transform:translateY(-1px)}
+    .factor .small{font-size:12px;color:var(--muted);margin-top:6px;min-height:28px;line-height:1.32}
+    .class-pill{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:26px;border-radius:999px;font-weight:900;font-size:13px;border:1px solid #d6dee0;background:#fff;margin-left:6px}
+    .result-card{border-radius:26px;min-height:235px;padding:20px;background:linear-gradient(135deg,#ffffff,#f8fafc);border:1px solid var(--line);position:relative;overflow:hidden}
+    .result-card:before{content:"";position:absolute;right:-55px;top:-55px;width:190px;height:190px;border-radius:50%;background:var(--class-soft,#dcfce7)}
+    .result-content{position:relative;z-index:1}
+    .final-class{font-size:76px;font-weight:950;line-height:.95;margin:4px 0;letter-spacing:-.07em;color:var(--class-color,#16a34a)}
+    .group{display:inline-flex;padding:8px 12px;border-radius:999px;background:var(--class-soft,#dcfce7);color:var(--class-color,#16a34a);font-weight:900;margin-bottom:12px}
+    .diagnosis{font-size:16px;line-height:1.45;color:#26342f;margin:8px 0 0}
+    .meter{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:12px 0 6px;display:flex}
+    .seg{height:100%;flex:1;border-right:1px solid rgba(255,255,255,.7);opacity:.28}.seg.on{opacity:1}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.chip{padding:7px 10px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:12px;font-weight:800;color:#405048}
+    .warning{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:16px;padding:10px 12px;font-size:13px;line-height:1.4;margin-top:10px}
+    .ok{background:#ecfdf5;border-color:#bbf7d0;color:#166534}.bad{background:#fef2f2;border-color:#fecaca;color:#991b1b}.info{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+    .actionbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button{border:0;border-radius:14px;padding:11px 14px;font-weight:900;cursor:pointer;transition:.18s}.primary{background:#0f766e;color:#fff}.secondary{background:#f1f5f9;color:#0f172a}.danger{background:#fee2e2;color:#991b1b}.primary:hover,.secondary:hover,.danger:hover{transform:translateY(-1px);filter:brightness(.98)}
+    .recommendation{display:grid;gap:10px;margin-top:12px}.rec-item{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;line-height:1.4}.rec-item strong{color:#0f766e}
+    .subscreen{display:none}.subscreen.active{display:block}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff}table{width:100%;border-collapse:collapse;min-width:720px}th,td{padding:10px 12px;border-bottom:1px solid #e5ece8;text-align:left;font-size:13px;vertical-align:top}th{background:#f1f7f4;color:#24443c;font-size:12px;text-transform:uppercase;letter-spacing:.04em}tr:hover td{background:#fbfdfc}
+    .map-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.map-cell{min-height:92px;border:1px dashed #cbd5cf;border-radius:18px;padding:12px;background:#fff;display:flex;flex-direction:column;justify-content:space-between}.map-cell b{font-size:15px}.map-cell span{font-size:12px;color:#47554f}
+    @media(max-width:720px){.map-grid{grid-template-columns:1fr 1fr}}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#47554f}.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+    .mini{font-size:12px;color:var(--muted);line-height:1.45}.footer-note{padding:12px 18px;border-top:1px solid var(--line);background:#fbfdfc;color:#5d6c65;font-size:12px;line-height:1.45}
+    .toast{position:fixed;right:18px;bottom:18px;background:#0f172a;color:white;padding:12px 16px;border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;transform:translateY(12px);pointer-events:none;transition:.25s;z-index:99}.toast.show{opacity:1;transform:translateY(0)}
+    .class-I,.class-II,.class-III{--class-color:#16a34a;--class-soft:#dcfce7}.class-IV{--class-color:#ca8a04;--class-soft:#fef9c3}.class-V,.class-VI{--class-color:#f97316;--class-soft:#ffedd5}.class-VII{--class-color:#dc2626;--class-soft:#fee2e2}.class-VIII{--class-color:#0284c7;--class-soft:#e0f2fe}
+    .print-only{display:none}@media print{body{background:#fff;padding:0}.app{box-shadow:none;border:0;border-radius:0}.tab,.actionbar,.footer-note{display:none}.print-only{display:block}main{display:block}.panel{break-inside:avoid;margin-bottom:12px}.subscreen{display:block!important}.factor-list{max-height:none}}
+  
+    .help-btn{margin-top:8px;border:1px solid #cfe3da;background:#f0fdfa;color:#0f766e;border-radius:12px;padding:7px 9px;font-size:12px;font-weight:900;cursor:pointer;width:100%}
+    .help-btn:hover{background:#ccfbf1;transform:translateY(-1px)}
+    .visual-panel{margin-top:14px;border:1px solid #d7e8e0;background:linear-gradient(135deg,#ffffff,#f0fdfa);border-radius:22px;padding:14px;box-shadow:0 10px 24px rgba(15,118,110,.08)}
+    .visual-panel h3{margin:0 0 8px;font-size:18px;color:#0f766e}
+    .visual-panel p{margin:0 0 10px;color:#475569;line-height:1.45;font-size:14px}
+    .visual-svg{width:100%;height:170px;border-radius:18px;background:#ecfeff;border:1px solid #bae6fd;overflow:hidden}
+    .visual-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media(max-width:900px){.visual-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.visual-grid{grid-template-columns:1fr}}
+    .visual-card{border:1px solid #dcebe4;background:#fff;border-radius:20px;padding:13px;box-shadow:0 8px 20px rgba(15,23,42,.05)}
+    .visual-card h3{margin:8px 0 6px;color:#0f766e;font-size:17px}
+    .visual-card p{font-size:13px;line-height:1.4;color:#475569;margin:0}
+    .mini-svg{height:120px;width:100%;border-radius:16px;background:#f8fafc;border:1px solid #e2e8f0}
+    .flow-dot{animation:flow 2.2s linear infinite}
+    .rain{animation:rain 1.3s linear infinite}
+    .slide{animation:slide 2.4s ease-in-out infinite}
+    .pulse{animation:pulse 1.6s ease-in-out infinite}
+    .grow{animation:grow 2s ease-in-out infinite;transform-origin:center bottom}
+    @keyframes flow{from{transform:translateX(-20px)}to{transform:translateX(145px)}}
+    @keyframes rain{from{transform:translateY(-15px);opacity:.1}to{transform:translateY(90px);opacity:.8}}
+    @keyframes slide{0%,100%{transform:translate(0,0)}50%{transform:translate(18px,10px)}}
+    @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+    @keyframes grow{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1)}}
+    .term{display:inline-flex;align-items:center;gap:5px;background:#ecfeff;border:1px solid #bae6fd;color:#075985;padding:4px 7px;border-radius:999px;font-weight:900;font-size:12px}
+    .legend-line{display:flex;gap:8px;align-items:flex-start;margin:7px 0;font-size:13px;color:#475569;line-height:1.35}
+    .legend-line b{color:#0f766e}
+    .visual-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .visual-toolbar button{padding:8px 10px;font-size:12px;border-radius:12px}
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="topline">
+      <div>
+        <h1>Classificador de Capacidade de Uso do Solo</h1>
+        <p class="subtitle">Selecione as características de cada área ou talhão da propriedade. O app identifica a limitação mais severa, permite marcar fatores ausentes sem penalização, classifica a área em classes I a VIII e recomenda o uso sustentável.</p>
+      </div>
+      <div class="badge">Infográfico interativo • MRN / Solos</div>
+    </div>
+    <nav>
+      <button class="tab active" data-tab="classificar">1. Classificar área</button>
+      <button class="tab" data-tab="comparar">2. Comparar talhões</button>
+      <button class="tab" data-tab="guia">3. Guia rápido</button>
+      <button class="tab" data-tab="visual">4. Guia visual</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel subscreen active" id="classificar">
+      <h2>🌱 Caracterização da área</h2>
+      <p class="hint">Preencha os dados básicos e selecione os fatores limitantes observados em campo.</p>
+      <div class="grid3">
+        <div class="field"><label>Propriedade</label><input id="propertyName" placeholder="Ex.: Sítio Santa Luzia"></div>
+        <div class="field"><label>Área ou talhão</label><input id="areaName" placeholder="Ex.: Talhão 01"></div>
+        <div class="field"><label>Tamanho da área (ha)</label><input id="areaSize" type="number" min="0" step="0.01" placeholder="Ex.: 2,5"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Uso atual ou pretendido</label><select id="useType"></select></div>
+        <div class="field"><label>Observação de campo</label><input id="note" placeholder="Ex.: área próxima ao córrego, solo raso..."></div>
+      </div>
+
+      <h2 style="margin-top:12px">🧭 Fatores de limitação</h2>
+      <p class="hint">A classe final é determinada pela característica que apresentar a maior restrição.</p>
+      <div id="factorList" class="factor-list"></div>
+    </section>
+
+    <aside class="panel subscreen active" id="classificar_resultado">
+      <h2>📊 Resultado da classificação</h2>
+      <div id="resultCard" class="result-card class-I">
+        <div class="result-content">
+          <div class="group" id="groupBadge">Grupo A</div>
+          <div class="mini">Classe final de capacidade de uso</div>
+          <div class="final-class" id="finalClass">I</div>
+          <div class="meter" id="meter"></div>
+          <p class="diagnosis" id="diagnosis">Selecione as características da área para gerar o diagnóstico.</p>
+          <div class="chips" id="chips"></div>
+        </div>
+      </div>
+      <div id="compatBox" class="warning info"></div>
+      <div class="recommendation" id="recommendation"></div>
+      <div class="actionbar">
+        <button class="primary" onclick="addArea()">Adicionar à comparação</button>
+        <button class="secondary" onclick="resetForm()">Limpar seleção</button>
+        <button class="secondary" onclick="window.print()">Imprimir / PDF</button>
+      </div>
+      <div id="visualHelp" class="visual-panel">
+        <h3>👁️ Ajuda visual</h3>
+        <p>Clique em “Ver explicação visual” em qualquer fator para mostrar uma ilustração simples.</p>
+        <div id="visualHelpContent"></div>
+      </div>
+    </aside>
+
+    <section class="panel subscreen" id="comparar" style="grid-column:1 / -1">
+      <h2>🗺️ Comparação das áreas da propriedade</h2>
+      <p class="hint">Cada área adicionada aparece na tabela e no mapa esquemático. Use para discutir zoneamento, intensidade de uso e conservação.</p>
+      <div class="table-wrap"><table><thead><tr><th>Área</th><th>ha</th><th>Classe</th><th>Grupo</th><th>Limitação principal</th><th>Uso atual</th><th>Status do uso</th><th>Recomendação resumida</th><th></th></tr></thead><tbody id="areaTable"></tbody></table></div>
+      <div class="map-grid" id="mapGrid"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:#16a34a"></i>I–III: maior aptidão</span>
+        <span><i class="dot" style="background:#ca8a04"></i>IV: uso limitado</span>
+        <span><i class="dot" style="background:#f97316"></i>V–VI: restrições fortes</span>
+        <span><i class="dot" style="background:#dc2626"></i>VII: uso muito restrito</span>
+        <span><i class="dot" style="background:#0284c7"></i>VIII: preservação/APP</span>
+      </div>
+      <div class="actionbar"><button class="secondary" onclick="exportCSV()">Exportar CSV</button><button class="danger" onclick="clearAreas()">Apagar comparação</button></div>
+    </section>
+
+    <section class="panel subscreen" id="guia" style="grid-column:1 / -1">
+      <h2>📘 Guia didático: como interpretar</h2>
+      <div class="grid2">
+        <div class="rec-item"><strong>Classes I a IV — Grupo A</strong><br>Terras com possibilidade de uso agrícola, variando de poucas limitações até necessidade de práticas complexas e menor revolvimento do solo.</div>
+        <div class="rec-item"><strong>Classes V a VII — Grupo B</strong><br>Terras com restrições mais fortes. Em geral, exigem pastagens bem manejadas, culturas permanentes, reflorestamento e conservação contínua.</div>
+        <div class="rec-item"><strong>Classe VIII — Grupo C</strong><br>Áreas impróprias para culturas, pastagens ou reflorestamento. Devem ser destinadas à preservação, fauna, flora, água, recreação ou APP.</div>
+        <div class="rec-item"><strong>Regra do classificador</strong><br>A classe final é definida pela limitação mais severa. Quando uma limitação não existe, selecione “não ocorre”, “não aparente” ou “sem risco aparente”, que entra como Classe I e não piora a classificação. Exemplo: se quase todos os fatores indicam classe III, mas a erosão indica VI, a área será classificada como VI.</div>
+      </div>
+      <h2 style="margin-top:18px">🧪 Sugestão de atividade</h2>
+      <p class="hint">Divida a propriedade em talhões. Os alunos avaliam solo, relevo, drenagem e erosão, classificam cada área e depois defendem o uso recomendado para cada talhão.</p>
+    </section>
+
+    <section class="panel subscreen" id="visual" style="grid-column:1 / -1">
+      <h2>👁️ Guia visual dos fatores de campo</h2>
+      <p class="hint">Use esta aba para explicar termos que costumam gerar dúvida. As imagens são ilustrações didáticas, não substituem observação técnica em campo.</p>
+      <div class="visual-grid" id="visualGrid"></div>
+    </section>
+
+  </main>
+  <div class="footer-note">Base técnica: tabela de limitações da planilha enviada e conteúdo da apostila sobre enquadramento de terras, classes, grupos, subclasses, recomendações de uso e práticas conservacionistas. Este app é didático e não substitui laudo técnico agronômico ou pedológico.</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const classOrder = {I:1, II:2, III:3, IV:4, V:5, VI:6, VII:7, VIII:8};
+const orderClass = Object.fromEntries(Object.entries(classOrder).map(([k,v])=>[v,k]));
+const roman = n => orderClass[n] || '—';
+const groupOf = cls => classOrder[cls] <= 4 ? 'Grupo A' : classOrder[cls] <= 7 ? 'Grupo B' : 'Grupo C';
+const classColor = cls => ({I:'#16a34a',II:'#16a34a',III:'#16a34a',IV:'#ca8a04',V:'#f97316',VI:'#f97316',VII:'#dc2626',VIII:'#0284c7'}[cls]||'#64748b');
+
+const factors = [
+  {id:'declive', name:'Classes de declive', sub:'Relevo e risco de erosão pelo grau de inclinação.', options:[
+    ['A','0–3%', 'I'], ['B','3–6%', 'II'], ['C','6–12%', 'III'], ['D','12–20%', 'IV'], ['E','20–40%', 'VI'], ['F','40–70%', 'VII'], ['G','70–100%', 'VIII'] ]},
+  {id:'fertilidade', name:'Fertilidade aparente', sub:'Potencial químico natural observado ou estimado.', options:[
+    ['1','Muito alta','I'], ['2','Alta','I'], ['3','Média','II'], ['4','Baixa','III'], ['5','Muito baixa','VI'] ]},
+  {id:'profundidade', name:'Profundidade efetiva', sub:'Espessura útil explorada pelas raízes.', options:[
+    ['1','Mais do que 200 cm','I'], ['2','100–200 cm','I'], ['3','50–100 cm','II'], ['4','25–50 cm','IV'], ['5','Menos que 25 cm','VI'] ]},
+  {id:'drenagem', name:'Drenagem interna', sub:'Facilidade de saída da água dentro do perfil.', options:[
+    ['1','Excessiva','II'], ['2','Boa','I'], ['3','Moderada','II'], ['4','Pobre','III'], ['5','Impedida','V'] ]},
+  {id:'defluvio', name:'Deflúvio superficial', sub:'Velocidade de escoamento superficial da água.', options:[
+    ['1','Muito rápido','IV'], ['2','Rápido','III'], ['3','Moderado','II'], ['4','Lento','I'], ['5','Muito lento','II'] ], note:'Na planilha, a opção “rápido” veio sem marcação; aqui foi classificada como III por coerência didática entre “muito rápido” e “moderado”.'},
+  {id:'pedregosidade', name:'Pedregosidade', sub:'Presença de pedras que limita preparo, plantio e manejo.', options:[
+    ['1','Sem pedras','I'], ['2','Menor ou igual a 1%','II'], ['3','1–10%','III'], ['4','10–30%','IV'], ['5','30–50%','VI'], ['6','Mais de 50%','VII'] ]},
+  {id:'inundacao', name:'Risco de inundação', sub:'Frequência de alagamentos ou enchentes.', options:[
+    ['0','Sem risco aparente','I'], ['1','Ocasionais','III'], ['2','Frequentes','V'], ['3','Muito frequentes','VIII'] ]},
+  {id:'erosao_laminar', name:'Erosão laminar', sub:'Remoção superficial uniforme do solo.', options:[
+    ['0','Não aparente','I'], ['1','Ligeira','II'], ['2','Moderada','III'], ['3','Severa','VI'], ['4','Muito severa','VII'], ['5','Extremamente severa','VIII'] ]},
+  {id:'sulcos_superficial', name:'Erosão em sulcos superficiais', sub:'Sulcos pequenos por escoamento concentrado.', options:[
+    ['0','Não ocorre / não aparente','I'], ['7','Ocasionais','II'], ['8','Frequentes','III'], ['9','Muito frequentes','IV'] ]},
+  {id:'sulcos_rasos', name:'Erosão em sulcos rasos', sub:'Sulcos rasos mais expressivos e frequentes.', options:[
+    ['0','Não ocorre / não aparente','I'], ['7','Ocasionais','III'], ['8','Frequentes','IV'], ['9','Muito frequentes','VI'] ]},
+  {id:'sulcos_profundos', name:'Erosão em sulcos profundos', sub:'Sulcos profundos com maior risco de degradação.', options:[
+    ['0','Não ocorre / não aparente','I'], ['7','Ocasionais','IV'], ['8','Frequentes','VI'], ['9','Muito frequentes','VII'] ]},
+  {id:'vocoroca', name:'Erosão em voçoroca', sub:'Erosão avançada, com canais profundos e instáveis.', options:[
+    ['0','Não ocorre / não aparente','I'], ['7V','Ocasional','VI'], ['8V','Frequente','VII'], ['9V','Muito frequente','VIII'] ]}
+];
+
+const uses = [
+  {id:'preservacao', label:'Preservação / APP / fauna e flora', intensity:0},
+  {id:'recreacao', label:'Recreação / turismo / armazenamento de água', intensity:0},
+  {id:'reflorestamento_complexo', label:'Pastagem ou reflorestamento — problema complexo', intensity:1},
+  {id:'reflorestamento_moderado', label:'Pastagem ou reflorestamento — problema moderado', intensity:2},
+  {id:'reflorestamento_simples', label:'Pastagem ou reflorestamento — problema simples', intensity:3},
+  {id:'cultivo_occasional', label:'Culturas ocasionais em extensão limitada', intensity:4},
+  {id:'anuais_complexo', label:'Culturas anuais — conservação complexa', intensity:5},
+  {id:'anuais_moderado', label:'Culturas anuais — conservação moderada', intensity:6},
+  {id:'anuais_simples', label:'Culturas anuais — conservação simples', intensity:7}
+];
+const maxIntensityByClass = {I:7, II:6, III:5, IV:4, V:3, VI:2, VII:1, VIII:0};
+const rationalByClass = {I:'culturas anuais com práticas simples ou qualquer cultura bem manejada', II:'culturas anuais com práticas moderadas/simples de conservação', III:'culturas com práticas complexas de conservação', IV:'cultivos ocasionais ou mínimo revolvimento do solo', V:'culturas, pastagens e reflorestamento apenas em situações especiais', VI:'culturas permanentes, pastagens bem manejadas ou reflorestamento', VII:'pastagens bem manejadas, reflorestamentos e cultivos arbóreos perenes', VIII:'preservação, APP, proteção da água, fauna e flora'};
+const recommendations = {
+  I:['Apta para quaisquer culturas.', 'Não exige práticas especiais de conservação, além do manejo agrícola normal.', 'Manter cobertura e fertilidade para preservar o potencial produtivo.'],
+  II:['Apta para quaisquer culturas com práticas simples.', 'Usar preparo em nível, manutenção de palhada e adubação adequada.', 'Evitar manejo que deixe o solo descoberto por muito tempo.'],
+  III:['Apta para culturas, mas exige práticas complexas.', 'Planejar controle de erosão, cobertura vegetal e manejo do escoamento.', 'Pode exigir terraceamento, rotação e conservação integrada.'],
+  IV:['Uso agrícola limitado, com mínimo revolvimento do solo.', 'Cultivos ocasionais ou em pequena extensão.', 'Priorizar cobertura permanente e práticas complexas de conservação.'],
+  V:['Uso agrícola apenas em situações especiais.', 'Limitações geralmente associadas à água, inundação ou drenagem.', 'Exigir conservação do solo e da água antes de intensificar o uso.'],
+  VI:['Indicada para culturas permanentes, pastagens bem manejadas e reflorestamento.', 'Evitar culturas anuais intensivas.', 'Manter boa cobertura do solo e práticas conservacionistas.'],
+  VII:['Uso muito restrito.', 'Indicada para pastagens bem manejadas, reflorestamento e cultivos arbóreos perenes.', 'Exige conservação complexa e cobertura constante do solo.'],
+  VIII:['Imprópria para culturas, pastagens ou reflorestamento produtivo.', 'Destinar à preservação, APP, fauna, flora, recreação ou armazenamento de água.', 'Não intensificar o uso agrícola.']
+};
+let savedAreas = JSON.parse(localStorage.getItem('soloAreas') || '[]');
+
+
+const visualData = {
+  declive:{
+    title:"Declividade",
+    simple:"É a inclinação do terreno. Quanto mais inclinado, maior o risco de a água escorrer rápido e causar erosão.",
+    observe:"Observe se a área é plana, suave, ondulada ou muito inclinada. Em campo, a água tende a correr mais em áreas de maior declive.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#ecfeff"/>
+      <polygon points="20,135 330,55 330,155 20,155" fill="#86efac" stroke="#166534" stroke-width="3"/>
+      <line x1="40" y1="129" x2="310" y2="60" stroke="#0f766e" stroke-width="6" stroke-linecap="round"/>
+      <circle class="slide" cx="95" cy="110" r="12" fill="#f97316"/>
+      <path d="M70 138 C120 120,160 116,220 94" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="8 8"/>
+      <text x="28" y="33" font-size="18" font-weight="700" fill="#0f172a">Terreno inclinado = maior escoamento</text>
+      <text x="235" y="78" font-size="13" font-weight="700" fill="#166534">declive</text>
+    </svg>`
+  },
+  fertilidade:{
+    title:"Fertilidade aparente",
+    simple:"É uma estimativa da capacidade do solo fornecer nutrientes para as plantas.",
+    observe:"Pode ser avaliada por histórico de produtividade, vigor das plantas, análise de solo, cor, matéria orgânica e manejo anterior.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#f0fdf4"/>
+      <rect x="0" y="118" width="360" height="52" fill="#7c2d12"/>
+      <g class="grow">
+        <path d="M180 120 C178 90,175 70,150 50" stroke="#166534" stroke-width="6" fill="none"/>
+        <path d="M180 120 C182 90,188 72,215 48" stroke="#166534" stroke-width="6" fill="none"/>
+        <ellipse cx="145" cy="48" rx="26" ry="14" fill="#22c55e"/>
+        <ellipse cx="220" cy="46" rx="28" ry="15" fill="#22c55e"/>
+      </g>
+      <circle cx="82" cy="134" r="7" fill="#facc15"/><circle cx="116" cy="143" r="7" fill="#f97316"/><circle cx="250" cy="135" r="7" fill="#38bdf8"/>
+      <text x="26" y="32" font-size="18" font-weight="700" fill="#0f172a">Nutrientes + manejo = vigor</text>
+      <text x="42" y="152" font-size="12" font-weight="700" fill="#fff">solo</text>
+    </svg>`
+  },
+  profundidade:{
+    title:"Profundidade efetiva",
+    simple:"É a profundidade que as raízes conseguem explorar sem impedimentos fortes.",
+    observe:"Solo raso limita raízes, água e nutrientes. Pode haver pedra, camada compactada, lençol freático ou rocha perto da superfície.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#f8fafc"/>
+      <rect x="40" y="45" width="120" height="105" fill="#92400e"/><rect x="200" y="45" width="120" height="105" fill="#92400e"/>
+      <rect x="40" y="118" width="120" height="32" fill="#64748b"/><rect x="200" y="148" width="120" height="2" fill="#64748b"/>
+      <path d="M100 45 C102 75,82 86,89 113" stroke="#fef3c7" stroke-width="4" fill="none"/>
+      <path d="M260 45 C262 82,242 110,250 146" stroke="#fef3c7" stroke-width="4" fill="none"/>
+      <text x="52" y="35" font-size="15" font-weight="700" fill="#0f172a">Raso</text>
+      <text x="212" y="35" font-size="15" font-weight="700" fill="#0f172a">Profundo</text>
+      <text x="54" y="138" font-size="12" font-weight="700" fill="#fff">impedimento</text>
+    </svg>`
+  },
+  drenagem:{
+    title:"Drenagem interna",
+    simple:"É a facilidade com que a água se move dentro do perfil do solo.",
+    observe:"Drenagem pobre pode deixar o solo encharcado, reduzir oxigênio para raízes e dificultar o uso agrícola.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#eff6ff"/>
+      <rect x="55" y="55" width="95" height="95" fill="#92400e"/><rect x="210" y="55" width="95" height="95" fill="#92400e"/>
+      <path class="rain" d="M90 20 v35 M115 15 v35 M250 20 v35 M275 15 v35" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/>
+      <path d="M83 75 C100 95,100 120,90 145" stroke="#38bdf8" stroke-width="5" fill="none"/>
+      <rect x="210" y="115" width="95" height="35" fill="#38bdf8" opacity=".65"/>
+      <text x="58" y="38" font-size="14" font-weight="700" fill="#0f172a">Boa</text>
+      <text x="213" y="38" font-size="14" font-weight="700" fill="#0f172a">Pobre/impedida</text>
+    </svg>`
+  },
+  defluvio:{
+    title:"Deflúvio superficial",
+    simple:"É a água que escorre pela superfície depois da chuva.",
+    observe:"Quando é muito rápido, aumenta o risco de erosão e perda de solo. Cobertura vegetal e curvas de nível ajudam a reduzir.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#ecfeff"/>
+      <polygon points="25,120 330,60 330,155 25,155" fill="#bbf7d0"/>
+      <path class="flow-dot" d="M45 116 C95 105,150 94,210 82" stroke="#0284c7" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M45 140 C125 125,200 110,305 83" stroke="#0ea5e9" stroke-width="3" stroke-dasharray="8 8" fill="none"/>
+      <text x="28" y="35" font-size="18" font-weight="700" fill="#0f172a">Água correndo sobre o solo</text>
+    </svg>`
+  },
+  pedregosidade:{
+    title:"Pedregosidade",
+    simple:"É a presença de pedras na superfície ou no perfil do solo.",
+    observe:"Muitas pedras dificultam preparo, plantio, mecanização, raízes e podem reduzir a área útil de cultivo.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#f8fafc"/>
+      <rect x="0" y="100" width="360" height="70" fill="#92400e"/>
+      <ellipse cx="75" cy="126" rx="28" ry="17" fill="#64748b"/><ellipse cx="135" cy="142" rx="20" ry="12" fill="#475569"/><ellipse cx="220" cy="126" rx="33" ry="18" fill="#64748b"/><ellipse cx="285" cy="146" rx="26" ry="13" fill="#475569"/>
+      <path d="M55 98 C75 70,100 75,110 98" fill="#22c55e"/>
+      <path d="M255 98 C272 80,295 82,310 98" fill="#22c55e"/>
+      <text x="28" y="35" font-size="18" font-weight="700" fill="#0f172a">Pedras limitam manejo e raízes</text>
+    </svg>`
+  },
+  inundacao:{
+    title:"Risco de inundação",
+    simple:"É a chance da área ficar coberta por água em enchentes ou alagamentos.",
+    observe:"Áreas de baixada e margens de córrego costumam ter maior risco e podem exigir preservação ou uso muito restrito.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#e0f2fe"/>
+      <rect x="0" y="116" width="360" height="54" fill="#38bdf8" opacity=".75"/>
+      <path class="pulse" d="M0 116 C60 100,100 132,160 116 S260 100,360 116" stroke="#0284c7" stroke-width="5" fill="none"/>
+      <path d="M55 115 L85 70 L115 115 Z" fill="#22c55e"/>
+      <rect x="210" y="88" width="55" height="38" fill="#f97316"/><polygon points="205,88 238,62 270,88" fill="#b45309"/>
+      <text x="26" y="35" font-size="18" font-weight="700" fill="#0f172a">Baixada ou margem de córrego</text>
+    </svg>`
+  },
+  erosao_laminar:{
+    title:"Erosão laminar",
+    simple:"É a retirada de uma camada fina e uniforme da superfície do solo.",
+    observe:"Às vezes é difícil de perceber. Sinais: solo mais claro, raízes expostas, perda de matéria orgânica e enxurrada barrenta.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#fff7ed"/>
+      <polygon points="30,115 330,80 330,155 30,155" fill="#a16207"/>
+      <path class="flow-dot" d="M60 105 C125 100,200 92,300 83" stroke="#38bdf8" stroke-width="5" fill="none"/>
+      <path d="M55 122 C130 113,210 105,310 94" stroke="#fef3c7" stroke-width="8" opacity=".8"/>
+      <text x="25" y="34" font-size="18" font-weight="700" fill="#0f172a">Camada superficial sendo removida</text>
+    </svg>`
+  },
+  sulcos_superficial:{
+    title:"Sulcos superficiais",
+    simple:"São pequenos canais formados pela água escorrendo concentrada.",
+    observe:"São rasos e ainda fáceis de corrigir, mas indicam que a enxurrada já começou a concentrar fluxo.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#fff7ed"/>
+      <rect x="0" y="85" width="360" height="85" fill="#92400e"/>
+      <path d="M60 90 C80 105,95 115,120 160" stroke="#451a03" stroke-width="5" fill="none"/>
+      <path d="M150 90 C170 108,190 120,220 160" stroke="#451a03" stroke-width="4" fill="none"/>
+      <path class="flow-dot" d="M60 92 C80 108,100 124,120 155" stroke="#38bdf8" stroke-width="3" fill="none"/>
+      <text x="28" y="35" font-size="18" font-weight="700" fill="#0f172a">Pequenos canais no solo</text>
+    </svg>`
+  },
+  sulcos_rasos:{
+    title:"Sulcos rasos",
+    simple:"São canais de erosão mais visíveis que os sulcos superficiais.",
+    observe:"Já atrapalham manejo e indicam maior concentração da água. Podem evoluir para sulcos profundos.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#fff7ed"/>
+      <rect x="0" y="78" width="360" height="92" fill="#92400e"/>
+      <path d="M90 78 C110 105,115 135,145 170" stroke="#451a03" stroke-width="14" fill="none"/>
+      <path d="M210 78 C230 108,240 132,275 170" stroke="#451a03" stroke-width="12" fill="none"/>
+      <path class="flow-dot" d="M92 80 C112 110,120 135,145 165" stroke="#38bdf8" stroke-width="4" fill="none"/>
+      <text x="28" y="35" font-size="18" font-weight="700" fill="#0f172a">Canais rasos e visíveis</text>
+    </svg>`
+  },
+  sulcos_profundos:{
+    title:"Sulcos profundos",
+    simple:"São canais mais fundos, com maior perda de solo e maior dificuldade de correção.",
+    observe:"Podem impedir trânsito de máquinas, concentrar enxurradas e evoluir para voçorocas.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#fff7ed"/>
+      <rect x="0" y="70" width="360" height="100" fill="#92400e"/>
+      <path d="M160 72 C130 100,130 135,105 170 L235 170 C210 136,210 100,180 72 Z" fill="#451a03"/>
+      <path class="flow-dot" d="M170 78 C160 108,160 132,170 160" stroke="#38bdf8" stroke-width="5" fill="none"/>
+      <text x="28" y="35" font-size="18" font-weight="700" fill="#0f172a">Canal profundo de erosão</text>
+    </svg>`
+  },
+  vocoroca:{
+    title:"Voçoroca",
+    simple:"É um estágio avançado da erosão, com grandes cortes e canais profundos.",
+    observe:"É uma limitação grave. Exige recuperação, controle de enxurrada e normalmente restringe muito o uso agrícola.",
+    svg:`<svg class="visual-svg" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="170" fill="#fef2f2"/>
+      <rect x="0" y="62" width="360" height="108" fill="#92400e"/>
+      <path d="M45 62 C80 85,95 118,80 170 L280 170 C245 135,250 98,310 62 Z" fill="#451a03"/>
+      <path d="M120 70 C150 96,150 125,135 170" stroke="#7f1d1d" stroke-width="12" fill="none"/>
+      <path class="pulse" d="M130 72 C150 100,155 132,145 165" stroke="#38bdf8" stroke-width="5" fill="none"/>
+      <text x="28" y="35" font-size="18" font-weight="700" fill="#7f1d1d">Erosão avançada</text>
+    </svg>`
+  }
+};
+function getVisualKey(id){
+  if(visualData[id]) return id;
+  if(id.includes("sulcos_superficial")) return "sulcos_superficial";
+  if(id.includes("sulcos_rasos")) return "sulcos_rasos";
+  if(id.includes("sulcos_profundos")) return "sulcos_profundos";
+  return id;
+}
+function showVisual(id){
+  const key = getVisualKey(id);
+  const v = visualData[key] || visualData.declive;
+  const target = document.getElementById('visualHelpContent');
+  target.innerHTML = `${v.svg}
+    <div class="legend-line"><span class="term">${v.title}</span></div>
+    <div class="legend-line"><b>O que é?</b> ${v.simple}</div>
+    <div class="legend-line"><b>Como observar?</b> ${v.observe}</div>
+    <div class="visual-toolbar"><button class="secondary" onclick="document.querySelector('[data-tab=visual]').click()">Abrir guia visual completo</button></div>`;
+  document.getElementById('visualHelp').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function renderVisualGrid(){
+  const grid = document.getElementById('visualGrid');
+  if(!grid) return;
+  const keys = ['declive','fertilidade','profundidade','drenagem','defluvio','pedregosidade','inundacao','erosao_laminar','sulcos_superficial','sulcos_rasos','sulcos_profundos','vocoroca'];
+  grid.innerHTML = keys.map(k=>{
+    const v = visualData[k];
+    return `<div class="visual-card">${v.svg.replace('class="visual-svg"', 'class="mini-svg"')}<h3>${v.title}</h3><p><b>O que é?</b> ${v.simple}</p><p style="margin-top:6px"><b>Campo:</b> ${v.observe}</p></div>`;
+  }).join('');
+}
+
+function init(){
+  const useType = document.getElementById('useType');
+  useType.innerHTML = uses.map(u=>`<option value="${u.id}">${u.label}</option>`).join('');
+  const list = document.getElementById('factorList');
+  list.innerHTML = factors.map(f=>`<div class="factor"><label>${f.name} <span class="class-pill" id="pill_${f.id}">—</span></label><select id="${f.id}" onchange="calculate()"><option value="">Selecione...</option>${f.options.map(o=>`<option value="${o[0]}" data-class="${o[2]}">${o[0]} — ${o[1]} → Classe ${o[2]}</option>`).join('')}</select><div class="small">${f.sub}</div><button class="help-btn" type="button" onclick="showVisual('${f.id}')">👁️ Ver explicação visual</button></div>`).join('');
+  document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input', calculate));
+  renderMeter('I'); calculate(); renderAreas(); renderVisualGrid(); showVisual('declive');
+}
+function selectedUse(){return uses.find(u=>u.id===document.getElementById('useType').value) || uses[0];}
+function getSelection(){
+  return factors.map(f=>{
+    const el = document.getElementById(f.id); const opt = el.options[el.selectedIndex];
+    if(!el.value) return null;
+    const row = f.options.find(o=>o[0]==el.value);
+    return {factor:f.name, id:f.id, symbol:row[0], label:row[1], cls:row[2], order:classOrder[row[2]], note:f.note || ''};
+  }).filter(Boolean);
+}
+function calculate(){
+  const selections = getSelection();
+  factors.forEach(f=>{
+    const s = selections.find(x=>x.id===f.id); const pill = document.getElementById('pill_'+f.id);
+    if(pill){ pill.textContent = s ? s.cls : '—'; pill.style.color = s ? classColor(s.cls) : '#64748b'; }
+  });
+  const worst = selections.length ? selections.reduce((a,b)=> b.order>a.order ? b : a) : {cls:'I', order:1, factor:'Aguardando seleção', label:'', symbol:''};
+  const cls = worst.cls;
+  const card = document.getElementById('resultCard'); card.className = 'result-card class-'+cls;
+  document.getElementById('finalClass').textContent = cls;
+  document.getElementById('groupBadge').textContent = groupOf(cls);
+  document.getElementById('diagnosis').innerHTML = selections.length ? `A área foi enquadrada como <b>Classe ${cls}</b> porque a limitação mais severa selecionada foi <b>${worst.factor}</b>: ${worst.symbol} — ${worst.label}.` : 'Selecione as características da área para gerar o diagnóstico.';
+  renderMeter(cls);
+  renderChips(selections, worst);
+  renderCompatibility(cls);
+  renderRecommendation(cls, selections);
+  return {cls,worst,selections};
+}
+function renderMeter(cls){
+  const colors = ['#16a34a','#16a34a','#16a34a','#ca8a04','#f97316','#f97316','#dc2626','#0284c7'];
+  document.getElementById('meter').innerHTML = colors.map((c,i)=>`<div class="seg ${i < classOrder[cls] ? 'on':''}" style="background:${c}"></div>`).join('');
+}
+function renderChips(selections,worst){
+  const chips = document.getElementById('chips');
+  if(!selections.length){chips.innerHTML='<span class="chip">Nenhum fator selecionado</span>';return}
+  const sorted = [...selections].sort((a,b)=>b.order-a.order).slice(0,4);
+  chips.innerHTML = sorted.map(s=>`<span class="chip" style="border-color:${classColor(s.cls)}33">${s.factor}: Classe ${s.cls}</span>`).join('');
+}
+function renderCompatibility(cls){
+  const box = document.getElementById('compatBox'); const u = selectedUse(); const max = maxIntensityByClass[cls];
+  if(u.intensity > max){box.className='warning bad'; box.innerHTML = `<b>Risco de sobreutilização.</b> O uso selecionado é mais intensivo do que o recomendado para a Classe ${cls}. Uso racional sugerido: ${rationalByClass[cls]}.`;}
+  else if(u.intensity < max - 1){box.className='warning ok'; box.innerHTML = `<b>Uso abaixo do potencial máximo.</b> A área suporta, tecnicamente, um uso mais intensivo, desde que sejam respeitadas as práticas conservacionistas da Classe ${cls}.`;}
+  else {box.className='warning info'; box.innerHTML = `<b>Uso compatível.</b> O uso selecionado está próximo da utilização racional para a Classe ${cls}: ${rationalByClass[cls]}.`;}
+}
+function renderRecommendation(cls,selections){
+  const rec = document.getElementById('recommendation');
+  const note = selections.find(s=>s.note)?.note;
+  rec.innerHTML = `<div class="rec-item"><strong>Uso recomendado:</strong><br>${rationalByClass[cls]}.</div>` + recommendations[cls].map(r=>`<div class="rec-item">${r}</div>`).join('') + (note ? `<div class="warning"><b>Observação:</b> ${note}</div>`:'');
+}
+function addArea(){
+  const r = calculate(); if(!r.selections.length){toast('Selecione pelo menos uma característica antes de adicionar.');return}
+  const prop = document.getElementById('propertyName').value.trim();
+  const area = document.getElementById('areaName').value.trim() || `Área ${savedAreas.length+1}`;
+  const size = document.getElementById('areaSize').value;
+  const use = selectedUse();
+  const status = use.intensity > maxIntensityByClass[r.cls] ? 'Sobreutilização' : use.intensity < maxIntensityByClass[r.cls]-1 ? 'Abaixo do potencial' : 'Compatível';
+  savedAreas.push({prop,area,size,cls:r.cls,group:groupOf(r.cls),factor:r.worst.factor,limitation:`${r.worst.symbol} — ${r.worst.label}`,use:use.label,status,rec:rationalByClass[r.cls],date:new Date().toLocaleDateString('pt-BR')});
+  localStorage.setItem('soloAreas', JSON.stringify(savedAreas)); renderAreas(); toast('Área adicionada à comparação.');
+}
+function renderAreas(){
+  const tbody = document.getElementById('areaTable');
+  tbody.innerHTML = savedAreas.length ? savedAreas.map((a,i)=>`<tr><td><b>${a.area}</b><br><span class="mini">${a.prop||'Propriedade não informada'}</span></td><td>${a.size||'—'}</td><td><b style="color:${classColor(a.cls)}">${a.cls}</b></td><td>${a.group}</td><td>${a.factor}<br><span class="mini">${a.limitation}</span></td><td>${a.use}</td><td>${a.status}</td><td>${a.rec}</td><td><button class="danger" onclick="removeArea(${i})">Excluir</button></td></tr>`).join('') : `<tr><td colspan="9">Nenhuma área adicionada ainda.</td></tr>`;
+  const map = document.getElementById('mapGrid');
+  map.innerHTML = savedAreas.length ? savedAreas.map(a=>`<div class="map-cell" style="border-color:${classColor(a.cls)};background:${classColor(a.cls)}12"><b>${a.area}</b><span>Classe ${a.cls} • ${a.group}</span><span>${a.status}</span></div>`).join('') : `<div class="map-cell"><b>Mapa vazio</b><span>Adicione áreas na aba de classificação.</span></div>`;
+}
+function removeArea(i){savedAreas.splice(i,1);localStorage.setItem('soloAreas',JSON.stringify(savedAreas));renderAreas();}
+function clearAreas(){if(confirm('Apagar todas as áreas da comparação?')){savedAreas=[];localStorage.removeItem('soloAreas');renderAreas();}}
+function resetForm(){document.querySelectorAll('input').forEach(i=>i.value=''); factors.forEach(f=>document.getElementById(f.id).value=''); calculate();}
+function exportCSV(){
+  if(!savedAreas.length){toast('Não há áreas para exportar.');return}
+  const headers=['Propriedade','Área','ha','Classe','Grupo','Limitação principal','Detalhe','Uso','Status','Recomendação','Data'];
+  const rows=savedAreas.map(a=>[a.prop,a.area,a.size,a.cls,a.group,a.factor,a.limitation,a.use,a.status,a.rec,a.date]);
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v||'').replaceAll('"','""')}"`).join(';')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob); const link=document.createElement('a'); link.href=url; link.download='classificacao_uso_solo.csv'; link.click(); URL.revokeObjectURL(url);
+}
+function toast(msg){const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);}
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  const tab=btn.dataset.tab; document.querySelectorAll('.subscreen').forEach(s=>s.classList.remove('active'));
+  if(tab==='classificar'){document.getElementById('classificar').classList.add('active');document.getElementById('classificar_resultado').classList.add('active');}
+  else{document.getElementById(tab).classList.add('active');}
+}));
+init();
+</script>
+</body>
+</html>
