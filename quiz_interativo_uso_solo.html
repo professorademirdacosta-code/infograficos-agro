@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz Interativo — Classes de Uso do Solo</title>
+<style>
+  :root{
+    --bg:#eef6f2;
+    --card:#ffffff;
+    --ink:#16312b;
+    --muted:#64748b;
+    --brand:#12825f;
+    --brand2:#0f6f95;
+    --soft:#e8f7f1;
+    --warn:#fff3cd;
+    --danger:#ffe3e3;
+    --ok:#daf7e8;
+    --line:#d8e6df;
+    --shadow:0 18px 45px rgba(18, 130, 95, .14);
+    --radius:24px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#eef6f2 0%,#f9fbff 45%,#edf7ff 100%);color:var(--ink)}
+  body{padding:16px}
+  .app{max-width:1360px;margin:0 auto}
+  header{
+    display:grid;grid-template-columns:1.35fr .65fr;gap:16px;align-items:stretch;margin-bottom:16px
+  }
+  .hero,.scoreCard,.panel,.questionCard,.classifier,.summary{
+    background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)
+  }
+  .hero{padding:24px;position:relative;overflow:hidden}
+  .hero:before{content:"";position:absolute;right:-70px;top:-80px;width:250px;height:250px;background:radial-gradient(circle,#bff2df,transparent 70%);opacity:.9}
+  h1{margin:0 0 8px;font-size:clamp(1.5rem,3.2vw,2.7rem);line-height:1.05}
+  .subtitle{font-size:clamp(.95rem,1.5vw,1.15rem);color:#425466;max-width:900px;line-height:1.45}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:var(--soft);color:#0d6b4f;padding:8px 11px;border-radius:999px;font-weight:700;font-size:.82rem;border:1px solid #c6eadb}
+  .scoreCard{padding:18px;display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+  .scoreGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .metric{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:12px;text-align:center}
+  .metric strong{display:block;font-size:1.6rem}
+  .metric span{font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  button{
+    border:0;border-radius:14px;padding:11px 14px;font-weight:800;cursor:pointer;background:var(--brand);color:white;
+    box-shadow:0 8px 18px rgba(18,130,95,.18);transition:.18s transform,.18s filter
+  }
+  button:hover{transform:translateY(-1px);filter:brightness(1.03)}
+  button.secondary{background:#1f2937}
+  button.ghost{background:#eef6f2;color:#0f6b50;border:1px solid #c9e7dc;box-shadow:none}
+  button.warn{background:#b45309}
+  button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  main{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(360px,1.05fr);gap:16px;align-items:start}
+  .panel{padding:16px}
+  .panel h2,.classifier h2,.questionCard h2,.summary h2{margin:0 0 10px;font-size:1.25rem}
+  .instructions{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:18px;padding:12px;color:#475569;line-height:1.45;font-size:.95rem;margin-bottom:14px}
+  .questionNav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+  .qbtn{
+    padding:10px;border-radius:14px;border:1px solid #dbe7e2;background:#fff;color:#234;
+    font-weight:900;text-align:center;cursor:pointer
+  }
+  .qbtn.active{background:#0f766e;color:#fff}
+  .qbtn.done{background:#dcfce7;border-color:#86efac;color:#166534}
+  .qbtn.wrong{background:#fee2e2;border-color:#fecaca;color:#991b1b}
+  .questionCard{padding:18px;margin-bottom:16px}
+  .tag{display:inline-flex;align-items:center;gap:6px;background:#edf7ff;color:#0f5f80;border:1px solid #c9e9f8;border-radius:999px;padding:7px 10px;font-weight:800;font-size:.78rem;margin-bottom:10px}
+  .caseBox{background:#fcfffd;border:1px solid #dbeee6;border-radius:20px;padding:14px;margin:12px 0}
+  .caseBox h3{margin:0 0 8px;font-size:1.05rem}
+  .caseGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;font-size:.88rem}
+  .caseItem{padding:8px;border-radius:12px;background:#f1f9f5;border:1px solid #dbefe6}
+  .caseItem b{display:block;color:#0f6b50;font-size:.75rem;text-transform:uppercase;letter-spacing:.02em}
+  .questionText{font-size:1.08rem;line-height:1.45;font-weight:800;margin:12px 0}
+  .answers{display:grid;gap:9px;margin:12px 0}
+  .answer{
+    display:flex;gap:9px;align-items:flex-start;background:#fff;border:1px solid #dce7e2;border-radius:16px;padding:12px;cursor:pointer;
+    transition:.15s background,.15s border
+  }
+  .answer:hover{background:#f8fffb;border-color:#a7d9c6}
+  .answer input{margin-top:3px;transform:scale(1.15)}
+  .feedback{display:none;padding:13px;border-radius:16px;margin-top:12px;line-height:1.45}
+  .feedback.ok{display:block;background:var(--ok);border:1px solid #8ee2b4}
+  .feedback.bad{display:block;background:var(--danger);border:1px solid #f6aaaa}
+  .classifier{padding:16px;position:sticky;top:12px}
+  .miniHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}
+  .miniHead p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.35}
+  .formGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  label{display:block;font-size:.78rem;font-weight:900;color:#334155;text-transform:uppercase;letter-spacing:.03em;margin:0 0 5px}
+  select,input[type=text]{width:100%;padding:10px;border-radius:14px;border:1px solid #cddfd8;background:#fff;color:#19342e;font-weight:700}
+  .resultBox{margin-top:14px;background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;border-radius:22px;padding:16px;box-shadow:0 14px 30px rgba(15,118,110,.22)}
+  .resultTop{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .classBadge{font-size:3rem;font-weight:1000;line-height:1;background:#fff;color:#0f766e;border-radius:18px;min-width:96px;text-align:center;padding:12px}
+  .resultBox h3{margin:0;font-size:1.12rem}
+  .resultBox p{margin:5px 0 0;opacity:.94;line-height:1.35}
+  .limitList{margin-top:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:16px;padding:10px;font-size:.9rem;line-height:1.35}
+  .scale{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:12px}
+  .scale span{height:12px;border-radius:999px;background:#dbeafe;opacity:.45}
+  .scale span.on{opacity:1;background:#fff}
+  .summary{padding:18px;margin-top:16px;display:none}
+  .summary.show{display:block}
+  .summaryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+  .level{padding:14px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0}
+  .review{display:grid;gap:8px;margin-top:12px}
+  .reviewItem{padding:11px;border-radius:14px;border:1px solid #e2e8f0;background:#fff}
+  .reviewItem.good{border-color:#86efac;background:#f0fdf4}
+  .reviewItem.miss{border-color:#fca5a5;background:#fef2f2}
+  .footerNote{color:#64748b;font-size:.84rem;line-height:1.45;margin-top:12px}
+  @media (max-width:980px){
+    header,main{grid-template-columns:1fr}
+    .classifier{position:relative;top:0}
+  }
+  @media (max-width:650px){
+    body{padding:8px}
+    .hero,.scoreCard,.panel,.questionCard,.classifier,.summary{border-radius:18px}
+    .formGrid,.caseGrid,.summaryGrid{grid-template-columns:1fr}
+    .questionNav{grid-template-columns:repeat(4,1fr)}
+    .resultTop{align-items:stretch;flex-direction:column}
+    .classBadge{width:100%}
+  }
+  @media print{
+    body{background:white;padding:0}
+    button,.toolbar,.questionNav,.classifier{display:none!important}
+    header,main{display:block}
+    .hero,.scoreCard,.panel,.questionCard,.summary{box-shadow:none;border:1px solid #aaa;break-inside:avoid;margin-bottom:10px}
+    .summary{display:block!important}
+  }
+
+  /* Modo projeção 16:9: ideal para datashow, TV e Google Sites em tela cheia */
+  body.projection{
+    padding:0;
+    overflow:hidden;
+    background:#dfeee8;
+  }
+  body.projection .app{
+    width:100vw;
+    height:100vh;
+    max-width:none;
+    aspect-ratio:16/9;
+    padding:clamp(8px,1vw,18px);
+    display:flex;
+    flex-direction:column;
+  }
+  body.projection header{
+    grid-template-columns:1.4fr .6fr;
+    gap:10px;
+    margin-bottom:10px;
+    flex:0 0 auto;
+  }
+  body.projection .hero{
+    padding:16px 20px;
+  }
+  body.projection h1{
+    font-size:clamp(1.45rem,2.4vw,2.25rem);
+  }
+  body.projection .subtitle{
+    font-size:clamp(.82rem,1.05vw,1rem);
+    max-width:1100px;
+  }
+  body.projection .chips{
+    margin-top:9px;
+  }
+  body.projection .chip{
+    padding:6px 9px;
+    font-size:.72rem;
+  }
+  body.projection .scoreCard{
+    padding:12px;
+  }
+  body.projection main{
+    grid-template-columns:.88fr 1.12fr;
+    gap:10px;
+    flex:1 1 auto;
+    min-height:0;
+    overflow:hidden;
+  }
+  body.projection .panel,
+  body.projection .classifier{
+    padding:12px;
+    min-height:0;
+    overflow:auto;
+  }
+  body.projection .questionCard{
+    padding:13px;
+    margin-bottom:0;
+  }
+  body.projection .instructions{
+    padding:9px;
+    margin-bottom:9px;
+    font-size:.82rem;
+  }
+  body.projection .questionNav{
+    grid-template-columns:repeat(10,1fr);
+    gap:5px;
+    margin-bottom:9px;
+  }
+  body.projection .qbtn{
+    padding:7px 4px;
+    border-radius:10px;
+    font-size:.82rem;
+  }
+  body.projection .caseBox{
+    padding:10px;
+    margin:8px 0;
+  }
+  body.projection .caseGrid{
+    grid-template-columns:repeat(3,1fr);
+    gap:5px;
+  }
+  body.projection .caseItem{
+    padding:6px;
+    font-size:.75rem;
+  }
+  body.projection .questionText{
+    font-size:.95rem;
+    margin:8px 0;
+  }
+  body.projection .answers{
+    gap:6px;
+    margin:8px 0;
+  }
+  body.projection .answer{
+    padding:8px;
+    border-radius:12px;
+    font-size:.84rem;
+  }
+  body.projection button{
+    padding:8px 10px;
+    border-radius:11px;
+    font-size:.82rem;
+  }
+  body.projection .classifier{
+    position:relative;
+    top:0;
+  }
+  body.projection .formGrid{
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+  }
+  body.projection label{
+    font-size:.66rem;
+    margin-bottom:3px;
+  }
+  body.projection select{
+    padding:7px;
+    border-radius:10px;
+    font-size:.78rem;
+  }
+  body.projection .resultBox{
+    margin-top:9px;
+    padding:12px;
+    border-radius:18px;
+  }
+  body.projection .classBadge{
+    font-size:2.25rem;
+    min-width:78px;
+    padding:9px;
+  }
+  body.projection .resultBox h3{
+    font-size:1rem;
+  }
+  body.projection .resultBox p,
+  body.projection .limitList,
+  body.projection .footerNote{
+    font-size:.8rem;
+  }
+  body.projection .footerNote{
+    margin-top:8px;
+  }
+  body.projection .summary{
+    max-height:60vh;
+    overflow:auto;
+  }
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <section class="hero">
+      <h1>Quiz Interativo — Classes de Uso do Solo</h1>
+      <div class="subtitle">
+        Leia o estudo de caso, carregue os dados no classificador, interprete a limitação principal e responda.
+        A regra usada é: <b>a classe final é definida pela limitação mais severa da área</b>.
+      </div>
+      <div class="chips">
+        <span class="chip">Capacidade de uso</span>
+        <span class="chip">Classes I a VIII</span>
+        <span class="chip">Grupo A, B e C</span>
+        <span class="chip">Manejo conservacionista</span>
+      </div>
+    </section>
+
+    <aside class="scoreCard">
+      <div class="scoreGrid">
+        <div class="metric"><strong id="scoreNow">0</strong><span>Acertos</span></div>
+        <div class="metric"><strong id="answeredNow">0/10</strong><span>Respondidas</span></div>
+      </div>
+      <div class="toolbar">
+        <button class="ghost" onclick="resetQuiz()">Reiniciar</button>
+        <button class="secondary" onclick="showSummary()">Resultado</button>
+        <button class="warn" onclick="window.print()">Imprimir/PDF</button>
+        <button class="ghost" onclick="toggleProjection()">Modo 16:9</button>
+      </div>
+    </aside>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Roteiro da atividade</h2>
+      <div class="instructions">
+        <b>Como usar:</b> em cada questão, clique em <b>“Carregar caso no classificador”</b>. Observe a classe indicada,
+        o grupo e a limitação principal. Depois marque a alternativa. O objetivo não é decorar: é aprender a diagnosticar
+        o uso adequado da área.
+      </div>
+      <div class="questionNav" id="questionNav"></div>
+      <div class="questionCard" id="questionCard"></div>
+      <section class="summary" id="summary"></section>
+    </section>
+
+    <aside class="classifier">
+      <div class="miniHead">
+        <div>
+          <h2>Classificador da área</h2>
+          <p>Use este painel para simular o talhão do caso. Campos “sem risco/não ocorre” entram como Classe I e não pioram a área.</p>
+        </div>
+      </div>
+
+      <div class="formGrid" id="classifierForm"></div>
+
+      <div class="resultBox">
+        <div class="resultTop">
+          <div>
+            <h3 id="resultTitle">Classe final</h3>
+            <p id="resultText">Preencha ou carregue um caso para classificar.</p>
+          </div>
+          <div class="classBadge" id="classBadge">—</div>
+        </div>
+        <div class="scale" id="scale"></div>
+        <div class="limitList" id="limitList">Limitação principal: —</div>
+      </div>
+
+      <div class="footerNote">
+        Observação didática: a opção “Deflúvio superficial — rápido” foi tratada como Classe III por coerência entre
+        “moderado = II” e “muito rápido = IV”, pois a célula da planilha estava sem marcação.
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+const roman = ["I","II","III","IV","V","VI","VII","VIII"];
+const rank = Object.fromEntries(roman.map((r,i)=>[r,i+1]));
+
+const criteria = [
+  {key:"declive", label:"Classes de declive", opts:[
+    ["0–3%","I"],["3–6%","II"],["6–12%","III"],["12–20%","IV"],["20–40%","VI"],["40–70%","VII"],["70–100%","VIII"]
+  ]},
+  {key:"fertilidade", label:"Fertilidade aparente", opts:[
+    ["Muito alta","I"],["Alta","I"],["Média","II"],["Baixa","III"],["Muito baixa","VI"]
+  ]},
+  {key:"profundidade", label:"Profundidade efetiva", opts:[
+    ["Mais que 200 cm","I"],["100–200 cm","I"],["50–100 cm","II"],["25–50 cm","IV"],["Menos que 25 cm","VI"]
+  ]},
+  {key:"drenagem", label:"Drenagem interna", opts:[
+    ["Excessiva","II"],["Boa","I"],["Moderada","II"],["Pobre","III"],["Impedida","V"]
+  ]},
+  {key:"defluvio", label:"Deflúvio superficial", opts:[
+    ["Muito rápido","IV"],["Rápido","III"],["Moderado","II"],["Lento","I"],["Muito lento","II"]
+  ]},
+  {key:"pedregosidade", label:"Pedregosidade", opts:[
+    ["Sem pedras","I"],["≤ 1%","II"],["1–10%","III"],["10–30%","IV"],["30–50%","VI"],["Mais de 50%","VII"]
+  ]},
+  {key:"inundacao", label:"Risco de inundação", opts:[
+    ["Sem risco aparente","I"],["Ocasionais","III"],["Frequentes","V"],["Muito frequentes","VIII"]
+  ]},
+  {key:"erosaoLaminar", label:"Erosão laminar", opts:[
+    ["Não aparente","I"],["Ligeira","II"],["Moderada","III"],["Severa","VI"],["Muito severa","VII"],["Extremamente severa","VIII"]
+  ]},
+  {key:"sulcosSuperficial", label:"Sulcos superficiais", opts:[
+    ["Não ocorre / não aparente","I"],["Ocasionais","II"],["Frequentes","III"],["Muito frequentes","IV"]
+  ]},
+  {key:"sulcosRasos", label:"Sulcos rasos", opts:[
+    ["Não ocorre / não aparente","I"],["Ocasionais","III"],["Frequentes","IV"],["Muito frequentes","VI"]
+  ]},
+  {key:"sulcosProfundos", label:"Sulcos profundos", opts:[
+    ["Não ocorre / não aparente","I"],["Ocasionais","IV"],["Frequentes","VI"],["Muito frequentes","VII"]
+  ]},
+  {key:"vocoroca", label:"Voçoroca", opts:[
+    ["Não ocorre / não aparente","I"],["Ocasional","VI"],["Frequente","VII"],["Muito frequente","VIII"]
+  ]}
+];
+
+const recommendations = {
+  I: {grupo:"A", txt:"Apta para quaisquer culturas, sem práticas especiais de conservação e correção do solo."},
+  II: {grupo:"A", txt:"Apta para quaisquer culturas, desde que sejam adotadas práticas simples de conservação e correção."},
+  III: {grupo:"A", txt:"Apta para culturas, mas exige práticas complexas de conservação e correção do solo."},
+  IV: {grupo:"A", txt:"Apta para cultivos com mínimo revolvimento do solo; cultivos mais expostos só em situações ocasionais ou limitadas."},
+  V: {grupo:"B", txt:"Culturas, pastagens e reflorestamento apenas em situações especiais, geralmente por excesso de água, com conservação do solo e da água."},
+  VI: {grupo:"B", txt:"Mais indicada para culturas permanentes protetoras, pastagens bem manejadas e reflorestamentos com práticas conservacionistas."},
+  VII: {grupo:"B", txt:"Indicada apenas para pastagens bem manejadas, reflorestamentos e cultivos perenes arbóreos, com práticas complexas e cobertura permanente."},
+  VIII:{grupo:"C", txt:"Imprópria para culturas, pastagens ou reflorestamento. Recomenda-se preservação, proteção da fauna e flora, recreação, armazenamento de água ou APP."}
+};
+
+function clsOf(key, desc){
+  const c = criteria.find(x=>x.key===key);
+  const o = c.opts.find(x=>x[0]===desc);
+  return o ? o[1] : "I";
+}
+
+function buildCase(base){
+  const defaults = {
+    declive:"0–3%", fertilidade:"Alta", profundidade:"100–200 cm", drenagem:"Boa", defluvio:"Lento",
+    pedregosidade:"Sem pedras", inundacao:"Sem risco aparente", erosaoLaminar:"Não aparente",
+    sulcosSuperficial:"Não ocorre / não aparente", sulcosRasos:"Não ocorre / não aparente",
+    sulcosProfundos:"Não ocorre / não aparente", vocoroca:"Não ocorre / não aparente"
+  };
+  return {...defaults, ...base};
+}
+
+const questions = [
+  {
+    type:"classe", title:"Área plana próxima à sede",
+    case: buildCase({declive:"3–6%", fertilidade:"Média", profundidade:"50–100 cm", drenagem:"Boa", defluvio:"Moderado", pedregosidade:"≤ 1%"}),
+    ask:"Após simular a área, qual é a classe final de capacidade de uso?",
+    options:["Classe I","Classe II","Classe III","Classe IV","Classe VI"],
+    correct:"Classe II",
+    explain:"A maior limitação do caso chega à Classe II: declive 3–6%, fertilidade média, profundidade 50–100 cm e deflúvio moderado. Como nenhuma limitação passa de II, a classe final é II."
+  },
+  {
+    type:"classe", title:"Talhão em encosta moderada",
+    case: buildCase({declive:"6–12%", fertilidade:"Baixa", profundidade:"50–100 cm", drenagem:"Moderada", defluvio:"Rápido", erosaoLaminar:"Moderada"}),
+    ask:"Qual classe final o classificador deve indicar?",
+    options:["Classe II","Classe III","Classe IV","Classe V","Classe VI"],
+    correct:"Classe III",
+    explain:"Declive 6–12%, fertilidade baixa, deflúvio rápido e erosão laminar moderada indicam Classe III. A limitação mais severa é III."
+  },
+  {
+    type:"limitante", title:"Solo raso em área cultivável",
+    case: buildCase({declive:"3–6%", fertilidade:"Média", profundidade:"25–50 cm", drenagem:"Boa", defluvio:"Moderado", pedregosidade:"1–10%"}),
+    ask:"Qual fator é o principal responsável por piorar a classificação?",
+    options:["Drenagem boa","Profundidade efetiva de 25–50 cm","Declive de 3–6%","Pedregosidade de 1–10%","Fertilidade média"],
+    correct:"Profundidade efetiva de 25–50 cm",
+    explain:"A profundidade efetiva de 25–50 cm indica Classe IV, enquanto os demais fatores ficam em classes menos restritivas."
+  },
+  {
+    type:"classe", title:"Baixada com excesso de água",
+    case: buildCase({declive:"0–3%", fertilidade:"Alta", profundidade:"100–200 cm", drenagem:"Impedida", defluvio:"Muito lento", inundacao:"Frequentes"}),
+    ask:"Considerando as limitações de água, qual é a classe final?",
+    options:["Classe I","Classe II","Classe III","Classe V","Classe VIII"],
+    correct:"Classe V",
+    explain:"A drenagem impedida e o risco de inundação frequente levam a Classe V. O relevo plano e a fertilidade alta não anulam essa limitação."
+  },
+  {
+    type:"uso", title:"Encosta com erosão severa",
+    case: buildCase({declive:"20–40%", fertilidade:"Média", profundidade:"50–100 cm", drenagem:"Boa", defluvio:"Muito rápido", erosaoLaminar:"Severa"}),
+    ask:"Depois da classificação, qual uso seria mais adequado?",
+    options:["Cultura anual intensiva em preparo convencional","Culturas permanentes protetoras, pastagem bem manejada ou reflorestamento","Qualquer cultura sem conservação","Uso urbano imediato","Área obrigatoriamente sem nenhuma utilização"],
+    correct:"Culturas permanentes protetoras, pastagem bem manejada ou reflorestamento",
+    explain:"O caso chega à Classe VI. Para essa classe, o uso deve proteger o solo, com culturas permanentes, pastagens bem manejadas ou reflorestamento."
+  },
+  {
+    type:"classe", title:"Margem de córrego com restrição forte",
+    case: buildCase({declive:"0–3%", fertilidade:"Alta", profundidade:"100–200 cm", drenagem:"Pobre", inundacao:"Muito frequentes"}),
+    ask:"Qual classe final deve ser indicada?",
+    options:["Classe II","Classe III","Classe V","Classe VI","Classe VIII"],
+    correct:"Classe VIII",
+    explain:"O risco de inundação muito frequente é Classe VIII. Mesmo com relevo plano e boa fertilidade, a limitação mais severa define a classe final."
+  },
+  {
+    type:"erro", title:"Decisão do produtor",
+    case: buildCase({declive:"12–20%", fertilidade:"Baixa", profundidade:"25–50 cm", drenagem:"Boa", defluvio:"Muito rápido", erosaoLaminar:"Moderada"}),
+    ask:"O produtor quer usar preparo convencional frequente nessa área. A decisão é adequada?",
+    options:["Sim, pois toda Classe IV permite preparo convencional sem risco","Não, porque a área exige mínimo revolvimento e práticas complexas de conservação","Sim, porque a fertilidade baixa é corrigida com adubo e resolve tudo","Não, porque toda Classe IV é APP","Sim, desde que aumente a frequência de aração"],
+    correct:"Não, porque a área exige mínimo revolvimento e práticas complexas de conservação",
+    explain:"A área tende à Classe IV. Essa classe exige maior cuidado, mínimo revolvimento e práticas conservacionistas complexas quando houver uso agrícola."
+  },
+  {
+    type:"classe", title:"Área pedregosa",
+    case: buildCase({declive:"3–6%", fertilidade:"Média", profundidade:"100–200 cm", drenagem:"Boa", pedregosidade:"30–50%"}),
+    ask:"Qual classe final aparece no diagnóstico?",
+    options:["Classe II","Classe III","Classe IV","Classe VI","Classe VII"],
+    correct:"Classe VI",
+    explain:"A pedregosidade de 30–50% indica Classe VI, sendo mais restritiva que os demais fatores."
+  },
+  {
+    type:"limitante", title:"Voçoroca no talhão",
+    case: buildCase({declive:"6–12%", fertilidade:"Média", profundidade:"50–100 cm", drenagem:"Boa", erosaoLaminar:"Moderada", vocoroca:"Frequente"}),
+    ask:"Qual limitação deve aparecer como principal?",
+    options:["Declive de 6–12%","Fertilidade média","Erosão laminar moderada","Voçoroca frequente","Boa drenagem"],
+    correct:"Voçoroca frequente",
+    explain:"A voçoroca frequente indica Classe VII, mais severa que declive, fertilidade, profundidade e erosão laminar moderada."
+  },
+  {
+    type:"comparacao", title:"Comparação de uso entre áreas",
+    case: buildCase({declive:"40–70%", fertilidade:"Baixa", profundidade:"25–50 cm", drenagem:"Boa", erosaoLaminar:"Muito severa"}),
+    ask:"Uma área Classe VII deve ser priorizada para qual alternativa?",
+    options:["Cultura anual intensiva com solo descoberto","Pastagem bem manejada, reflorestamento ou cultivo perene arbóreo","Qualquer cultura sem conservação","Horticultura intensiva com preparo frequente","Nenhum tipo de cobertura vegetal"],
+    correct:"Pastagem bem manejada, reflorestamento ou cultivo perene arbóreo",
+    explain:"Classe VII é muito restritiva. O uso recomendado é pastagem bem manejada, reflorestamento ou cultivos perenes arbóreos, sempre com práticas complexas e cobertura constante."
+  }
+];
+
+let current = 0;
+let answers = Array(questions.length).fill(null);
+
+function init(){
+  buildClassifierForm();
+  buildNav();
+  renderQuestion(0);
+  renderScale("I");
+  calculate();
+}
+function buildClassifierForm(){
+  const wrap = document.getElementById("classifierForm");
+  wrap.innerHTML = criteria.map(c => `
+    <div>
+      <label for="${c.key}">${c.label}</label>
+      <select id="${c.key}" onchange="calculate()">
+        ${c.opts.map(o=>`<option value="${o[0]}">${o[0]} — Classe ${o[1]}</option>`).join("")}
+      </select>
+    </div>
+  `).join("");
+}
+function buildNav(){
+  const nav = document.getElementById("questionNav");
+  nav.innerHTML = questions.map((q,i)=>`<div class="qbtn" id="qbtn${i}" onclick="renderQuestion(${i})">${i+1}</div>`).join("");
+  updateScore();
+}
+function renderQuestion(i){
+  current = i;
+  const q = questions[i];
+  document.querySelectorAll(".qbtn").forEach((b,idx)=>b.classList.toggle("active",idx===i));
+  const caseItems = Object.entries(q.case).map(([key,val])=>{
+    const c = criteria.find(x=>x.key===key);
+    return `<div class="caseItem"><b>${c.label}</b>${val} <small>(Classe ${clsOf(key,val)})</small></div>`;
+  }).join("");
+  const selected = answers[i]?.choice || "";
+  const checked = opt => selected===opt ? "checked" : "";
+  const card = document.getElementById("questionCard");
+  card.innerHTML = `
+    <span class="tag">Questão ${i+1} · ${q.title}</span>
+    <div class="caseBox">
+      <h3>Estudo de caso</h3>
+      <div class="caseGrid">${caseItems}</div>
+    </div>
+    <button class="ghost" onclick="loadCase(${i})">Carregar caso no classificador</button>
+    <div class="questionText">${q.ask}</div>
+    <div class="answers">
+      ${q.options.map(opt=>`
+        <label class="answer">
+          <input type="radio" name="answer" value="${opt}" ${checked} onchange="selectAnswer('${encodeURIComponent(opt)}')" />
+          <span>${opt}</span>
+        </label>
+      `).join("")}
+    </div>
+    <div class="toolbar">
+      <button onclick="checkAnswer()">Corrigir questão</button>
+      <button class="ghost" onclick="prevQuestion()" ${i===0?"disabled":""}>Anterior</button>
+      <button class="secondary" onclick="nextQuestion()" ${i===questions.length-1?"disabled":""}>Próxima</button>
+    </div>
+    <div id="feedback" class="feedback"></div>
+  `;
+  if(answers[i]?.checked) showFeedback();
+}
+function selectAnswer(encoded){
+  const choice = decodeURIComponent(encoded);
+  answers[current] = {...(answers[current]||{}), choice, checked:false};
+  updateScore();
+}
+function checkAnswer(){
+  const picked = document.querySelector('input[name="answer"]:checked');
+  if(!picked){
+    alert("Marque uma alternativa antes de corrigir.");
+    return;
+  }
+  answers[current] = {choice:picked.value, checked:true, correct:picked.value===questions[current].correct};
+  updateScore();
+  showFeedback();
+}
+function showFeedback(){
+  const q = questions[current];
+  const a = answers[current];
+  const f = document.getElementById("feedback");
+  if(!a || !a.checked) return;
+  f.className = "feedback " + (a.correct ? "ok" : "bad");
+  f.innerHTML = a.correct
+    ? `<b>Correto.</b> ${q.explain}`
+    : `<b>Ainda não.</b> Resposta correta: <b>${q.correct}</b>. ${q.explain}`;
+}
+function loadCase(i){
+  const q = questions[i];
+  for(const [key,val] of Object.entries(q.case)){
+    const el = document.getElementById(key);
+    if(el) el.value = val;
+  }
+  calculate();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function calculate(){
+  const parts = criteria.map(c=>{
+    const val = document.getElementById(c.key)?.value || c.opts[0][0];
+    const cls = clsOf(c.key,val);
+    return {label:c.label, value:val, cls, score:rank[cls]};
+  });
+  const max = Math.max(...parts.map(p=>p.score));
+  const finalCls = roman[max-1];
+  const ties = parts.filter(p=>p.score===max);
+  const rec = recommendations[finalCls];
+  document.getElementById("classBadge").textContent = finalCls;
+  document.getElementById("resultTitle").textContent = `Classe ${finalCls} · Grupo ${rec.grupo}`;
+  document.getElementById("resultText").textContent = rec.txt;
+  document.getElementById("limitList").innerHTML =
+    `<b>Limitação principal:</b> ${ties.map(t=>`${t.label}: ${t.value} (Classe ${t.cls})`).join("; ")}.`;
+  renderScale(finalCls);
+}
+function renderScale(cls){
+  const scale = document.getElementById("scale");
+  const score = rank[cls] || 0;
+  scale.innerHTML = roman.map((r,i)=>`<span class="${i<score?'on':''}" title="Classe ${r}"></span>`).join("");
+}
+function updateScore(){
+  const checked = answers.filter(a=>a?.checked).length;
+  const correct = answers.filter(a=>a?.checked && a.correct).length;
+  document.getElementById("scoreNow").textContent = correct;
+  document.getElementById("answeredNow").textContent = `${checked}/${questions.length}`;
+  answers.forEach((a,i)=>{
+    const b = document.getElementById("qbtn"+i);
+    if(!b) return;
+    b.classList.remove("done","wrong");
+    if(a?.checked) b.classList.add(a.correct?"done":"wrong");
+  });
+}
+function nextQuestion(){ if(current<questions.length-1) renderQuestion(current+1); }
+function prevQuestion(){ if(current>0) renderQuestion(current-1); }
+function resetQuiz(){
+  if(!confirm("Deseja reiniciar o quiz?")) return;
+  answers = Array(questions.length).fill(null);
+  document.getElementById("summary").classList.remove("show");
+  buildNav();
+  renderQuestion(0);
+}
+function showSummary(){
+  const checked = answers.filter(a=>a?.checked).length;
+  const correct = answers.filter(a=>a?.checked && a.correct).length;
+  const pct = Math.round((correct/questions.length)*100);
+  let level = "Precisa revisar o uso do classificador.";
+  if(pct>=90) level = "Domínio excelente do enquadramento.";
+  else if(pct>=70) level = "Bom domínio, com poucos ajustes.";
+  else if(pct>=50) level = "Compreensão parcial; vale refazer os casos.";
+  const review = questions.map((q,i)=>{
+    const a = answers[i];
+    const cls = a?.checked ? (a.correct?"good":"miss") : "miss";
+    const txt = a?.checked ? `Sua resposta: ${a.choice}` : "Não respondida.";
+    return `<div class="reviewItem ${cls}"><b>Q${i+1} — ${q.title}</b><br>${txt}<br><small>Correta: ${q.correct}</small></div>`;
+  }).join("");
+  const s = document.getElementById("summary");
+  s.classList.add("show");
+  s.innerHTML = `
+    <h2>Resultado do quiz</h2>
+    <div class="summaryGrid">
+      <div class="level"><b>Acertos</b><br><span style="font-size:2rem;font-weight:1000">${correct}/${questions.length}</span></div>
+      <div class="level"><b>Desempenho</b><br><span style="font-size:2rem;font-weight:1000">${pct}%</span></div>
+      <div class="level"><b>Leitura pedagógica</b><br>${level}</div>
+    </div>
+    <div class="review">${review}</div>
+  `;
+  s.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function toggleProjection(){
+  document.body.classList.toggle("projection");
+  const isOn = document.body.classList.contains("projection");
+  try{ localStorage.setItem("quizSoloProjection", isOn ? "1" : "0"); }catch(e){}
+}
+function applySavedProjectionMode(){
+  try{
+    if(localStorage.getItem("quizSoloProjection")==="1"){
+      document.body.classList.add("projection");
+    }
+  }catch(e){}
+}
+
+applySavedProjectionMode();
+init();
+</script>
+</body>
+</html>
