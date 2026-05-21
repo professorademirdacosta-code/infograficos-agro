@@ -132,6 +132,11 @@ body.projecao .nota{font-size:.75rem}
   .hero,.painel,.quiz,.questao,.resumo{box-shadow:none;border:1px solid #aaa;margin-bottom:10px}
   .resumo{display:block!important}
 }
+
+.manualNote{background:#f0fdfa;border:1px solid #99f6e4;color:#115e59;border-radius:16px;padding:10px 12px;font-size:13px;line-height:1.4;margin:10px 0}
+.checklistBox{display:none;margin-top:10px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:16px;padding:10px;color:#475569;font-size:13px;line-height:1.45}
+.checklistBox.show{display:block}
+
 </style>
 </head>
 <body>
@@ -141,7 +146,7 @@ body.projecao .nota{font-size:.75rem}
     <h1>Quiz Avaliativo — Classes de Uso do Solo</h1>
     <p>O aluno responde todas as questões primeiro. A pontuação e o gabarito só aparecem ao final.</p>
     <div class="chips">
-      <span class="chip">Sem correção imediata</span>
+      <span class="chip">Modo investigação</span>
       <span class="chip">Resultado apenas no final</span>
       <span class="chip">Gabarito ao final</span>
       <span class="chip">Modo 16:9</span>
@@ -179,7 +184,7 @@ body.projecao .nota{font-size:.75rem}
     </details>
 
     <div class="instrucao">
-      <b>Como funciona:</b> use o classificador para conferir as características, mas a classe final fica oculta até a finalização.
+      <b>Como funciona:</b> leia o estudo de caso e preencha manualmente o classificador. A classe final fica oculta até a finalização.
       Ao terminar todas as questões, clique em <b>“Finalizar e registrar”</b>.
     </div>
 
@@ -279,13 +284,17 @@ function buildForm(){
     span.textContent=c.label;
     const sel=document.createElement("select");
     sel.id=c.key;
+    const empty=document.createElement("option");
+    empty.value="";
+    empty.textContent="Selecione...";
+    sel.appendChild(empty);
     c.opts.forEach(o=>{
       const op=document.createElement("option");
       op.value=o[0];
       op.textContent=o[0];
       sel.appendChild(op);
     });
-    sel.addEventListener("change",()=>{ if(finalizado){ revealResult(); } else { lockResult(); } });
+    sel.addEventListener("change",()=>{ if(finalizado){ revealResultFromCase(current); } else { lockResult(); } });
     label.appendChild(span); label.appendChild(sel); form.appendChild(label);
   });
 }
@@ -327,11 +336,25 @@ function renderQuestion(i){
   caso.appendChild(grid);
   box.appendChild(caso);
 
-  const load=document.createElement("button");
-  load.className="ghost";
-  load.textContent="Carregar caso no classificador";
-  load.addEventListener("click",()=>loadCase(i));
-  box.appendChild(load);
+  const manual=document.createElement("div");
+  manual.className="manualNote";
+  manual.innerHTML="<b>Modo investigação:</b> preencha manualmente o classificador da direita usando os dados do estudo de caso. O sistema não carrega os valores sozinho.";
+  box.appendChild(manual);
+
+  const checklistBtn=document.createElement("button");
+  checklistBtn.className="ghost";
+  checklistBtn.textContent="Ver checklist do que devo preencher";
+  checklistBtn.addEventListener("click",()=>toggleChecklist());
+  box.appendChild(checklistBtn);
+
+  const checklist=document.createElement("div");
+  checklist.id="checklistBox";
+  checklist.className="checklistBox";
+  checklist.innerHTML=Object.entries(q.case).map(([key,val])=>{
+    const c=criteria.find(x=>x.key===key);
+    return `<div><b>${c.label}:</b> ${val}</div>`;
+  }).join("");
+  box.appendChild(checklist);
 
   const pergunta=document.createElement("div");
   pergunta.className="pergunta";
@@ -365,8 +388,7 @@ function renderQuestion(i){
   tools.append(ant,prox);
   box.appendChild(tools);
 
-  loadCase(i);
-  if(finalizado){ revealResult(); } else { lockResult(); }
+  if(finalizado){ revealResultFromCase(i); } else { lockResult(); }
 }
 function loadCase(i){
   const q=questions[i];
@@ -405,6 +427,34 @@ function revealResult(){
   document.getElementById("limite").innerHTML="<b>Limitação principal:</b> "+data.ties.map(t=>`${t.label}: ${t.value} (Classe ${t.cls})`).join("; ")+".";
   renderBars(data.finalCls);
 }
+
+function classifyCase(i){
+  const q=questions[i];
+  const parts=Object.entries(q.case).map(([key,val])=>{
+    const c=criteria.find(x=>x.key===key);
+    const cls=clsOf(key,val);
+    return {label:c.label,value:val,cls,score:rank[cls]};
+  });
+  const max=Math.max(...parts.map(p=>p.score));
+  const finalCls=roman[max-1];
+  const ties=parts.filter(p=>p.score===max);
+  return {finalCls,ties,rec:rec[finalCls]};
+}
+function revealResultFromCase(i){
+  const data=classifyCase(i);
+  const r=document.getElementById("resultado");
+  r.classList.add("revelado");
+  document.getElementById("badge").textContent=data.finalCls;
+  document.getElementById("resultTitle").textContent=`Resultado da Questão ${i+1}: Classe ${data.finalCls} · Grupo ${data.rec.grupo}`;
+  document.getElementById("resultText").textContent=data.rec.txt;
+  document.getElementById("limite").innerHTML="<b>Limitação principal:</b> "+data.ties.map(t=>`${t.label}: ${t.value} (Classe ${t.cls})`).join("; ")+".";
+  renderBars(data.finalCls);
+}
+function toggleChecklist(){
+  const box=document.getElementById("checklistBox");
+  if(box) box.classList.toggle("show");
+}
+
 function renderBars(cls){
   const b=document.getElementById("barras");
   b.innerHTML="";
@@ -500,7 +550,7 @@ async function finalizarQuiz(){
 
   finalizado=true;
   updateProgress();
-  revealResult();
+  revealResultFromCase(current);
   renderQuestion(current);
   showSummary();
 
@@ -538,6 +588,7 @@ function resetQuiz(){
   finalizado=false;
   document.getElementById("resumo").classList.remove("show");
   const sr=document.getElementById("statusRegistro"); if(sr) sr.className="statusRegistro";
+  document.querySelectorAll("#form select").forEach(s=>s.value="");
   buildNav(); renderQuestion(0); lockResult();
 }
 document.getElementById("btnProj").addEventListener("click",()=>document.body.classList.toggle("projecao"));
