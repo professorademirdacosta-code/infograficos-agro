@@ -3,28 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiz Interativo — Classes de Uso do Solo</title>
+<title>Quiz Avaliativo — Classes de Uso do Solo</title>
 <style>
 :root{
   --bg:#eef7f1;--card:#fff;--ink:#14332b;--muted:#607086;--brand:#0f8a6b;--brand2:#0f766e;
   --line:#d8e8e1;--soft:#edf8f3;--shadow:0 16px 40px rgba(15,118,110,.14);
-  --ok:#dcfce7;--bad:#fee2e2;--dark:#0f172a;
+  --ok:#dcfce7;--bad:#fee2e2;--dark:#0f172a;--warn:#fff7ed;
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#eef7f1,#f8fbff);color:var(--ink)}
 body{padding:14px}
 .app{max-width:1360px;margin:auto}
 header{display:grid;grid-template-columns:1.35fr .65fr;gap:14px;margin-bottom:14px}
-.card,.hero,.score,.quiz,.classificador,.resumo{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.hero,.painel,.quiz,.classificador,.resumo{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
 .hero{padding:22px}
 h1{margin:0 0 8px;font-size:clamp(1.45rem,3vw,2.6rem);line-height:1.05}
 .hero p{margin:0;color:var(--muted);font-size:clamp(.95rem,1.35vw,1.1rem);line-height:1.45}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .chip{background:var(--soft);border:1px solid #c9eadc;color:#0d6b4f;border-radius:999px;padding:7px 10px;font-size:.8rem;font-weight:800}
-.score{padding:16px;display:flex;flex-direction:column;gap:12px;justify-content:space-between}
+.painel{padding:16px;display:flex;flex-direction:column;gap:12px;justify-content:space-between}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .metric{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:12px;text-align:center}
-.metric strong{display:block;font-size:1.7rem}
+.metric strong{display:block;font-size:1.55rem}
 .metric span{color:var(--muted);font-size:.75rem;font-weight:800;text-transform:uppercase}
 button{border:0;border-radius:14px;background:var(--brand);color:white;padding:10px 13px;font-weight:800;cursor:pointer}
 button.secondary{background:#1f2937}
@@ -37,11 +37,13 @@ main{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(360px,1.05fr)
 .classificador{position:sticky;top:12px}
 h2{margin:0 0 10px;font-size:1.25rem}
 .instrucao{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:18px;padding:12px;color:#475569;line-height:1.45;margin-bottom:12px}
+.alunoGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.campoTexto span{display:block;font-size:.72rem;font-weight:900;text-transform:uppercase;color:#334155;margin-bottom:4px}
+input[type=text]{width:100%;padding:10px;border:1px solid #cddfd8;border-radius:13px;background:white;font-weight:700;color:#19342e}
 .nav{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-bottom:12px}
 .qnav{border:1px solid #dbe7e2;background:white;color:#19342e;border-radius:12px;padding:8px 4px;text-align:center;font-weight:900;cursor:pointer}
 .qnav.ativa{background:var(--brand2);color:white}
-.qnav.certa{background:#dcfce7;color:#166534;border-color:#86efac}
-.qnav.errada{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.qnav.respondida{background:#dbeafe;color:#1e40af;border-color:#93c5fd}
 .questao{border:1px solid var(--line);border-radius:22px;padding:14px;background:#fff}
 .tag{display:inline-block;background:#edf7ff;color:#0f5f80;border:1px solid #c9e9f8;border-radius:999px;padding:7px 10px;font-weight:800;font-size:.78rem;margin-bottom:10px}
 .caso{background:#fcfffd;border:1px solid #dbeee6;border-radius:18px;padding:12px;margin:10px 0}
@@ -54,9 +56,11 @@ h2{margin:0 0 10px;font-size:1.25rem}
 .alt{display:flex;gap:9px;align-items:flex-start;border:1px solid #dce7e2;border-radius:16px;background:#fff;padding:11px;cursor:pointer;line-height:1.35}
 .alt:hover{background:#f7fffb;border-color:#addbc9}
 .alt input{margin-top:3px}
-.feedback{display:none;margin-top:12px;padding:13px;border-radius:16px;line-height:1.45}
-.feedback.ok{display:block;background:var(--ok);border:1px solid #86efac}
-.feedback.bad{display:block;background:var(--bad);border:1px solid #fca5a5}
+.statusEnvio{display:none;margin-top:12px;padding:12px;border-radius:16px;line-height:1.45}
+.statusEnvio.show{display:block}
+.statusEnvio.ok{background:var(--ok);border:1px solid #86efac}
+.statusEnvio.bad{background:var(--bad);border:1px solid #fca5a5}
+.statusEnvio.warn{background:var(--warn);border:1px solid #fed7aa}
 .formGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 label.campo span{display:block;font-size:.72rem;font-weight:900;text-transform:uppercase;color:#334155;margin-bottom:4px}
 select{width:100%;padding:9px;border:1px solid #cddfd8;border-radius:13px;background:white;font-weight:700;color:#19342e}
@@ -80,6 +84,9 @@ select{width:100%;padding:9px;border:1px solid #cddfd8;border-radius:13px;backgr
 .rev{border:1px solid #e2e8f0;background:white;border-radius:14px;padding:10px}
 .rev.good{background:#f0fdf4;border-color:#86efac}
 .rev.bad{background:#fef2f2;border-color:#fca5a5}
+.config{margin-top:10px;border:1px dashed #cbd5e1;background:#f8fafc;border-radius:16px;padding:10px}
+.config summary{cursor:pointer;font-weight:900;color:#334155}
+.codeInput{font-family:monospace;font-size:.78rem}
 
 /* Modo 16:9 para projetor */
 body.projecao{padding:0;overflow:hidden;background:#dfeee8}
@@ -108,10 +115,11 @@ body.projecao .nota{font-size:.75rem}
 @media(max-width:920px){
   header,main{grid-template-columns:1fr}
   .classificador{position:relative;top:0}
+  .alunoGrid{grid-template-columns:1fr}
 }
 @media(max-width:620px){
   body{padding:8px}
-  .hero,.score,.quiz,.classificador,.questao{border-radius:18px}
+  .hero,.painel,.quiz,.classificador,.questao{border-radius:18px}
   .nav{grid-template-columns:repeat(5,1fr)}
   .casoGrid,.formGrid,.resumoGrid{grid-template-columns:1fr}
   .resultTop{flex-direction:column;align-items:stretch}
@@ -119,9 +127,9 @@ body.projecao .nota{font-size:.75rem}
 }
 @media print{
   body{background:white;padding:0}
-  button,.nav,.classificador{display:none!important}
+  button,.nav,.classificador,.config{display:none!important}
   header,main{display:block}
-  .hero,.score,.quiz,.questao,.resumo{box-shadow:none;border:1px solid #aaa;margin-bottom:10px}
+  .hero,.painel,.quiz,.questao,.resumo{box-shadow:none;border:1px solid #aaa;margin-bottom:10px}
   .resumo{display:block!important}
 }
 </style>
@@ -130,23 +138,23 @@ body.projecao .nota{font-size:.75rem}
 <div class="app">
 <header>
   <section class="hero">
-    <h1>Quiz Interativo — Classes de Uso do Solo</h1>
-    <p>Leia o caso, carregue os dados no classificador e responda. A classe final fica oculta até a correção.</p>
+    <h1>Quiz Avaliativo — Classes de Uso do Solo</h1>
+    <p>O aluno responde todas as questões primeiro. A pontuação e o gabarito só aparecem ao final.</p>
     <div class="chips">
-      <span class="chip">Modo Avaliação</span>
-      <span class="chip">Classes I a VIII</span>
-      <span class="chip">Grupo A, B e C</span>
-      <span class="chip">Uso sustentável</span>
+      <span class="chip">Sem correção imediata</span>
+      <span class="chip">Resultado apenas no final</span>
+      <span class="chip">Gabarito ao final</span>
+      <span class="chip">Modo 16:9</span>
     </div>
   </section>
-  <aside class="score">
+  <aside class="painel">
     <div class="metrics">
-      <div class="metric"><strong id="scoreNow">0</strong><span>Acertos</span></div>
       <div class="metric"><strong id="answeredNow">0/10</strong><span>Respondidas</span></div>
+      <div class="metric"><strong id="scoreNow">—</strong><span>Acertos</span></div>
     </div>
     <div class="toolbar">
       <button class="ghost" id="btnProj">Modo 16:9</button>
-      <button class="secondary" id="btnResumo">Resultado</button>
+      <button class="secondary" id="btnFinalizar">Finalizar quiz</button>
       <button class="warn" onclick="window.print()">Imprimir/PDF</button>
       <button class="ghost" id="btnReset">Reiniciar</button>
     </div>
@@ -155,12 +163,17 @@ body.projecao .nota{font-size:.75rem}
 
 <main>
   <section class="quiz">
-    <h2>Atividade</h2>
-    <div class="instrucao">
-      <b>Como funciona:</b> no classificador, os nomes das características aparecem sem mostrar a classe.
-      Primeiro o aluno marca a alternativa. Depois, ao corrigir, o sistema revela a classe final, o grupo,
-      a limitação principal e a justificativa.
+    <h2>Identificação do aluno</h2>
+    <div class="alunoGrid">
+      <label class="campoTexto"><span>Nome completo</span><input type="text" id="alunoNome" placeholder="Digite seu nome"></label>
+      <label class="campoTexto"><span>Turma</span><input type="text" id="alunoTurma" placeholder="Ex.: 2º Agro"></label>
     </div>
+
+    <div class="instrucao">
+      <b>Como funciona:</b> use o classificador para conferir as características, mas a classe final fica oculta até a finalização.
+      Ao terminar todas as questões, clique em <b>“Finalizar quiz”</b>.
+    </div>
+
     <div class="nav" id="nav"></div>
     <div class="questao" id="questao"></div>
     <section class="resumo" id="resumo"></section>
@@ -168,18 +181,18 @@ body.projecao .nota{font-size:.75rem}
 
   <aside class="classificador">
     <h2>Classificador da área</h2>
-    <p class="nota">A classe final fica oculta até a correção da questão. “Sem risco/não ocorre” não piora a classificação.</p>
+    <p class="nota">A classe final fica oculta durante a avaliação. “Sem risco/não ocorre” não piora a classificação.</p>
     <div class="formGrid" id="form"></div>
     <div class="resultado" id="resultado">
       <div class="resultTop">
         <div>
           <h3 id="resultTitle">Resultado oculto</h3>
-          <p id="resultText">Responda a questão e clique em “Corrigir questão” para revelar.</p>
+          <p id="resultText">A classe será revelada apenas após finalizar a avaliação.</p>
         </div>
         <div class="badge" id="badge">?</div>
       </div>
       <div class="barras" id="barras"></div>
-      <div class="limite" id="limite"><b>Limitação principal:</b> oculta até a correção.</div>
+      <div class="limite" id="limite"><b>Limitação principal:</b> oculta até a finalização.</div>
     </div>
     <p class="nota">Observação: “Deflúvio superficial — rápido” foi tratado como Classe III por coerência didática.</p>
   </aside>
@@ -245,6 +258,7 @@ const questions = [
 
 let current=0;
 let answers=Array(questions.length).fill(null);
+let finalizado=false;
 
 function buildForm(){
   const form=document.getElementById("form");
@@ -261,7 +275,7 @@ function buildForm(){
       op.textContent=o[0];
       sel.appendChild(op);
     });
-    sel.addEventListener("change",()=>{ if(answers[current]?.checked) revealResult(); else lockResult(); });
+    sel.addEventListener("change",()=>{ if(finalizado) revealResult(); else lockResult(); });
     label.appendChild(span); label.appendChild(sel); form.appendChild(label);
   });
 }
@@ -275,7 +289,7 @@ function buildNav(){
     b.addEventListener("click",()=>renderQuestion(i));
     nav.appendChild(b);
   });
-  updateScore();
+  updateProgress();
 }
 function renderQuestion(i){
   current=i;
@@ -324,7 +338,8 @@ function renderQuestion(i){
     input.name="alt";
     input.value=opt;
     if(answers[i]?.choice===opt) input.checked=true;
-    input.addEventListener("change",()=>{ answers[current]={...(answers[current]||{}),choice:opt,checked:false}; updateScore(); lockResult(); });
+    input.disabled=finalizado;
+    input.addEventListener("change",()=>{ answers[current]={choice:opt}; updateProgress(); lockResult(); });
     const span=document.createElement("span");
     span.textContent=String.fromCharCode(65+idx)+") "+opt;
     lab.appendChild(input); lab.appendChild(span); alts.appendChild(lab);
@@ -333,21 +348,15 @@ function renderQuestion(i){
 
   const tools=document.createElement("div");
   tools.className="toolbar";
-  const corrigir=document.createElement("button");
-  corrigir.textContent="Corrigir questão";
-  corrigir.addEventListener("click",checkAnswer);
   const ant=document.createElement("button");
   ant.className="ghost"; ant.textContent="Anterior"; ant.disabled=i===0; ant.addEventListener("click",()=>renderQuestion(current-1));
   const prox=document.createElement("button");
   prox.className="secondary"; prox.textContent="Próxima"; prox.disabled=i===questions.length-1; prox.addEventListener("click",()=>renderQuestion(current+1));
-  tools.append(corrigir,ant,prox);
+  tools.append(ant,prox);
   box.appendChild(tools);
 
-  const fb=document.createElement("div");
-  fb.id="feedback"; fb.className="feedback";
-  box.appendChild(fb);
-
-  if(answers[i]?.checked){ showFeedback(); revealResult(); } else { lockResult(); }
+  loadCase(i);
+  if(finalizado) revealResult(); else lockResult();
 }
 function loadCase(i){
   const q=questions[i];
@@ -355,7 +364,6 @@ function loadCase(i){
     const el=document.getElementById(key);
     if(el) el.value=val;
   });
-  if(answers[current]?.checked) revealResult(); else lockResult();
 }
 function classify(){
   const parts=criteria.map(c=>{
@@ -373,8 +381,8 @@ function lockResult(){
   r.classList.remove("revelado");
   document.getElementById("badge").textContent="?";
   document.getElementById("resultTitle").textContent="Resultado oculto";
-  document.getElementById("resultText").textContent="Responda a questão e clique em “Corrigir questão” para revelar.";
-  document.getElementById("limite").innerHTML="<b>Limitação principal:</b> oculta até a correção.";
+  document.getElementById("resultText").textContent="A classe será revelada apenas após finalizar a avaliação.";
+  document.getElementById("limite").innerHTML="<b>Limitação principal:</b> oculta até a finalização.";
   renderBars(null);
 }
 function revealResult(){
@@ -398,35 +406,41 @@ function renderBars(cls){
     b.appendChild(s);
   });
 }
-function checkAnswer(){
-  const picked=document.querySelector('input[name="alt"]:checked');
-  if(!picked){ alert("Marque uma alternativa antes de corrigir."); return; }
-  const q=questions[current];
-  answers[current]={choice:picked.value,checked:true,correct:picked.value===q.correct};
-  updateScore();
-  showFeedback();
-  revealResult();
-}
-function showFeedback(){
-  const q=questions[current];
-  const a=answers[current];
-  const fb=document.getElementById("feedback");
-  if(!a?.checked) return;
-  fb.className="feedback "+(a.correct?"ok":"bad");
-  fb.innerHTML=a.correct ? `<b>Correto.</b> ${q.exp}` : `<b>Ainda não.</b> Resposta correta: <b>${q.correct}</b>. ${q.exp}`;
-}
-function updateScore(){
-  const checked=answers.filter(a=>a?.checked).length;
-  const correct=answers.filter(a=>a?.checked&&a.correct).length;
-  document.getElementById("scoreNow").textContent=correct;
-  document.getElementById("answeredNow").textContent=`${checked}/${questions.length}`;
+function updateProgress(){
+  const answered=answers.filter(a=>a?.choice).length;
+  document.getElementById("answeredNow").textContent=`${answered}/${questions.length}`;
+  document.getElementById("scoreNow").textContent=finalizado ? countCorrect() : "—";
   document.querySelectorAll(".qnav").forEach((b,i)=>{
-    b.classList.remove("certa","errada");
-    if(answers[i]?.checked) b.classList.add(answers[i].correct?"certa":"errada");
+    b.classList.remove("respondida");
+    if(answers[i]?.choice) b.classList.add("respondida");
   });
 }
+function countCorrect(){
+  return answers.filter((a,i)=>a?.choice===questions[i].correct).length;
+}
+function finalizarQuiz(){
+  const nome=document.getElementById("alunoNome").value.trim();
+  const turma=document.getElementById("alunoTurma").value.trim();
+
+  if(!nome || !turma){
+    alert("Preencha nome completo e turma antes de finalizar.");
+    return;
+  }
+
+  const answered=answers.filter(a=>a?.choice).length;
+  if(answered<questions.length){
+    alert(`Ainda faltam ${questions.length-answered} questão(ões). Responda todas antes de finalizar.`);
+    return;
+  }
+
+  finalizado=true;
+  updateProgress();
+  revealResult();
+  renderQuestion(current);
+  showSummary();
+}
 function showSummary(){
-  const correct=answers.filter(a=>a?.checked&&a.correct).length;
+  const correct=countCorrect();
   const pct=Math.round((correct/questions.length)*100);
   let nivel="Precisa revisar.";
   if(pct>=90) nivel="Domínio excelente."; else if(pct>=70) nivel="Bom domínio."; else if(pct>=50) nivel="Compreensão parcial.";
@@ -434,32 +448,35 @@ function showSummary(){
   s.classList.add("show");
   s.innerHTML=`<h2>Resultado final</h2>
     <div class="resumoGrid">
+      <div class="bloco"><b>Aluno</b><br>${escapeHtml(document.getElementById("alunoNome").value.trim())}</div>
       <div class="bloco"><b>Acertos</b><br><span style="font-size:2rem;font-weight:1000">${correct}/${questions.length}</span></div>
-      <div class="bloco"><b>Desempenho</b><br><span style="font-size:2rem;font-weight:1000">${pct}%</span></div>
-      <div class="bloco"><b>Leitura</b><br>${nivel}</div>
+      <div class="bloco"><b>Desempenho</b><br><span style="font-size:2rem;font-weight:1000">${pct}%</span><br>${nivel}</div>
     </div>
     <div class="revisao">
       ${questions.map((q,i)=>{
         const a=answers[i];
-        return `<div class="rev ${a?.correct?'good':'bad'}"><b>Q${i+1} — ${q.title}</b><br>${a?.checked?'Sua resposta: '+a.choice:'Não respondida'}<br><small>Correta: ${q.correct}</small></div>`;
+        const ok=a?.choice===q.correct;
+        return `<div class="rev ${ok?'good':'bad'}"><b>Q${i+1} — ${q.title}</b><br>Sua resposta: ${escapeHtml(a?.choice||"")}<br><small>Correta: ${escapeHtml(q.correct)}. ${escapeHtml(q.exp)}</small></div>`;
       }).join("")}
     </div>`;
   s.scrollIntoView({behavior:"smooth"});
 }
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
 function resetQuiz(){
   if(!confirm("Reiniciar o quiz?")) return;
   answers=Array(questions.length).fill(null);
+  finalizado=false;
   document.getElementById("resumo").classList.remove("show");
-  buildNav(); renderQuestion(0); loadCase(0); lockResult();
+  buildNav(); renderQuestion(0); lockResult();
 }
 document.getElementById("btnProj").addEventListener("click",()=>document.body.classList.toggle("projecao"));
-document.getElementById("btnResumo").addEventListener("click",showSummary);
+document.getElementById("btnFinalizar").addEventListener("click",finalizarQuiz);
 document.getElementById("btnReset").addEventListener("click",resetQuiz);
-
 buildForm();
 buildNav();
 renderQuestion(0);
-loadCase(0);
 lockResult();
 </script>
 </body>
