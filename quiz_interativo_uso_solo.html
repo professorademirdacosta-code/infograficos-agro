@@ -271,6 +271,14 @@
     overflow:auto;
   }
 
+
+  .lockedResult{
+    background:linear-gradient(135deg,#334155,#0f172a)!important;
+  }
+  .lockedResult .classBadge{
+    color:#0f172a!important;
+  }
+
 </style>
 </head>
 <body>
@@ -308,9 +316,7 @@
     <section class="panel">
       <h2>Roteiro da atividade</h2>
       <div class="instructions">
-        <b>Como usar:</b> em cada questão, clique em <b>“Carregar caso no classificador”</b>. Observe a classe indicada,
-        o grupo e a limitação principal. Depois marque a alternativa. O objetivo não é decorar: é aprender a diagnosticar
-        o uso adequado da área.
+        <b>Como usar:</b> em cada questão, clique em <b>“Carregar caso no classificador”</b>. No Modo Avaliação, o classificador <b>não mostra a classe final</b> antes da resposta. Primeiro marque a alternativa; depois clique em <b>“Corrigir questão”</b> para revelar a classe, o grupo, a limitação principal e a explicação.
       </div>
       <div class="questionNav" id="questionNav"></div>
       <div class="questionCard" id="questionCard"></div>
@@ -321,7 +327,7 @@
       <div class="miniHead">
         <div>
           <h2>Classificador da área</h2>
-          <p>Use este painel para simular o talhão do caso. Campos “sem risco/não ocorre” entram como Classe I e não pioram a área.</p>
+          <p>Use este painel para simular o talhão do caso. A classe final fica oculta até a correção da questão.</p>
         </div>
       </div>
 
@@ -507,8 +513,8 @@ function init(){
   buildClassifierForm();
   buildNav();
   renderQuestion(0);
-  renderScale("I");
-  calculate();
+  renderScale("I", true);
+  calculate(false);
 }
 function buildClassifierForm(){
   const wrap = document.getElementById("classifierForm");
@@ -516,7 +522,7 @@ function buildClassifierForm(){
     <div>
       <label for="${c.key}">${c.label}</label>
       <select id="${c.key}" onchange="calculate()">
-        ${c.opts.map(o=>`<option value="${o[0]}">${o[0]} — Classe ${o[1]}</option>`).join("")}
+        ${c.opts.map(o=>`<option value="${o[0]}">${o[0]}</option>`).join("")}
       </select>
     </div>
   `).join("");
@@ -532,7 +538,7 @@ function renderQuestion(i){
   document.querySelectorAll(".qbtn").forEach((b,idx)=>b.classList.toggle("active",idx===i));
   const caseItems = Object.entries(q.case).map(([key,val])=>{
     const c = criteria.find(x=>x.key===key);
-    return `<div class="caseItem"><b>${c.label}</b>${val} <small>(Classe ${clsOf(key,val)})</small></div>`;
+    return `<div class="caseItem"><b>${c.label}</b>${val}</div>`;
   }).join("");
   const selected = answers[i]?.choice || "";
   const checked = opt => selected===opt ? "checked" : "";
@@ -561,6 +567,7 @@ function renderQuestion(i){
     <div id="feedback" class="feedback"></div>
   `;
   if(answers[i]?.checked) showFeedback();
+  calculate(answers[i]?.checked);
 }
 function selectAnswer(encoded){
   const choice = decodeURIComponent(encoded);
@@ -576,6 +583,7 @@ function checkAnswer(){
   answers[current] = {choice:picked.value, checked:true, correct:picked.value===questions[current].correct};
   updateScore();
   showFeedback();
+  calculate(true);
 }
 function showFeedback(){
   const q = questions[current];
@@ -593,28 +601,56 @@ function loadCase(i){
     const el = document.getElementById(key);
     if(el) el.value = val;
   }
-  calculate();
+  calculate(isCurrentRevealed());
   window.scrollTo({top:0, behavior:"smooth"});
 }
-function calculate(){
-  const parts = criteria.map(c=>{
+function getClassificationParts(){
+  return criteria.map(c=>{
     const val = document.getElementById(c.key)?.value || c.opts[0][0];
     const cls = clsOf(c.key,val);
     return {label:c.label, value:val, cls, score:rank[cls]};
   });
+}
+function isCurrentRevealed(){
+  return !!answers[current]?.checked;
+}
+function showLockedResult(){
+  const box = document.querySelector(".resultBox");
+  if(box) box.classList.add("lockedResult");
+  document.getElementById("classBadge").textContent = "?";
+  document.getElementById("resultTitle").textContent = "Resultado oculto";
+  document.getElementById("resultText").textContent = "Responda a alternativa e clique em “Corrigir questão” para revelar a classe final.";
+  document.getElementById("limitList").innerHTML = "<b>Limitação principal:</b> oculta até a correção.";
+  renderScale("I", true);
+}
+function calculate(forceReveal=false){
+  const parts = getClassificationParts();
   const max = Math.max(...parts.map(p=>p.score));
   const finalCls = roman[max-1];
   const ties = parts.filter(p=>p.score===max);
   const rec = recommendations[finalCls];
+
+  if(!forceReveal && !isCurrentRevealed()){
+    showLockedResult();
+    return {finalCls, rec, ties};
+  }
+
+  const box = document.querySelector(".resultBox");
+  if(box) box.classList.remove("lockedResult");
   document.getElementById("classBadge").textContent = finalCls;
   document.getElementById("resultTitle").textContent = `Classe ${finalCls} · Grupo ${rec.grupo}`;
   document.getElementById("resultText").textContent = rec.txt;
   document.getElementById("limitList").innerHTML =
     `<b>Limitação principal:</b> ${ties.map(t=>`${t.label}: ${t.value} (Classe ${t.cls})`).join("; ")}.`;
   renderScale(finalCls);
+  return {finalCls, rec, ties};
 }
-function renderScale(cls){
+function renderScale(cls, hidden=false){
   const scale = document.getElementById("scale");
+  if(hidden){
+    scale.innerHTML = roman.map((r,i)=>`<span title="Classe ${r}"></span>`).join("");
+    return;
+  }
   const score = rank[cls] || 0;
   scale.innerHTML = roman.map((r,i)=>`<span class="${i<score?'on':''}" title="Classe ${r}"></span>`).join("");
 }
