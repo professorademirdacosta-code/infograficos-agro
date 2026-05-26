@@ -78,7 +78,7 @@
   </main>
 
   <script>
-    const APPS_SCRIPT_URL = "COLE_AQUI_A_URL_DO_SEU_WEB_APP";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykCLYBUVesmJl1Dk_1OblVxcH8QMt6g2vr12vcXgslubVT95i5lrWRG-iNwQqRiBdHsA/exec";
     const slides=[['inicio','Visão geral','🌱'],['especies','Espécies','🐄'],['dimensionamento','Calculadora','📐'],['termico','ZCT','🌡️'],['quadro','Quadro-resumo','📋'],['diagnostico','Diagnóstico','🩺'],['atividade','Checklist','✅']];
     const nav=document.getElementById('nav');slides.forEach(([id,label,icon],i)=>{const b=document.createElement('button');b.innerHTML=`<span>${icon} ${label}</span><span>›</span>`;b.onclick=()=>showSlide(id);if(i===0)b.classList.add('active');nav.appendChild(b)});function showSlide(id){document.querySelectorAll('.slide').forEach(s=>s.classList.toggle('active',s.dataset.slide===id));document.querySelectorAll('.nav button').forEach((b,i)=>b.classList.toggle('active',slides[i][0]===id));}
 
