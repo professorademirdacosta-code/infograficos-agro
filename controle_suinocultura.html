@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Suinocultura v53</title>
+<title>Controle Suinocultura v62</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -958,6 +958,51 @@ th{background:#ddebf7;color:#0f3150}
  .resumo-roteiro-futuro div{font-size:5.2pt!important;padding:2px!important;border-radius:4px!important}
 }
 
+
+
+/* --- v62.1: gráfico de consumo por fase na nutrição --- */
+.grafico-consumo-panel{
+  margin-top:12px;
+  box-shadow:none;
+}
+.grafico-consumo-wrap{
+  overflow:auto;
+  border:1px solid var(--linha);
+  border-radius:14px;
+  background:#fff;
+  padding:10px;
+}
+.grafico-consumo-svg{
+  width:100%;
+  min-width:760px;
+  height:auto;
+  display:block;
+}
+.grafico-legenda{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+  font-size:.82rem;
+  color:#475569;
+}
+.grafico-legenda span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+.grafico-legenda i{
+  width:12px;
+  height:12px;
+  border-radius:3px;
+  display:inline-block;
+}
+@media print{
+  .grafico-consumo-panel{page-break-inside:avoid;margin-top:5px!important}
+  .grafico-consumo-svg{min-width:0!important}
+  .grafico-consumo-wrap{padding:4px!important}
+}
+
 /* --- v57: pesagens reais de lotes e padrão novo MM AA-NNNN --- */
 .pesagem-ajuste{
   display:block;
@@ -980,8 +1025,8 @@ th{background:#ddebf7;color:#0f3150}
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Reprodutivo de Suínos</h1>
-      <div class="sub">Cadastro de matrizes e reprodutores, calendário imprimível e ficha de lote</div>
+      <h1>Controle Reprodutivo de Suínos — v62</h1>
+      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal automática por baia</div>
     </div>
   </div>
   <nav>
@@ -1045,7 +1090,7 @@ th{background:#ddebf7;color:#0f3150}
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v62.1, a Ficha semanal diferencia manejo de lote/matriz e é gerada automaticamente se a aba Semanal não vier no JSON.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
@@ -1216,6 +1261,11 @@ th{background:#ddebf7;color:#0f3150}
       <div class="grid two" style="margin-top:12px">
         <div class="panel" style="box-shadow:none"><h3>Matrizes</h3><div class="table-wrap"><table id="tRacaoMatriz"></table></div></div>
         <div class="panel" style="box-shadow:none"><h3>Lotes</h3><div class="table-wrap"><table id="tRacaoLote"></table></div></div>
+      </div>
+      <div class="panel grafico-consumo-panel">
+        <h3>Gráfico de consumo de ração do lote por fase</h3>
+        <p class="small">Referência didática baseada na tabela de desempenho do sistema: quanto maior a idade/peso, maior tende a ser o consumo semanal por animal.</p>
+        <div id="graficoConsumoRacao" class="grafico-consumo-wrap"></div>
       </div>
     </div>
   </section>
@@ -2062,38 +2112,45 @@ function classePeriodoAtual(inicio, fim){
  return "";
 }
 
+function textoDiasV62(n){
+ if(n === null || n === undefined || isNaN(n)) return "";
+ const d = Math.max(0, Math.floor(Number(n)));
+ return d === 1 ? "1 dia" : d + " dias";
+}
+
 function situacaoMatriz(r){
  if(animalDescartado(r)) return {txt:"Descartada / histórico encerrado",cls:"b-alerta",racao:"Sem manejo reprodutivo"};
 
- // Caso a matriz já teve desmame, mas não aparece cobertura nova depois de 45 dias.
  const ultimoDesmame = dataUltimoDesmamePorMatriz(r.id, r.nome);
  if(ultimoDesmame && !temCoberturaApos(r.id, r.nome, ultimoDesmame)){
    const diasPosDesmame = diffDays(dataRef, ultimoDesmame);
    if(diasPosDesmame > PARAMS.vazioDescarteAposDesmame){
-     return {txt:"Vazia / possível descarte",cls:"b-alerta",racao:"Avaliar descarte ou nova cobertura"};
+     return {txt:"Vazia / possível descarte — " + textoDiasV62(diasPosDesmame) + " pós-desmame",cls:"b-alerta",racao:"Avaliar descarte ou nova cobertura"};
    }
  }
 
- if(!r.coberturaDt) return {txt:"Cadastro",cls:"b-info",racao:"—"};
+ if(!r.coberturaDt) return {txt:"Cadastro / sem cobertura lançada",cls:"b-info",racao:"—"};
 
  if(r.partoRealDt){
    const d=diffDays(dataRef,r.partoRealDt);
    if(d<0) return {txt:"Aguardando parto",cls:"b-parto",racao:"Ração pré-lactação"};
-   if(d<=PARAMS.desmame) return {txt:"Lactação",cls:"b-ok",racao:"Ração lactação"};
+   if(d<=PARAMS.desmame) return {txt:"Amamentando há " + textoDiasV62(d),cls:"b-ok",racao:"Ração lactação"};
    const desmame = addDays(r.partoRealDt, PARAMS.desmame);
    const diasPosDesmame = diffDays(dataRef, desmame);
    if(diasPosDesmame > PARAMS.vazioDescarteAposDesmame && !temCoberturaApos(r.id, r.nome, desmame)){
-     return {txt:"Vazia / possível descarte",cls:"b-alerta",racao:"Avaliar descarte ou nova cobertura"};
+     return {txt:"Vazia / possível descarte — " + textoDiasV62(diasPosDesmame) + " pós-desmame",cls:"b-alerta",racao:"Avaliar descarte ou nova cobertura"};
    }
-   return {txt:"Pós-desmame",cls:"b-info",racao:"Ração lactação / retorno ao cio"};
+   if(diasPosDesmame <= 2) return {txt:"Pré-cio / descanso pós-desmame — " + textoDiasV62(diasPosDesmame),cls:"b-info",racao:"Ração lactação / retorno ao cio"};
+   if(diasPosDesmame <= 7) return {txt:"Cio provável / retorno à cobertura — " + textoDiasV62(diasPosDesmame) + " pós-desmame",cls:"b-repro",racao:"Ração lactação / flushing"};
+   return {txt:"Pós-desmame — " + textoDiasV62(diasPosDesmame),cls:"b-info",racao:"Ração lactação / retorno ao cio"};
  }
 
  const dc=diffDays(dataRef,r.coberturaDt);
  const falta=r.partoPrevDt?diffDays(r.partoPrevDt,dataRef):null;
- if(dc<PARAMS.confirmacaoPrenhez) return {txt:"A confirmar prenhez",cls:"b-repro",racao:"Ração gestação"};
- if(falta!==null&&falta<=PARAMS.entradaMaternidadeAntesParto&&falta>=0) return {txt:"Pré-parto",cls:"b-parto",racao:"Ração pré-lactação"};
- if(dc<=PARAMS.gestacao) return {txt:"Gestação",cls:"b-ok",racao:dc>=85?"Ração pré-lactação":"Ração gestação"};
- return {txt:"Parto vencido/verificar",cls:"b-alerta",racao:"Verificar matriz"};
+ if(dc<PARAMS.confirmacaoPrenhez) return {txt:"A confirmar prenhez — " + textoDiasV62(dc) + " pós-cobertura",cls:"b-repro",racao:"Ração gestação"};
+ if(falta!==null&&falta<=PARAMS.entradaMaternidadeAntesParto&&falta>=0) return {txt:"Pré-parto — gestante há " + textoDiasV62(dc) + (falta!==null ? "; faltam " + textoDiasV62(falta) : ""),cls:"b-parto",racao:"Ração pré-lactação"};
+ if(dc<=PARAMS.gestacao) return {txt:"Gestante há " + textoDiasV62(dc),cls:"b-ok",racao:dc>=85?"Ração pré-lactação":"Ração gestação"};
+ return {txt:"Parto vencido/verificar — " + textoDiasV62(dc) + " pós-cobertura",cls:"b-alerta",racao:"Verificar matriz"};
 }
 
 function situacaoLote(r){
@@ -2462,7 +2519,7 @@ function renderMatrizes(){
  });
 
  $("#tMatrizes").innerHTML=`<thead><tr>
- <th>ID</th><th>Nome</th><th>Baia</th><th>Idade</th><th>Classificação</th><th>Status</th><th>Cobertura atual</th><th>Reprodutor</th><th>Confirmar prenhez</th><th>Parto previsto</th><th>Parto real</th><th>Lote atual</th><th>Situação atual</th><th>Ração matriz</th></tr></thead><tbody>`+
+ <th>ID</th><th>Nome</th><th>Baia</th><th>Idade</th><th>Cobertura atual</th><th>Reprodutor</th><th>Confirmar prenhez</th><th>Parto previsto</th><th>Parto real</th><th>Lote nascido</th><th>Situação atual</th><th>Ração matriz</th></tr></thead><tbody>`+
  rs.map(r=>{
    const st = situacaoMatriz(r);
 
@@ -2471,14 +2528,12 @@ function renderMatrizes(){
    <td><b>${r.nome||"—"}</b></td>
    <td>${baiaTexto(r)}</td>
    <td>${idadeAnimalTexto(r)}</td>
-   <td>${badge(classificacaoEtariaMatriz(r).txt,classificacaoEtariaMatriz(r).cls)}</td>
-   <td>${badgeStatusAnimal(r)}</td>
    <td>${fmt(r.coberturaDt)}</td>
    <td>${r.reprodutor||"—"}</td>
    <td>${fmt(r.confirmacaoDt)}</td>
    <td>${fmt(r.partoPrevDt)}</td>
    <td>${fmt(r.partoRealDt)}</td>
-   <td>${r.lote||"—"}</td>
+   <td>${r.partoRealDt ? (r.lote||"—") : "—"}</td>
    <td>${badge(st.txt,st.cls)}</td>
    <td>${st.racao||"—"}</td>
    </tr>`;
@@ -2782,6 +2837,52 @@ function renderNutricao(){
    const acumulado = DESEMPENHO.filter(d=>d[0] <= x.max).map(d=>numeroKg(d[2])).filter(v=>v!==null).reduce((a,b)=>a+b,0);
    return `<tr><td>${x.min} a ${x.max} dias</td><td>${x.fase}</td><td><b>${x.racao}</b></td><td>${pbRacao(x.racao)}</td><td>${txtSem}</td><td>${acumulado ? kg(acumulado,2) : "—"}</td><td>${x.manejo}</td></tr>`;
  }).join("")+`</tbody>`;
+
+ renderGraficoConsumoRacao();
+}
+
+function corFaseConsumoV621(racao){
+ const n = normalizarTextoBusca(racao || "");
+ if(n.includes("pre") || n.includes("creep")) return "#70ad47";
+ if(n.includes("inicial i") || n.includes("inicial 1")) return "#5b9bd5";
+ if(n.includes("inicial ii") || n.includes("inicial 2")) return "#ffc000";
+ if(n.includes("recria")) return "#ed7d31";
+ if(n.includes("terminacao") || n.includes("terminação")) return "#a64d79";
+ return "#999999";
+}
+
+function renderGraficoConsumoRacao(){
+ const el = document.querySelector("#graficoConsumoRacao");
+ if(!el) return;
+ const pontos = DESEMPENHO.map(d=>({idade:d[0], peso:d[1], consumo:numeroKg(d[2]), racao:d[3]})).filter(p=>p.consumo !== null);
+ if(!pontos.length){ el.innerHTML = "<p class='small'>Sem dados de desempenho para montar o gráfico.</p>"; return; }
+ const W = 860, H = 360, L = 58, R = 20, T = 22, B = 52;
+ const maxIdade = Math.max(...pontos.map(p=>p.idade));
+ const maxCons = Math.max(...pontos.map(p=>p.consumo));
+ const x = idade => L + (idade / maxIdade) * (W - L - R);
+ const y = cons => H - B - (cons / maxCons) * (H - T - B);
+ const bw = Math.max(8, (W-L-R) / pontos.length * 0.58);
+ const barras = pontos.map(p=>`<rect x="${x(p.idade)-bw/2}" y="${y(p.consumo)}" width="${bw}" height="${H-B-y(p.consumo)}" rx="4" fill="${corFaseConsumoV621(p.racao)}"><title>${p.idade} dias — ${kg(p.consumo,2)} por semana — ${p.racao}</title></rect>`).join("");
+ const labels = pontos.map((p,i)=> i % 2 === 0 || i === pontos.length-1 ? `<text x="${x(p.idade)}" y="${H-29}" text-anchor="middle" font-size="10">${p.idade}</text>` : "").join("");
+ const valores = pontos.map((p,i)=> i % 2 === 0 || i === pontos.length-1 ? `<text x="${x(p.idade)}" y="${y(p.consumo)-5}" text-anchor="middle" font-size="9">${kg(p.consumo,1)}</text>` : "").join("");
+ const linhasY = Array.from({length:5},(_,i)=>{
+   const v = maxCons * i / 4;
+   const yy = y(v);
+   return `<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e5e7eb"/><text x="${L-8}" y="${yy+4}" text-anchor="end" font-size="10">${kg(v,0)}</text>`;
+ }).join("");
+ const fases = [...new Set(pontos.map(p=>p.racao))];
+ const legenda = fases.map(f=>`<span><i style="background:${corFaseConsumoV621(f)}"></i>${esc(f)}</span>`).join("");
+ el.innerHTML = `<svg class="grafico-consumo-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de consumo de ração por idade e fase">
+   <text x="${L}" y="15" font-size="13" font-weight="700" fill="#0f3150">Consumo semanal estimado por animal</text>
+   ${linhasY}
+   <line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#475569"/>
+   <line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#475569"/>
+   ${barras}
+   ${valores}
+   ${labels}
+   <text x="${W/2}" y="${H-8}" text-anchor="middle" font-size="11" fill="#475569">Idade do lote em dias</text>
+   <text x="16" y="${H/2}" transform="rotate(-90 16 ${H/2})" text-anchor="middle" font-size="11" fill="#475569">kg/animal/semana</text>
+ </svg><div class="grafico-legenda">${legenda}</div>`;
 }
 
 function parseCSV(text){
@@ -2848,7 +2949,7 @@ function mapJSON(payload){
    cadastroRows = payload.cadastro || payload.Cadastro || payload.animais || [];
    dadosRows = payload.dados || payload["Dados Suínos"] || payload["Dados Suinos"] || payload.lancamentos || payload.data || payload.registros || payload.rows || [];
    leitoesRows = payload.leitoes || payload["Leitões"] || payload["Leitoes"] || payload.leitoes_individuais || [];
-   semanalRows = payload.semanal || payload["Semanal"] || payload["semanal"] || payload.resumoSemanal || [];
+   semanalRows = payload.semanal || payload["Semanal"] || payload["semanal"] || payload.resumoSemanal || payload.fichaSemanal || payload.ficha_semanal || payload["Ficha Semanal"] || payload["Ficha_Semanal"] || payload["Resumo Semanal"] || [];
    pesagensRows = payload.pesagens_lotes || payload.PESAGENS_LOTES || payload["Pesagens_Lotes"] || payload["Pesagens Lotes"] || payload.pesagens || [];
  }
 
@@ -3985,6 +4086,18 @@ function ganhoPesoTexto(a,b){
  return (n2-n1).toFixed(2).replace(".", ",")+" kg";
 }
 
+function faseLeitaoTexto(l){
+ const nasc = parseDate(l.dataNascimento || l.nascimento);
+ if(!nasc) return l.status || "Fase não informada";
+ const idade = diffDays(dataRef, nasc);
+ if(idade < 0) return "Nascimento previsto";
+ if(idade <= 28) return "Fase de amamentação / cria";
+ if(idade <= 70) return "Fase de creche";
+ if(idade <= 112) return "Fase de recria / crescimento";
+ if(idade <= 147) return "Fase de terminação";
+ return "Acima da fase de terminação / avaliar destino";
+}
+
 function renderLeitoes(){
  const q = $("#busca") ? $("#busca").value.trim().toLowerCase() : "";
  const filtroLote = $("#filtroLote") ? $("#filtroLote").value : "";
@@ -4042,13 +4155,129 @@ function renderLeitoes(){
        <td>${ganhoPesoTexto(l.pesoNascer,l.pesoDesmame)}</td>
        <td>${l.pesoCrecheAcabamento||"—"}</td>
        <td>${ganhoPesoTexto(l.pesoDesmame,l.pesoCrecheAcabamento)}</td>
-       <td>${l.status||"—"}</td>
+       <td>${faseLeitaoTexto(l)}</td>
        <td>${l.obs||"—"}</td>
      </tr>`;
    }).join("")+`</tbody>`;
  }
 }
 
+
+
+function semanaTextoV62(){
+ return `${fmt(dataRef)} a ${fmt(addDays(dataRef,7))}`;
+}
+
+function statusBaixaTextoV62(r){
+ return normalizarTextoBusca([r.statusAnimal,r.status,r.situacao,r.situação,r.obs].filter(Boolean).join(" "));
+}
+
+function estaBaixadoV62(r){
+ const s = statusBaixaTextoV62(r);
+ return s.includes("descart") || s.includes("vendid") || s.includes("morto") || s.includes("obito") || s.includes("óbito") || s.includes("baixa") || s.includes("encerrado");
+}
+
+function manejoAutoSemanaV62(ref, tipo){
+ if(!ref) return "Conferir água, cocho, limpeza, ambiência e comportamento.";
+ const eventosSemana = eventos()
+   .filter(e=>e.data >= dataRef && e.data <= addDays(dataRef,7))
+   .filter(e=>{
+     const alvo = normalizarTextoBusca(e.lote || e.id || e.matriz || "");
+     const id = normalizarTextoBusca(ref.id || "");
+     const nome = normalizarTextoBusca(ref.nome || "");
+     const lote = normalizarTextoBusca(ref.lote || "");
+     return (lote && alvo === lote) || (id && alvo === id) || (nome && alvo === nome);
+   })
+   .map(e=>`${fmt(e.data)}: ${tipo === "lote" ? "[LOTE] " : tipo === "matriz" ? "[MATRIZ] " : tipo === "reprodutor" ? "[REPRODUTOR] " : ""}${e.acao}`);
+
+ if(eventosSemana.length) return eventosSemana.join(" | ");
+
+ if(tipo === "lote"){
+   const idade = ref.partoBaseDt ? diffDays(dataRef, ref.partoBaseDt) : null;
+   if(idade !== null && idade <= 7) return "Conferir mamada, vitalidade, umbigo, aquecimento e aplicação de ferro conforme protocolo.";
+   if(idade !== null && idade <= 28) return "Conferir creep feed, uniformidade, sanidade e preparo para desmame.";
+   if(idade !== null && idade <= 70) return "Conferir consumo, adaptação pós-desmame, água, temperatura e sinais de diarreia.";
+   if(idade !== null && idade <= 112) return "Conferir ganho de peso, lotação, ventilação e ajuste de cochos.";
+   return "Conferir peso, consumo, lotação, ventilação e possível venda/transferência.";
+ }
+
+ if(tipo === "reprodutor") return "Conferir escore corporal, água, cocho, casco, aprumos, libido e condição geral.";
+ return "Conferir escore corporal, consumo, água, cio/gestação/lactação e condição geral.";
+}
+
+function registrosUnicosPorAnimalV62(regs){
+ const mapa = new Map();
+ regs.forEach(r=>{
+   const chave = normalizarTextoBusca(r.id || r.nome || r.lote || "");
+   if(!chave) return;
+   const atual = mapa.get(chave);
+   const dataR = r.coberturaDt || r.partoBaseDt || r.nascimentoDt || new Date(0);
+   const dataA = atual ? (atual.coberturaDt || atual.partoBaseDt || atual.nascimentoDt || new Date(0)) : new Date(0);
+   if(!atual || dataR >= dataA) mapa.set(chave,r);
+ });
+ return [...mapa.values()];
+}
+
+function gerarSemanalAutomaticoV62(){
+ const semana = semanaTextoV62();
+ const regs = DATA.map(normalizar);
+ const linhas = [];
+
+ regs.filter(r=>isMatriz(r) && r.lote && r.partoRealDt && r.partoRealDt <= addDays(dataRef,7))
+   .forEach(r=>{
+     const qtd = qtdBaseParaSemanaLote(r);
+     if(qtd !== null && qtd !== undefined && Number(qtd) <= 0) return;
+     linhas.push({
+       data:dataRef,
+       semana,
+       baia:baiaDoRegistro(r) || "Sem baia informada",
+       animal:r.lote,
+       idAnimal:r.lote,
+       lote:r.lote,
+       categoria:"Lote",
+       tipo:"Lote",
+       qtdAnimais:qtd || "",
+       manejo:manejoAutoSemanaV62(r,"lote"),
+       obs:"Gerado automaticamente na v62.1 a partir dos dados do lote. Manejo referente ao lote, não à matriz mãe."
+     });
+   });
+
+ registrosUnicosPorAnimalV62(regs.filter(r=>isMatriz(r) && !estaBaixadoV62(r)))
+   .forEach(r=>{
+     linhas.push({
+       data:dataRef,
+       semana,
+       baia:baiaDoRegistro(r) || "Sem baia informada",
+       animal:r.nome || r.id,
+       idAnimal:r.id,
+       lote:r.lote || "",
+       categoria:"Matriz",
+       tipo:"Matriz",
+       qtdAnimais:"1",
+       manejo:manejoAutoSemanaV62(r,"matriz"),
+       obs:"Gerado automaticamente na v62.1 a partir do cadastro/ciclo da matriz."
+     });
+   });
+
+ registrosUnicosPorAnimalV62(regs.filter(r=>isReprodutor(r) && !estaBaixadoV62(r)))
+   .forEach(r=>{
+     linhas.push({
+       data:dataRef,
+       semana,
+       baia:baiaDoRegistro(r) || "Sem baia informada",
+       animal:r.nome || r.id,
+       idAnimal:r.id,
+       lote:"",
+       categoria:"Reprodutor",
+       tipo:"Reprodutor",
+       qtdAnimais:"1",
+       manejo:manejoAutoSemanaV62(r,"reprodutor"),
+       obs:"Gerado automaticamente na v62.1 a partir do cadastro do reprodutor."
+     });
+   });
+
+ return linhas;
+}
 
 function linhasSemanalEnriquecidas(){
  const fim = addDays(dataRef, 7);
@@ -4057,14 +4286,16 @@ function linhasSemanalEnriquecidas(){
    if(!d) return true;
    return d >= dataRef && d <= fim;
  }
- return (SEMANAL || [])
-   .filter(dentroDaSemana)
+ const linhasDaAbaSemanal = (SEMANAL || []).filter(dentroDaSemana);
+ const base = linhasDaAbaSemanal.length ? linhasDaAbaSemanal : gerarSemanalAutomaticoV62();
+ return base
    .map(enriquecerLinhaSemanal)
+   .filter(x=>x.baia || x.animal || x.lote || x.racao || x.manejo)
    .sort((a,b)=>{
      const ba = String(a.baia||"");
      const bb = String(b.baia||"");
-     if(ba !== bb) return ba.localeCompare(bb,"pt-BR");
-     return String(a.animal||a.lote||"").localeCompare(String(b.animal||b.lote||""),"pt-BR");
+     if(ba !== bb) return ba.localeCompare(bb,"pt-BR",{numeric:true});
+     return String(a.animal||a.lote||"").localeCompare(String(b.animal||b.lote||""),"pt-BR",{numeric:true});
    });
 }
 
@@ -4088,8 +4319,39 @@ function miniTabelaPlanoDiario(x){
  return `<table class="mini-dia-table"><thead><tr><th>Dia</th><th>Quantidade</th></tr></thead><tbody>${linhas.map(l=>`<tr><td>${esc(l[0])}</td><td><b>${esc(l[1])}</b></td></tr>`).join("")}</tbody></table>`;
 }
 
+function tipoExibicaoSemanalV621(x){
+ const t = String(x.tipoCalculo || x.tipo || x.categoria || "").toLowerCase();
+ if(t.includes("lote")) return "Lote";
+ if(t.includes("reprod")) return "Reprodutor";
+ if(t.includes("matriz")) return "Matriz";
+ return x.tipoCalculo || x.tipo || "—";
+}
+
+function nomeExibicaoSemanalV621(x){
+ const tipo = tipoExibicaoSemanalV621(x);
+ if(tipo === "Lote"){
+   const ref = buscarRegistroPorAnimalOuLote(x.animal || x.idAnimal || x.lote, "Lote");
+   const matriz = ref && ref.tipoRef === "lote" ? `${ref.nome || "Matriz"} (${ref.id || "—"})` : "";
+   const lote = x.lote || x.animal || x.idAnimal || "—";
+   return `<b>${esc(lote)}</b><br><span class="small">Manejo do lote${matriz ? " — mãe: " + esc(matriz) : ""}</span>`;
+ }
+ if(tipo === "Matriz"){
+   const id = x.idAnimal ? ` (${esc(x.idAnimal)})` : "";
+   return `<b>${esc(x.animal || "Matriz")}${id}</b><br><span class="small">Manejo da matriz</span>`;
+ }
+ return `<b>${esc(x.animal || x.idAnimal || "—")}</b><br><span class="small">Manejo do reprodutor</span>`;
+}
+
+function prefixoManejoSemanalV621(x){
+ const tipo = tipoExibicaoSemanalV621(x);
+ if(tipo === "Lote") return "[LOTE] ";
+ if(tipo === "Matriz") return "[MATRIZ] ";
+ if(tipo === "Reprodutor") return "[REPRODUTOR] ";
+ return "";
+}
+
 function miniTabelaOcupacaoBaia(lista){
- return `<table class="mini-dia-table"><thead><tr><th>Animal/Lote</th><th>Tipo</th><th>Fase</th><th>Animais</th></tr></thead><tbody>${lista.map(x=>`<tr><td><b>${esc(x.animal||x.lote||x.idAnimal||"—")}</b>${x.lote && x.lote !== x.animal?`<br><span class="small">${esc(x.lote)}</span>`:""}</td><td>${esc(x.tipoCalculo||"—")}</td><td>${esc(x.fase||"—")}</td><td>${esc(x.qtdAnimais||"—")}</td></tr>`).join("")}</tbody></table>`;
+ return `<table class="mini-dia-table"><thead><tr><th>Animal/Lote</th><th>Referência</th><th>Fase</th><th>Animais</th></tr></thead><tbody>${lista.map(x=>`<tr><td>${nomeExibicaoSemanalV621(x)}</td><td>${esc(tipoExibicaoSemanalV621(x))}</td><td>${esc(x.fase||"—")}</td><td>${esc(x.qtdAnimais||"—")}</td></tr>`).join("")}</tbody></table>`;
 }
 
 function miniTabelaRacaoBaia(lista){
@@ -4101,6 +4363,7 @@ function renderFichaSemanalColaborador(){
  if(!el) return;
 
  const linhas = linhasSemanalEnriquecidas();
+ const origemFichaSemanal = (SEMANAL || []).length ? "Aba Semanal" : "Geração automática v62.1";
 
  if(!linhas.length){
    el.innerHTML = `<div class="card">
@@ -4132,7 +4395,7 @@ function renderFichaSemanalColaborador(){
    <div class="ficha-head">
      <div>
        <h2>Ficha semanal do colaborador</h2>
-       <p>Período: ${dataIni} a ${dataFim} — roteiro por baia. A ração do lote usa a fase/idade como padrão; peso informado fica apenas como conferência eventual.</p>
+       <p>Período: ${dataIni} a ${dataFim} — roteiro por baia. Origem: ${origemFichaSemanal}. A ração do lote usa a fase/idade como padrão; peso informado fica apenas como conferência eventual.</p>
      </div>
      <div class="ficha-tag">${badge(baias+" baias","b-info")}</div>
    </div>
@@ -4154,10 +4417,10 @@ function renderFichaSemanalColaborador(){
        </tr></thead>
        <tbody>
          ${[...grupos.entries()].map(([baia,lista])=>{
-           const planos = lista.map(x=>`<div style="margin-bottom:4px"><b>${esc(x.animal||x.lote||"—")}</b>${miniTabelaPlanoDiario(x)}</div>`).join("");
+           const planos = lista.map(x=>`<div style="margin-bottom:4px">${nomeExibicaoSemanalV621(x)}${miniTabelaPlanoDiario(x)}</div>`).join("");
            const manejosTxt = lista.map(x=>{
              const m = x.manejo || x.obs || "—";
-             return `<div style="margin-bottom:4px"><b>${esc(x.animal||x.lote||"—")}:</b> ${esc(m)}</div>`;
+             return `<div style="margin-bottom:4px"><b>${prefixoManejoSemanalV621(x)}${esc(x.animal||x.lote||"—")}:</b> ${esc(m)}</div>`;
            }).join("");
            return `<tr>
              <td><b>${esc(baia)}</b></td>
