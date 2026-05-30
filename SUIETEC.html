@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Suinocultura v62</title>
+<title>Controle Zootécnico - Setor de Suinocultura - ETEC</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -1015,6 +1015,85 @@ th{background:#ddebf7;color:#0f3150}
  .pesagem-ajuste{font-size:4.7pt!important;line-height:1.05!important}
 }
 
+
+/* --- v63: ficha semanal operacional limpa para o colaborador --- */
+.ficha-semanal-operacional .ficha-head{
+  margin-bottom:8px;
+}
+.ficha-semanal-operacional .ficha-head p{
+  max-width:980px;
+}
+.ficha-semanal-operacional-table{
+  min-width:0!important;
+  table-layout:fixed;
+}
+.ficha-semanal-operacional-table th,
+.ficha-semanal-operacional-table td{
+  font-size:.82rem;
+  padding:7px 8px;
+  white-space:normal;
+  word-break:break-word;
+  vertical-align:top;
+}
+.ficha-semanal-operacional-table th:nth-child(1){width:7%}
+.ficha-semanal-operacional-table th:nth-child(2){width:18%}
+.ficha-semanal-operacional-table th:nth-child(3){width:14%}
+.ficha-semanal-operacional-table th:nth-child(4){width:12%}
+.ficha-semanal-operacional-table th:nth-child(5){width:12%}
+.ficha-semanal-operacional-table th:nth-child(6){width:15%}
+.ficha-semanal-operacional-table th:nth-child(7){width:22%}
+.ficha-semanal-operacional-table .principal{font-weight:900;color:#0f3150}
+.ficha-semanal-operacional-table .secundario{display:block;color:#64748b;font-size:.74rem;margin-top:2px}
+.ficha-semanal-operacional-table .var-ok{color:#166534;font-weight:800}
+.ficha-semanal-operacional-table .var-alerta{color:#92400e;font-weight:800}
+.assinatura-semanal-operacional{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:1fr 34mm 1.3fr;
+  gap:10px;
+  font-size:.82rem;
+}
+@media(max-width:900px){
+  .assinatura-semanal-operacional{grid-template-columns:1fr}
+  .ficha-semanal-table-wrap{overflow:auto}
+  .ficha-semanal-operacional-table{min-width:920px!important}
+}
+@media print{
+  #fichasemanal.active{display:block!important}
+  @page{size:A4 landscape;margin:6mm}
+  .ficha-semanal-operacional .ficha-head{padding-bottom:4px;margin-bottom:5px}
+  .ficha-semanal-operacional .ficha-head h2{font-size:12pt!important}
+  .ficha-semanal-operacional .ficha-head p{font-size:6.5pt!important}
+  .ficha-semanal-operacional-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+  .ficha-semanal-operacional-table th,
+  .ficha-semanal-operacional-table td{font-size:6.1pt!important;line-height:1.08!important;padding:2.4px 3px!important}
+  .ficha-semanal-operacional-table .secundario{font-size:5.3pt!important}
+  .assinatura-semanal-operacional{font-size:6pt!important;grid-template-columns:1fr 28mm 1.4fr!important;margin-top:5px!important}
+}
+
+
+/* --- v65: alinhamento da aba Nutrição e legenda PB no gráfico --- */
+#nutricao .grid.two{align-items:stretch;}
+#nutricao .panel{display:flex;flex-direction:column;height:100%;}
+#nutricao .panel h3{margin:0 0 8px 0;}
+#nutricao .table-wrap{flex:1;display:block;}
+#nutricao table{height:100%;}
+.grafico-legenda span{background:#f8fafc;border:1px solid var(--linha);border-radius:999px;padding:4px 8px;}
+.grafico-legenda .pb-mini{color:#64748b;font-size:.78rem;font-weight:700;}
+@media print{
+  .grafico-legenda span{padding:2px 5px!important;font-size:5.4pt!important;}
+  .grafico-legenda .pb-mini{font-size:4.8pt!important;}
+}
+
+
+/* --- v66: peso real x esperado e previsão revisada de abate na ficha semanal --- */
+.peso-resumo-v66{display:block;margin-top:3px;font-size:.72rem;color:#0f3150;background:#eef6ff;border:1px solid #c7d7e8;border-radius:8px;padding:3px 5px;line-height:1.18}
+.peso-resumo-v66.alerta{background:#fff7ed;border-color:#fdba74;color:#9a3412}
+.peso-resumo-v66.ok{background:#ecfdf5;border-color:#86efac;color:#14532d}
+@media print{
+  .peso-resumo-v66{font-size:4.9pt!important;padding:1.3px 2px!important;border-radius:4px!important;line-height:1.05!important}
+}
+
 </style>
 </head>
 <body>
@@ -1025,8 +1104,8 @@ th{background:#ddebf7;color:#0f3150}
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Reprodutivo de Suínos — v62</h1>
-      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal automática por baia</div>
+      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC</h1>
+      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia</div>
     </div>
   </div>
   <nav>
@@ -1090,7 +1169,7 @@ th{background:#ddebf7;color:#0f3150}
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v62.1, a Ficha semanal diferencia manejo de lote/matriz e é gerada automaticamente se a aba Semanal não vier no JSON.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v62.1, a Ficha semanal diferencia manejo de lote/matriz e é gerada automaticamente se a aba Semanal não vier no JSON, em formato operacional limpo por baia.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
@@ -1526,7 +1605,25 @@ const PB_RACOES = {
 };
 
 function pbRacao(nome){
-  return PB_RACOES[nome] || "—";
+  const bruto = String(nome || "").trim();
+  if(PB_RACOES[bruto]) return PB_RACOES[bruto];
+
+  // Aceita variações vindas da planilha/tabelas, como "Recria", "Terminação"
+  // ou nomes sem o prefixo "Ração", evitando PB em branco na ficha impressa.
+  const n = normalizarTextoBusca(bruto);
+  if(!n || n === "—") return "—";
+  if(n.includes("reprodutor")) return "14% PB";
+  if(n.includes("gestacao")) return "13% PB";
+  if(n.includes("pre lactacao") || n.includes("pre parto")) return "15% PB";
+  if(n.includes("lactacao")) return "16% PB";
+  if(n.includes("creep") || n.includes("pre inicial")) return "20% PB";
+  if(n.includes("inicial i") || n.includes("inicial 1")) return "18% PB";
+  if(n.includes("inicial ii") || n.includes("inicial 2")) return "16% PB";
+  if(n === "inicial") return "18% PB";
+  if(n.includes("recria")) return "15% PB";
+  if(n.includes("terminacao")) return "13% PB";
+  if(n.includes("leite materno") || n.includes("agua") || n.includes("acucar")) return "—";
+  return "—";
 }
 
 const RACAO_MATRIZ = [
@@ -2861,17 +2958,17 @@ function renderGraficoConsumoRacao(){
  const maxCons = Math.max(...pontos.map(p=>p.consumo));
  const x = idade => L + (idade / maxIdade) * (W - L - R);
  const y = cons => H - B - (cons / maxCons) * (H - T - B);
- const bw = Math.max(8, (W-L-R) / pontos.length * 0.58);
- const barras = pontos.map(p=>`<rect x="${x(p.idade)-bw/2}" y="${y(p.consumo)}" width="${bw}" height="${H-B-y(p.consumo)}" rx="4" fill="${corFaseConsumoV621(p.racao)}"><title>${p.idade} dias — ${kg(p.consumo,2)} por semana — ${p.racao}</title></rect>`).join("");
+ const bw = Math.max(14, (W-L-R) / pontos.length * 0.58);
+ const barras = pontos.map(p=>`<rect x="${x(p.idade)-bw/2}" y="${y(p.consumo)}" width="${bw}" height="${H-B-y(p.consumo)}" rx="4" fill="${corFaseConsumoV621(p.racao)}"><title>${p.idade} dias — ${kg(p.consumo,2)} por semana — ${p.racao} (${pbRacao(p.racao)})</title></rect>`).join("");
  const labels = pontos.map((p,i)=> i % 2 === 0 || i === pontos.length-1 ? `<text x="${x(p.idade)}" y="${H-29}" text-anchor="middle" font-size="10">${p.idade}</text>` : "").join("");
- const valores = pontos.map((p,i)=> i % 2 === 0 || i === pontos.length-1 ? `<text x="${x(p.idade)}" y="${y(p.consumo)-5}" text-anchor="middle" font-size="9">${kg(p.consumo,1)}</text>` : "").join("");
+ const valores = pontos.map(p=>`<text x="${x(p.idade)}" y="${y(p.consumo)-5}" text-anchor="middle" font-size="9">${kg(p.consumo,1)}</text>`).join("");
  const linhasY = Array.from({length:5},(_,i)=>{
    const v = maxCons * i / 4;
    const yy = y(v);
    return `<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e5e7eb"/><text x="${L-8}" y="${yy+4}" text-anchor="end" font-size="10">${kg(v,0)}</text>`;
  }).join("");
  const fases = [...new Set(pontos.map(p=>p.racao))];
- const legenda = fases.map(f=>`<span><i style="background:${corFaseConsumoV621(f)}"></i>${esc(f)}</span>`).join("");
+ const legenda = fases.map(f=>`<span><i style="background:${corFaseConsumoV621(f)}"></i>${esc(f)} <small class="pb-mini">(${pbRacao(f)})</small></span>`).join("");
  el.innerHTML = `<svg class="grafico-consumo-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de consumo de ração por idade e fase">
    <text x="${L}" y="15" font-size="13" font-weight="700" fill="#0f3150">Consumo semanal estimado por animal</text>
    ${linhasY}
@@ -3513,22 +3610,45 @@ function racaoMatrizNoDiaData(r, data){
  };
 }
 
+function desempenhoPlanejadoOuCorrigidoLote(ref, data){
+ if(!ref || !ref.partoRealDt || !data) return null;
+ const idade = diffDays(data, ref.partoRealDt);
+ const desempenhoEsperado = desempenhoPorIdadeRepetindoUltima(idade);
+ const ajuste = desempenhoAjustadoPorPesagem(ref.lote, data);
+ if(ajuste && ajuste.linha){
+   const l = ajuste.linha;
+   return {
+     dias:l[0], peso:l[1], consumo:l[2], racao:l[3],
+     origem:"pesagem",
+     nota:`Corrigido por pesagem real de ${kg(ajuste.pesoReal,1)} em ${fmt(ajuste.pesagem.dataDt)}`
+   };
+ }
+ if(!desempenhoEsperado) return null;
+ const ultimoDia = DESEMPENHO[DESEMPENHO.length-1][0];
+ return {
+   ...desempenhoEsperado,
+   origem: idade > ultimoDia ? "idade_acima_tabela" : "idade",
+   nota: idade > ultimoDia ? "Idade acima da tabela: cálculo mantido na última faixa esperada de peso/consumo." : "Cálculo por idade e peso esperado da tabela."
+ };
+}
+
 function consumoLoteNoDiaData(r, data){
- if(!r || !r.partoRealDt || !data) return {kgDiaAnimal:null, kgDiaLote:null, racao:"—", pb:"—", fase:"—"};
- const idade = diffDays(data, r.partoRealDt);
- const faixa = racaoLotePorIdadeRepetindoUltima(idade);
- const desempenho = desempenhoPorIdadeRepetindoUltima(idade);
+ if(!r || !r.partoRealDt || !data) return {kgDiaAnimal:null, kgDiaLote:null, racao:"—", pb:"—", fase:"—", nota:""};
+ const desempenho = desempenhoPlanejadoOuCorrigidoLote(r, data);
+ const faixa = desempenho ? racaoLotePorDesempenho(desempenho) : racaoLotePorIdadeRepetindoUltima(diffDays(data, r.partoRealDt));
  const qtd = qtdBaseParaSemanaLote(r);
  const consumoSemAnimal = desempenho ? numeroKg(desempenho.consumo) : null;
  const kgDiaAnimal = consumoSemAnimal !== null ? consumoSemAnimal / 7 : null;
  const kgDiaLote = kgDiaAnimal !== null && qtd ? kgDiaAnimal * qtd : null;
  return {
    fase:faixa ? faixa.fase : "Lote",
-   racao:faixa ? faixa.racao : "—",
-   pb:pbRacao(faixa ? faixa.racao : ""),
+   racao:desempenho && desempenho.racao ? desempenho.racao : (faixa ? faixa.racao : "—"),
+   pb:pbRacao(desempenho && desempenho.racao ? desempenho.racao : (faixa ? faixa.racao : "")),
    qtd:qtd || "",
    kgDiaAnimal,
-   kgDiaLote
+   kgDiaLote,
+   desempenho,
+   nota:desempenho ? desempenho.nota : ""
  };
 }
 
@@ -3633,6 +3753,130 @@ function racaoLotePorDesempenho(desempenho){
    || RACAO_LOTE[RACAO_LOTE.length - 1];
 }
 
+function assinaturaPlanoOperacional(p){
+ return [p.racao||"—", p.kgCabeca||"—", p.kgLote||"—"].join("|");
+}
+
+function nomeFaseOperacional(p){
+ const fase = String(p.fase || "").trim();
+ if(fase && fase !== "—") return fase;
+ const racao = String(p.racao || "").replace(/^Ração\s+/i, "").trim();
+ return racao || "—";
+}
+
+function formatarLinhaQtdOperacional(p){
+ return `${p.kgCabeca || "—"}/cab.; ${p.kgLote || "—"}/lote — ${nomeFaseOperacional(p)}`;
+}
+
+function resumoOperacionalSemana(ref){
+ if(!ref) return {racao:"—", pb:"—", kgCabeca:"—", kgLote:"—", variacao:"—", nota:""};
+ const tipo = ref.tipoRef || (isReprodutor(ref)?"reprodutor":isMatriz(ref)?"matriz":"");
+ const dias = Array.from({length:7},(_,i)=>addDays(dataRef,i));
+ const planos = dias.map(d=>{
+   if(tipo === "lote"){
+     const c = consumoLoteNoDiaData(ref,d);
+     return {data:d, fase:c.fase, racao:c.racao, pb:c.pb, kgCabeca:c.kgDiaAnimal!==null?kg(c.kgDiaAnimal,3):"—", kgLote:c.kgDiaLote!==null?kg(c.kgDiaLote,2):"—", nota:c.nota||""};
+   }
+   if(tipo === "reprodutor"){
+     const rp = racaoReprodutor(ref);
+     return {data:d, fase:rp.fase, racao:rp.racao, pb:rp.pb, kgCabeca:rp.qtd, kgLote:rp.kg!==null&&rp.kg!==undefined?kg(rp.kg,2):rp.qtd, nota:"Referência fixa para reprodutor."};
+   }
+   const m = racaoMatrizNoDiaData(ref,d);
+   return {data:d, fase:m.fase, racao:m.racao, pb:m.pb, kgCabeca:m.qtd, kgLote:m.kg!==null&&m.kg!==undefined?kg(m.kg,2):m.qtd, nota:""};
+ });
+ const primeiro = planos[0] || {};
+ const mudancas = [];
+ let assAnterior = assinaturaPlanoOperacional(primeiro);
+ for(let i=1;i<planos.length;i++){
+   const ass = assinaturaPlanoOperacional(planos[i]);
+   if(ass !== assAnterior){
+     mudancas.push(`A partir de ${fmt(planos[i].data)}: ${formatarLinhaQtdOperacional(planos[i])}`);
+     assAnterior = ass;
+   }
+ }
+ const notas = [...new Set(planos.map(p=>p.nota).filter(Boolean))];
+ return {
+   fase:primeiro.fase || "—",
+   racao:primeiro.racao || "—",
+   pb:primeiro.pb || "—",
+   kgCabeca:primeiro.kgCabeca || "—",
+   kgLote:primeiro.kgLote || "—",
+   variacao:mudancas.length ? mudancas.join(" | ") : "Sem variação na semana",
+   nota:notas.join(" | ")
+ };
+}
+
+
+const PESO_ALVO_ABATE_KG = 100;
+
+function indiceDesempenhoParaPesoAlvoV66(alvoKg){
+ const alvo = Number(alvoKg);
+ if(isNaN(alvo)) return DESEMPENHO.length - 1;
+ for(let i=0;i<DESEMPENHO.length;i++){
+   const faixa = intervaloPeso(DESEMPENHO[i][1]);
+   if(faixa && alvo <= faixa.max) return i;
+ }
+ return DESEMPENHO.length - 1;
+}
+
+function pesoEsperadoLoteKgV66(ref, data){
+ if(!ref || !ref.partoRealDt || !data) return null;
+ const idade = diffDays(data, ref.partoRealDt);
+ const d = desempenhoPorIdadeRepetindoUltima(idade);
+ return d ? mediaFaixaPeso(d.peso) : null;
+}
+
+function previsaoPesoAlvoLoteV66(ref, data=dataRef, alvoKg=PESO_ALVO_ABATE_KG){
+ if(!ref || !ref.partoRealDt) return null;
+ const esperado = pesoEsperadoLoteKgV66(ref, data);
+ const idade = diffDays(data, ref.partoRealDt);
+ const pes = ultimaPesagemAte(ref.lote, data);
+ const alvoIdx = indiceDesempenhoParaPesoAlvoV66(alvoKg);
+ const dataPadrao = addDays(ref.partoRealDt, DESEMPENHO[alvoIdx][0]);
+
+ if(pes && pes.pesoMedioKg !== null && pes.pesoMedioKg !== undefined){
+   const base = desempenhoPorPeso(pes.pesoMedioKg);
+   const baseIdx = base ? base.idx : 0;
+   const semanas = pes.pesoMedioKg >= alvoKg ? 0 : Math.max(0, alvoIdx - baseIdx);
+   const previsao = addDays(pes.dataDt, semanas * 7);
+   const dif = esperado !== null ? pes.pesoMedioKg - esperado : null;
+   return {
+     modo:'real',
+     pesagem:pes,
+     pesoReal:pes.pesoMedioKg,
+     pesoEsperado:esperado,
+     diferenca:dif,
+     previsao,
+     alvoKg,
+     status:pes.pesoMedioKg >= alvoKg ? 'atingido' : (dif !== null && dif < -3 ? 'abaixo' : 'ok'),
+     idade
+   };
+ }
+
+ return {
+   modo:'estimado',
+   pesoReal:null,
+   pesoEsperado:esperado,
+   diferenca:null,
+   previsao:dataPadrao,
+   alvoKg,
+   status:'estimado',
+   idade
+ };
+}
+
+function textoResumoPesoLoteV66(ref){
+ const p = previsaoPesoAlvoLoteV66(ref);
+ if(!p) return '';
+ const alvo = `${String(p.alvoKg).replace('.',',')} kg`;
+ if(p.modo === 'real'){
+   const difTxt = p.diferenca !== null ? `${p.diferenca >= 0 ? '+' : ''}${kg(p.diferenca,1)}` : '—';
+   const cls = p.status === 'abaixo' ? 'alerta' : 'ok';
+   return `<span class="peso-resumo-v66 ${cls}">Peso esp.: ${p.pesoEsperado !== null ? kg(p.pesoEsperado,1) : '—'} • real: ${kg(p.pesoReal,1)} em ${fmt(p.pesagem.dataDt)} • dif.: ${difTxt} • ${alvo}: ${fmt(p.previsao)}</span>`;
+ }
+ return `<span class="peso-resumo-v66">Peso esp.: ${p.pesoEsperado !== null ? kg(p.pesoEsperado,1) : '—'} • sem pesagem real • previsão ${alvo}: ${fmt(p.previsao)}</span>`;
+}
+
 function enriquecerLinhaSemanal(x){
  const ref = buscarRegistroPorAnimalOuLote(x.animal || x.idAnimal || x.lote, x.tipo || x.categoria);
 
@@ -3672,27 +3916,12 @@ function enriquecerLinhaSemanal(x){
  const ehReprodutor = ref.tipoRef === "reprodutor";
 
  if(ehLote){
-   const idadeSemana = ref.partoRealDt ? diffDays(dataRef, ref.partoRealDt) : null;
-   const pesoInformado = x.pesoAtual || x.pesoMedio || "";
-
-   // v52: na ficha semanal, o padrão volta a ser por idade/fase.
-   // O peso informado fica como conferência eventual, sem obrigar pesagem semanal.
-   const desempenhoPeso = null;
-   const desempenhoIdade = desempenhoPorIdadeRepetindoUltima(idadeSemana);
-   const desempenho = desempenhoIdade;
-
-   const faixa = racaoLotePorIdadeRepetindoUltima(idadeSemana);
+   const resumo = resumoOperacionalSemana(ref);
    const qtd = qtdBaseParaSemanaLote(ref);
-
-   const consumoSemAnimal = desempenho ? numeroKg(desempenho.consumo) : null;
-   const kgDiaAnimal = consumoSemAnimal !== null ? consumoSemAnimal / 7 : null;
-   const kgDiaLote = kgDiaAnimal !== null && qtd ? kgDiaAnimal * qtd : null;
-
-   let obsAuto = "";
+   let obsAuto = resumo.nota || "";
+   const pesoInformado = x.pesoAtual || x.pesoMedio || "";
    if(pesoInformado){
-     obsAuto = `Peso informado (${pesoInformado} kg) mantido como conferência. Cálculo semanal feito por idade/fase.`;
-   } else if(idadeSemana !== null && idadeSemana > DESEMPENHO[DESEMPENHO.length-1][0]){
-     obsAuto = "Acima da tabela: repetida última faixa de consumo.";
+     obsAuto = obsAuto ? `${obsAuto} Peso informado na aba Semanal: ${pesoInformado} kg.` : `Peso informado na aba Semanal: ${pesoInformado} kg.`;
    }
 
    return {
@@ -3701,19 +3930,23 @@ function enriquecerLinhaSemanal(x){
      tipoCalculo:"Lote",
      animal:x.animal || ref.lote || "",
      lote:x.lote || ref.lote || "",
-     fase:x.fase || (faixa ? faixa.fase : "Lote"),
-     racao:x.racao || (faixa ? faixa.racao : ""),
-     pb:x.pb || pbRacao(x.racao || (faixa ? faixa.racao : "")),
+     fase:x.fase || resumo.fase || "Lote",
+     racao:x.racao || resumo.racao || "",
+     pb:x.pb || resumo.pb || pbRacao(resumo.racao),
      qtdAnimais:x.qtdAnimais || qtd || "",
-     kgDiaAnimal:x.kgDiaAnimal || (kgDiaAnimal !== null ? kg(kgDiaAnimal,3) : ""),
-     kgDiaLote:x.kgDiaLote || (kgDiaLote !== null ? kg(kgDiaLote,2) : ""),
-     planoDiario:planoDiarioSemanal(ref),
-     obs:x.obs || obsAuto
+     kgDiaAnimal:x.kgDiaAnimal || resumo.kgCabeca || "—",
+     kgDiaLote:x.kgDiaLote || resumo.kgLote || "—",
+     variacaoSemana:resumo.variacao,
+     planoDiario:resumo.variacao,
+     pesoResumo:textoResumoPesoLoteV66(ref),
+     obs:x.obs || obsAuto,
+     manejo:x.manejo || manejoAutoSemanaV62(ref,"lote")
    };
  }
 
  if(ehReprodutor){
    const rp = racaoReprodutor(ref);
+   const resumo = resumoOperacionalSemana({...ref,tipoRef:"reprodutor"});
    return {
      ...x,
      baia:x.baia || baiaDoRegistro(ref),
@@ -3725,11 +3958,15 @@ function enriquecerLinhaSemanal(x){
      pb:x.pb || rp.pb,
      qtdAnimais:x.qtdAnimais || "1",
      kgDiaAnimal:x.kgDiaAnimal || rp.qtd,
-     kgDiaLote:x.kgDiaLote || (rp.kg !== null && rp.kg !== undefined ? kg(rp.kg,2) : rp.qtd)
+     kgDiaLote:x.kgDiaLote || (rp.kg !== null && rp.kg !== undefined ? kg(rp.kg,2) : rp.qtd),
+     variacaoSemana:resumo.variacao,
+     obs:x.obs || resumo.nota || "",
+     manejo:x.manejo || manejoAutoSemanaV62(ref,"reprodutor")
    };
  }
 
  const m = racaoMatrizNoDia(ref);
+ const resumo = resumoOperacionalSemana({...ref,tipoRef:"matriz"});
  return {
    ...x,
    baia:x.baia || baiaDoRegistro(ref),
@@ -3741,8 +3978,11 @@ function enriquecerLinhaSemanal(x){
    racao:x.racao || m.racao,
    pb:x.pb || m.pb || pbRacao(m.racao),
    qtdAnimais:x.qtdAnimais || "1",
-   kgDiaAnimal:x.kgDiaAnimal || m.qtd || "—",
-   kgDiaLote:x.kgDiaLote || (m.kg !== null && m.kg !== undefined ? kg(m.kg,2) : "—")
+   kgDiaAnimal:x.kgDiaAnimal || resumo.kgCabeca || m.qtd || "—",
+   kgDiaLote:x.kgDiaLote || resumo.kgLote || (m.kg !== null && m.kg !== undefined ? kg(m.kg,2) : "—"),
+   variacaoSemana:resumo.variacao,
+   obs:x.obs || resumo.nota || "",
+   manejo:x.manejo || manejoAutoSemanaV62(ref,"matriz")
  };
 }
 
@@ -4188,7 +4428,7 @@ function manejoAutoSemanaV62(ref, tipo){
      const lote = normalizarTextoBusca(ref.lote || "");
      return (lote && alvo === lote) || (id && alvo === id) || (nome && alvo === nome);
    })
-   .map(e=>`${fmt(e.data)}: ${tipo === "lote" ? "[LOTE] " : tipo === "matriz" ? "[MATRIZ] " : tipo === "reprodutor" ? "[REPRODUTOR] " : ""}${e.acao}`);
+   .map(e=>`${fmt(e.data)}: ${e.acao}`);
 
  if(eventosSemana.length) return eventosSemana.join(" | ");
 
@@ -4238,7 +4478,7 @@ function gerarSemanalAutomaticoV62(){
        tipo:"Lote",
        qtdAnimais:qtd || "",
        manejo:manejoAutoSemanaV62(r,"lote"),
-       obs:"Gerado automaticamente na v62.1 a partir dos dados do lote. Manejo referente ao lote, não à matriz mãe."
+       obs:"Gerado automaticamente na v66 a partir dos dados do lote. Manejo referente ao lote, não à matriz mãe."
      });
    });
 
@@ -4255,7 +4495,7 @@ function gerarSemanalAutomaticoV62(){
        tipo:"Matriz",
        qtdAnimais:"1",
        manejo:manejoAutoSemanaV62(r,"matriz"),
-       obs:"Gerado automaticamente na v62.1 a partir do cadastro/ciclo da matriz."
+       obs:"Gerado automaticamente na v66 a partir do cadastro/ciclo da matriz."
      });
    });
 
@@ -4272,7 +4512,7 @@ function gerarSemanalAutomaticoV62(){
        tipo:"Reprodutor",
        qtdAnimais:"1",
        manejo:manejoAutoSemanaV62(r,"reprodutor"),
-       obs:"Gerado automaticamente na v62.1 a partir do cadastro do reprodutor."
+       obs:"Gerado automaticamente na v66 a partir do cadastro do reprodutor."
      });
    });
 
@@ -4363,82 +4603,74 @@ function renderFichaSemanalColaborador(){
  if(!el) return;
 
  const linhas = linhasSemanalEnriquecidas();
- const origemFichaSemanal = (SEMANAL || []).length ? "Aba Semanal" : "Geração automática v62.1";
+ const origemFichaSemanal = (SEMANAL || []).length ? "Aba Semanal" : "Geração automática";
 
  if(!linhas.length){
    el.innerHTML = `<div class="card">
      <h3>Sem dados semanais carregados</h3>
-     <p>Para gerar esta ficha, a aba <b>Semanal</b> precisa ser retornada pelo Apps Script e conter as colunas <b>Baia</b>, <b>Animal/Lote (1)</b>, <b>Animal/Lote (2)</b> etc.</p>
-     <p>Depois clique em <b>Atualizar dados</b>.</p>
+     <p>A ficha pode ser gerada automaticamente pelo cadastro, ou pela aba <b>Semanal</b> quando ela vier no Apps Script.</p>
    </div>`;
    return;
  }
 
  const dataIni = fmt(dataRef);
- const dataFim = fmt(addDays(dataRef,7));
- const grupos = new Map();
- linhas.forEach(x=>{
-   const b = x.baia || "Sem baia";
-   if(!grupos.has(b)) grupos.set(b, []);
-   grupos.get(b).push(x);
- });
-
- const baias = grupos.size;
- const manejos = linhas.filter(x=>x.manejo).length;
- const racoes = new Set(linhas.map(x=>x.racao).filter(Boolean)).size;
- const totalKg = linhas.reduce((s,x)=>{
-   const n = Number(String(x.kgDiaLote||"").replace(",",".").replace(" kg",""));
-   return s + (isNaN(n)?0:n);
+ const dataFim = fmt(addDays(dataRef,6));
+ const baias = new Set(linhas.map(x=>x.baia||"Sem baia")).size;
+ const totalKgDia = linhas.reduce((s,x)=>{
+   const n = numeroFlex(x.kgDiaLote);
+   return s + (n || 0);
  },0);
 
- el.innerHTML = `<div class="ficha-semanal-a4 ficha-semanal-clean">
+ el.innerHTML = `<div class="ficha-semanal-a4 ficha-semanal-operacional">
    <div class="ficha-head">
      <div>
-       <h2>Ficha semanal do colaborador</h2>
-       <p>Período: ${dataIni} a ${dataFim} — roteiro por baia. Origem: ${origemFichaSemanal}. A ração do lote usa a fase/idade como padrão; peso informado fica apenas como conferência eventual.</p>
+       <h2>Ficha semanal de trato e manejo por baia</h2>
+       <p>Período: ${dataIni} a ${dataFim}. Usar esta folha no setor para conferir baia, animal/lote, ração, quantidade diária e manejos da semana. Origem: ${origemFichaSemanal}. Para lotes acima da idade da tabela, o cálculo permanece na última faixa esperada; se houver pesagem real cadastrada na planilha, a curva é corrigida a partir dela e a previsão de atingir 100 kg é recalculada.</p>
      </div>
      <div class="ficha-tag">${badge(baias+" baias","b-info")}</div>
    </div>
 
-   <div class="cards-semanal-clean">
-     ${[
-       ["Baias no roteiro", baias],
-       ["Animais/lotes", linhas.length],
-       ["Manejos preenchidos", manejos],
-       ["Tipos de ração", racoes],
-       ["Consumo total/dia", totalKg ? kg(totalKg,2)+" kg" : "—"]
-     ].map(x=>`<div class="today-card"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("")}
-   </div>
-
    <div class="table-wrap ficha-semanal-table-wrap">
-     <table class="compact-table ficha-semanal-clean-table">
+     <table class="compact-table ficha-semanal-operacional-table">
        <thead><tr>
-         <th>Baia</th><th>Ocupação</th><th>Ração e quantidade</th><th>Plano diário</th><th>Manejo/observação da semana</th>
+         <th>Baia</th>
+         <th>Animal ou lote</th>
+         <th>Ração</th>
+         <th>Qtd./cabeça/dia</th>
+         <th>Qtd./lote/dia</th>
+         <th>Variação na semana</th>
+         <th>Manejo da semana</th>
        </tr></thead>
        <tbody>
-         ${[...grupos.entries()].map(([baia,lista])=>{
-           const planos = lista.map(x=>`<div style="margin-bottom:4px">${nomeExibicaoSemanalV621(x)}${miniTabelaPlanoDiario(x)}</div>`).join("");
-           const manejosTxt = lista.map(x=>{
-             const m = x.manejo || x.obs || "—";
-             return `<div style="margin-bottom:4px"><b>${prefixoManejoSemanalV621(x)}${esc(x.animal||x.lote||"—")}:</b> ${esc(m)}</div>`;
-           }).join("");
+         ${linhas.map(x=>{
+           const tipo = tipoExibicaoSemanalV621(x);
+           const nome = tipo === "Lote"
+             ? `<span class="principal">${esc(x.lote || x.animal || "—")}</span><span class="secundario">Lote • ${esc(x.qtdAnimais||"—")} animais • ${esc(x.fase||"—")}</span>${x.pesoResumo || ""}`
+             : `<span class="principal">${esc(x.animal || x.idAnimal || "—")}</span><span class="secundario">${esc(tipo)} • ${esc(x.fase||"—")}</span>`;
+           const variacao = x.variacaoSemana || "Sem variação na semana";
+           const classeVar = variacao === "Sem variação na semana" ? "var-ok" : "var-alerta";
+           const manejo = x.manejo || x.obs || "Conferir água, cocho, limpeza, ambiência e comportamento.";
+           const obs = x.obs && x.obs !== manejo ? `<span class="secundario">${esc(x.obs)}</span>` : "";
            return `<tr>
-             <td><b>${esc(baia)}</b></td>
-             <td>${miniTabelaOcupacaoBaia(lista)}</td>
-             <td>${miniTabelaRacaoBaia(lista)}</td>
-             <td>${planos}</td>
-             <td>${manejosTxt}</td>
+             <td><b>${esc(x.baia || "Sem baia")}</b></td>
+             <td>${nome}</td>
+             <td><b>${esc(x.racao||"—")}</b><span class="secundario">PB: ${esc(x.pb||pbRacao(x.racao)||"—")}</span></td>
+             <td><b>${esc(x.kgDiaAnimal||"—")}</b></td>
+             <td><b>${esc(x.kgDiaLote||"—")}</b></td>
+             <td><span class="${classeVar}">${esc(variacao)}</span></td>
+             <td><b>${esc(manejo)}</b>${obs}</td>
            </tr>`;
          }).join("")}
        </tbody>
      </table>
    </div>
 
-   <div class="assinatura-semanal assinatura-semanal-clean">
+   <div class="assinatura-semanal-operacional">
      <div>Responsável: ____________________________</div>
      <div>Data: ____/____/______</div>
      <div>Observações gerais: _________________________________________________</div>
    </div>
+   <div class="small" style="margin-top:5px">Consumo diário estimado do setor nesta ficha: <b>${totalKgDia ? kg(totalKgDia,2) : "—"}</b>.</div>
  </div>`;
 }
 
