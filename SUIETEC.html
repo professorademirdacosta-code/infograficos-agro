@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Zootécnico - Setor de Suinocultura - ETEC</title>
+<title>Controle Zootécnico - Setor de Suinocultura - ETEC v67.1</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -1104,8 +1104,8 @@ th{background:#ddebf7;color:#0f3150}
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC</h1>
-      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia</div>
+      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v67.1</h1>
+      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v67.1</div>
     </div>
   </div>
   <nav>
@@ -1169,7 +1169,7 @@ th{background:#ddebf7;color:#0f3150}
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v62.1, a Ficha semanal diferencia manejo de lote/matriz e é gerada automaticamente se a aba Semanal não vier no JSON, em formato operacional limpo por baia.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v67.1, a Ficha semanal diferencia manejo de lote/matriz, busca sempre o ciclo mais atual da matriz e recalcula ração/quantidade automaticamente, evitando usar ciclos antigos ou quantidades manuais desatualizadas da aba Semanal.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
@@ -3436,6 +3436,15 @@ function tipoInformadoSemanal(x){
  return "";
 }
 
+function dataOperacionalRegistroV67(r){
+ if(!r) return new Date(0);
+ return r.coberturaDt || r.partoBaseDt || r.partoPrevDt || r.partoRealDt || r.nascimentoDt || new Date(0);
+}
+
+function registroMaisAtualV67(lista){
+ return (lista || []).slice().sort((a,b)=>dataOperacionalRegistroV67(b) - dataOperacionalRegistroV67(a))[0] || null;
+}
+
 function buscarRegistroPorAnimalOuLote(valor, tipoPreferido=""){
  const vOriginal = String(valor || "").trim();
  const v = normalizarTextoBusca(vOriginal);
@@ -3467,12 +3476,16 @@ function buscarRegistroPorAnimalOuLote(valor, tipoPreferido=""){
    return {tipoRef:"lote_nao_encontrado", codigo:vOriginal};
  }
 
- // Se a aba Semanal informar explicitamente que é matriz, procura SOMENTE matriz/reprodutor por ID/nome.
+ // v67.1: quando houver mais de um ciclo da mesma matriz, usa o ciclo MAIS ATUAL.
+ // Isso impede a ficha semanal de pegar uma cobertura/parto antigo e mostrar ração errada.
  if(tipo.includes("matriz") || tipo.includes("reprod")){
-   const porId = regs.find(r=>normalizarTextoBusca(r.id) === v && (tipo.includes("reprod") ? isReprodutor(r) : isMatriz(r)));
+   const querReprod = tipo.includes("reprod");
+   const candidatosId = regs.filter(r=>normalizarTextoBusca(r.id) === v && (querReprod ? isReprodutor(r) : isMatriz(r)));
+   const porId = registroMaisAtualV67(candidatosId);
    if(porId) return {...porId, tipoRef:isReprodutor(porId)?"reprodutor":"matriz"};
 
-   const porNome = regs.find(r=>normalizarTextoBusca(r.nome) === v && (tipo.includes("reprod") ? isReprodutor(r) : isMatriz(r)));
+   const candidatosNome = regs.filter(r=>normalizarTextoBusca(r.nome) === v && (querReprod ? isReprodutor(r) : isMatriz(r)));
+   const porNome = registroMaisAtualV67(candidatosNome);
    if(porNome) return {...porNome, tipoRef:isReprodutor(porNome)?"reprodutor":"matriz"};
 
    return null;
@@ -3501,10 +3514,12 @@ function buscarRegistroPorAnimalOuLote(valor, tipoPreferido=""){
    return {tipoRef:"lote_nao_encontrado", codigo:vOriginal};
  }
 
- const porId = regs.find(r=>normalizarTextoBusca(r.id) === v);
+ const candidatosId = regs.filter(r=>normalizarTextoBusca(r.id) === v);
+ const porId = registroMaisAtualV67(candidatosId);
  if(porId) return {...porId, tipoRef:isReprodutor(porId)?"reprodutor":"matriz"};
 
- const porNome = regs.find(r=>normalizarTextoBusca(r.nome) === v);
+ const candidatosNome = regs.filter(r=>normalizarTextoBusca(r.nome) === v);
+ const porNome = registroMaisAtualV67(candidatosNome);
  if(porNome) return {...porNome, tipoRef:isReprodutor(porNome)?"reprodutor":"matriz"};
 
  return null;
@@ -3930,12 +3945,12 @@ function enriquecerLinhaSemanal(x){
      tipoCalculo:"Lote",
      animal:x.animal || ref.lote || "",
      lote:x.lote || ref.lote || "",
-     fase:x.fase || resumo.fase || "Lote",
-     racao:x.racao || resumo.racao || "",
-     pb:x.pb || resumo.pb || pbRacao(resumo.racao),
-     qtdAnimais:x.qtdAnimais || qtd || "",
-     kgDiaAnimal:x.kgDiaAnimal || resumo.kgCabeca || "—",
-     kgDiaLote:x.kgDiaLote || resumo.kgLote || "—",
+     fase:resumo.fase || x.fase || "Lote",
+     racao:resumo.racao || x.racao || "",
+     pb:resumo.pb || x.pb || pbRacao(resumo.racao),
+     qtdAnimais:qtd || x.qtdAnimais || "",
+     kgDiaAnimal:resumo.kgCabeca || x.kgDiaAnimal || "—",
+     kgDiaLote:resumo.kgLote || x.kgDiaLote || "—",
      variacaoSemana:resumo.variacao,
      planoDiario:resumo.variacao,
      pesoResumo:textoResumoPesoLoteV66(ref),
@@ -3953,12 +3968,12 @@ function enriquecerLinhaSemanal(x){
      tipoCalculo:"Reprodutor",
      planoDiario:`Todos os dias: ${rp.qtd} — ${rp.racao}`,
      animal:x.animal || ref.nome || ref.id || "",
-     fase:x.fase || "Reprodutor",
-     racao:x.racao || rp.racao,
-     pb:x.pb || rp.pb,
-     qtdAnimais:x.qtdAnimais || "1",
-     kgDiaAnimal:x.kgDiaAnimal || rp.qtd,
-     kgDiaLote:x.kgDiaLote || (rp.kg !== null && rp.kg !== undefined ? kg(rp.kg,2) : rp.qtd),
+     fase:"Reprodutor",
+     racao:rp.racao || x.racao,
+     pb:rp.pb || x.pb,
+     qtdAnimais:"1",
+     kgDiaAnimal:rp.qtd || x.kgDiaAnimal,
+     kgDiaLote:(rp.kg !== null && rp.kg !== undefined ? kg(rp.kg,2) : rp.qtd) || x.kgDiaLote,
      variacaoSemana:resumo.variacao,
      obs:x.obs || resumo.nota || "",
      manejo:x.manejo || manejoAutoSemanaV62(ref,"reprodutor")
@@ -3974,12 +3989,12 @@ function enriquecerLinhaSemanal(x){
    planoDiario:planoDiarioSemanal(ref),
    animal:x.animal || ref.nome || ref.id || "",
    lote:x.lote || ref.lote || "",
-   fase:x.fase || m.fase || situacaoMatriz(ref).txt,
-   racao:x.racao || m.racao,
-   pb:x.pb || m.pb || pbRacao(m.racao),
-   qtdAnimais:x.qtdAnimais || "1",
-   kgDiaAnimal:x.kgDiaAnimal || resumo.kgCabeca || m.qtd || "—",
-   kgDiaLote:x.kgDiaLote || resumo.kgLote || (m.kg !== null && m.kg !== undefined ? kg(m.kg,2) : "—"),
+   fase:m.fase || resumo.fase || x.fase || situacaoMatriz(ref).txt,
+   racao:m.racao || resumo.racao || x.racao,
+   pb:m.pb || resumo.pb || x.pb || pbRacao(m.racao),
+   qtdAnimais:"1",
+   kgDiaAnimal:resumo.kgCabeca || m.qtd || x.kgDiaAnimal || "—",
+   kgDiaLote:resumo.kgLote || (m.kg !== null && m.kg !== undefined ? kg(m.kg,2) : "—") || x.kgDiaLote,
    variacaoSemana:resumo.variacao,
    obs:x.obs || resumo.nota || "",
    manejo:x.manejo || manejoAutoSemanaV62(ref,"matriz")
