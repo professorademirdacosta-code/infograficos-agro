@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incubação de Ovos: do Reprodutor ao Pintainho</title>
+    <style>
+        :root {
+            --primary: #2d5a27;
+            --primary-light: #e8f5e9;
+            --accent: #d68910;
+            --accent-light: #fef5e7;
+            --danger: #b03a2e;
+            --danger-light: #fdedec;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --gray: #7f8c8d;
+            --border-radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f4;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #1b3d17);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid-species {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .species-card {
+            background: white;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .species-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .species-card.active {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .species-card svg {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            fill: var(--primary);
+        }
+
+        .species-card.active svg {
+            fill: var(--primary);
+        }
+
+        .species-card h3 {
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .technical-table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 25px;
+        }
+
+        .technical-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .technical-table th, .technical-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .technical-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .technical-table tr:nth-child(even) {
+            background-color: #f9fbf9;
+        }
+
+        .alert-box {
+            background-color: var(--accent-light);
+            border-left: 5px solid var(--accent);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+            color: #7d5306;
+        }
+
+        .alert-box.danger {
+            background-color: var(--danger-light);
+            border-left-color: var(--danger);
+            color: #78281f;
+        }
+
+        /* Linha do Tempo */
+        .timeline-container {
+            position: relative;
+            margin: 40px 0;
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            min-width: 1000px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #cbd5e1;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            background: white;
+            border: 3px solid #cbd5e1;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .timeline-step:hover, .timeline-step.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            transform: scale(1.15);
+        }
+
+        .timeline-label {
+            position: absolute;
+            top: 55px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            width: 100px;
+            color: var(--dark);
+        }
+
+        .step-panel-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .step-panel-grid {
+                grid-template-columns: 1fr;
+            }
+            .timeline-container {
+                overflow-x: auto;
+            }
+        }
+
+        .sub-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .sub-card {
+            background: #fdfefe;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .sub-card h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        /* Simulador */
+        .simulator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .simulator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .result-box {
+            background: #f0f7f0;
+            border: 1px dashed var(--primary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        /* Quiz */
+        .quiz-container {
+            background: #fdfefe;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 25px;
+        }
+
+        .quiz-option {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quiz-option:hover {
+            background: #f1f5f9;
+        }
+
+        .quiz-option.correct {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: #1b3d17;
+            font-weight: 600;
+        }
+
+        .quiz-option.incorrect {
+            background-color: var(--danger-light);
+            border-color: var(--danger);
+            color: #78281f;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        /* Ilustrações e Grades Visuais Estilizadas */
+        .illustration-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .egg-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .egg-item svg {
+            width: 60px;
+            height: 80px;
+        }
+
+        .chick-behavior {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .chick-behavior {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chick-box {
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .chick-dots {
+            width: 100px;
+            height: 100px;
+            margin: 10px auto;
+            position: relative;
+            background: #f1f5f9;
+            border-radius: 50%;
+        }
+
+        /* Resumo Final */
+        .summary-box {
+            background: linear-gradient(135deg, var(--primary-light), #c8e6c9);
+            border-left: 6px solid var(--primary);
+            border-radius: var(--border-radius);
+            padding: 25px;
+        }
+
+        .summary-box ul {
+            padding-left: 20px;
+        }
+
+        .summary-box li {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .btn-nav:hover {
+            background: #1b3d17;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <h1>Incubação de Ovos: do Reprodutor ao Pintainho</h1>
+            <p>A incubação bem-sucedida começa antes do ovo chegar à incubadora. Ela depende da nutrição, sanidade e manejo dos reprodutores, da qualidade dos ovos, do armazenamento correto, da regulagem da incubadora e dos cuidados com os pintainhos após a eclosão.</p>
+        </div>
+    </header>
+
+    <main>
+        
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            1. Guia Técnico por Espécie
+        </h2>
+        
+        <div class="grid-species" id="species-selector">
+            </div>
+
+        <div class="panel" id="species-panel">
+            </div>
+
+
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            2. Etapas Críticas do Fluxo de Incubação
+        </h2>
+        <p style="margin-bottom: 15px; color: var(--gray);">Clique em cada número do fluxo para visualizar as orientações de manejo, alertas e contraindicações de campo.</p>
+        
+        <div class="timeline-container">
+            <div class="timeline" id="timeline-flow">
+                </div>
+        </div>
+
+        <div class="panel" id="step-panel">
+            </div>
+
+
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+            3. Simulador de Cronograma de Incubação
+        </h2>
+        <div class="panel">
+            <div class="simulator-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="sim-species">Selecione a Espécie:</label>
+                        <select id="sim-species" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sim-date">Data de Início da Incubação:</label>
+                        <input type="date" id="sim-date" class="form-control">
+                    </div>
+                </div>
+                <div class="result-box">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">Previsões Técnicas do Lote:</h3>
+                    <div id="sim-results">
+                        <p style="color: var(--gray);">Insira a data inicial e selecione a espécie para calcular o calendário zootécnico.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            4. Checklist de Verificação de Incubatório
+        </h2>
+        <div class="panel">
+            <p style="margin-bottom: 15px; color: var(--gray);">Utilize este checklist operacional antes do carregamento de cada lote de incubação.</p>
+            <div id="checklist-container">
+                </div>
+        </div>
+
+
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.25z"/></svg>
+            5. Avaliação de Fixação Técnica
+        </h2>
+        <div class="panel">
+            <div class="quiz-container">
+                <div id="quiz-content">
+                    </div>
+            </div>
+        </div>
+
+
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Resumo Técnico da Incubação
+        </h2>
+        <div class="summary-box">
+            <ul>
+                <li>A incubação começa no manejo dos reprodutores: matrizes estressadas ou mal nutridas inviabilizam o rendimento do incubatório.</li>
+                <li>A qualidade do ovo define grande parte do sucesso: a casca é a barreira física e biológica do embrião.</li>
+                <li>Temperatura, umidade, ventilação e viragem precisam ser controladas com rigor milimétrico.</li>
+                <li>A ovoscopia ajuda a monitorar fertilidade e desenvolvimento, removendo fontes de contaminação explosiva.</li>
+                <li>O manejo pós-eclosão influencia diretamente a sobrevivência e o desenvolvimento de todo o ciclo produtivo das aves.</li>
+            </ul>
+        </div>
+
+    </main>
+
+    <script>
+        // BANCO DE DADOS DAS ESPÉCIES
+        const speciesData = {
+            galinha: {
+                name: 'Galinha',
+                time: '21 dias',
+                temp: '37,5 °C',
+                humiInit: '55–60%',
+                humiEnd: '65–70%',
+                stopTurn: '18º dia',
+                care: 'Monitoramento rigoroso da janela de nascimento (geralmente entre 410 e 440 horas de incubação). Evitar variações térmicas superiores a 0,5°C.',
+                example: 'Em máquinas de estágio único, a redução gradual da temperatura para 37,2°C no período de transferência reduz o estresse térmico embrionário.',
+                svg: `<svg viewBox="0 0 64 64"><path d="M32 4C22 4 16 12 16 22c0 8 4 14 8 18l-2 14h6l2-8h4l2 8h6l-2-14c4-4 8-10 8-18C48 12 42 4 32 4zm0 8c2 0 4 2 4 4s-2 4-4 4-4-2-4-4 2-4 4-4z"/></svg>`
+            },
+            codorna: {
+                name: 'Codorna',
+                time: '16–18 dias',
+                temp: '37,5 °C',
+                humiInit: '55–60%',
+                humiEnd: '65–70%',
+                stopTurn: '14º/15º dia',
+                care: 'Devido ao tamanho reduzido dos ovos, a perda de umidade é acelerada. Exige bandejas com malhas finas no nascedouro para evitar fuga ou acidentes com os pintainhos.',
+                example: 'Manter a umidade estritamente em 60% até a transferência ajuda a evitar que a membrana interna resseque e prenda a pequena ave na casca.',
+                svg: `<svg viewBox="0 0 64 64"><path d="M32 10C24 10 18 16 18 24c0 6 3 11 6 14l-1 12h5l1-6h6l1 6h5l-1-12c3-3 6-8 6-14 0-8-6-14-14-14z"/></svg>`
+            },
+            pato: {
+                name: 'Pato',
+                time: '28 dias',
+                temp: '37,5 °C',
+                humiInit: '55–60%',
+                humiEnd: '70–75%',
+                stopTurn: '25º dia',
+                care: 'Exige manejo de resfriamento e aspersão periódica de água morna nos ovos a partir do 10º dia para simular a saída da mãe do ninho e aumentar a troca gasosa pela casca espessa.',
+                example: 'Geralmente realiza-se o resfriamento diário por 15-20 minutos, seguido de aspersão com água a 37°C antes do retorno à incubadora.',
+                svg: `<svg viewBox="0 0 64 64"><path d="M16 20c0-6 5-10 11-10s9 3 11 7c2-1 5-1 7 1s2 5 0 7c4 2 6 6 6 11 0 8-8 14-18 14H20c-7 0-11-4-11-9 0-4 3-8 7-11z"/></svg>`
+            },
+            marreco: {
+                name: 'Marreco',
+                time: '28 dias',
+                temp: '37,5 °C',
+                humiInit: '55–60%',
+                humiEnd: '70–75%',
+                stopTurn: '25º dia',
+                care: 'Similar aos patos, a casca possui uma cutícula cerosa espessa. A umidade no nascedouro deve ser elevada (mínimo 70%) para que as membranas fiquem elásticas na eclosão.',
+                example: 'Certificar que os extratores de ar da sala estejam dimensionados, pois ovos de palmípedes liberam alta carga de CO2 na fase final.',
+                svg: `<svg viewBox="0 0 64 64"><path d="M18 18c0-5 4-9 10-9s9 3 10 6c2-1 4-1 6 1s1 4 0 6c3 2 5 5 5 10 0 7-7 13-16 13H22c-6 0-10-3-10-8 0-4 2-7 6-9z"/></svg>`
+            },
+            ganso: {
+                name: 'Ganso',
+                time: '28–35 dias',
+                temp: '37,2–37,5 °C',
+                humiInit: '55–60%',
+                humiEnd: '70–75%',
+                stopTurn: '3 dias antes',
+                care: 'Ovos grandes exigem incubadoras adaptadas e viragem horizontal ou em ângulos específicos (geralmente 45° a 90°). O choque térmico ou mecânico destrói o disco germinativo facilmente.',
+                example: 'Atenção especial à variação do período de acordo com a raça (Ganso Africano ~32 dias, Ganso Embden ~30 dias).',
+                svg: `<svg viewBox="0 0 64 64"><path d="M14 24c0-8 6-14 14-14s12 4 14 9c3-1 6-1 7 2s1 6-1 8c4 3 5 7 5 12 0 9-9 15-19 15H20c-7 0-12-5-12-11 0-5 3-9 6-11z"/></svg>`
+            },
+            peru: {
+                name: 'Peru',
+                time: '28 dias',
+                temp: '37,5 °C',
+                humiInit: '55–60%',
+                humiEnd: '65–70%',
+                stopTurn: '25º dia',
+                care: 'Exige alto aporte de oxigênio na fase final. Ovos são sensíveis ao excesso de umidade na primeira metade do ciclo, o que pode impedir a formação correta da câmara de ar.',
+                example: 'Realizar a pesagem dos ovos para garantir que percam entre 11% e 13% de seu peso inicial até o momento da transferência.',
+                svg: `<svg viewBox="0 0 64 64"><path d="M32 6c10 0 16 8 16 16 0 5-2 10-5 13l5 15h-8l-3-8h-10l-3 8h-8l5-15c-3-3-5-8-5-13 0-8 6-16 16-16z"/></svg>`
+            },
+            dangola: {
+                name: "Galinha-d'angola",
+                time: '26–28 dias',
+                temp: '37,5 °C',
+                humiInit: '55–60%',
+                humiEnd: '65–70%',
+                stopTurn: '24º/25º dia',
+                care: 'Casca extremamente espessa e densa. A ovoscopia é mais difícil e requer foco luminoso de alta intensidade. Sensíveis à contaminação em caso de ovos lavados.',
+                example: 'Garantir que a umidade de eclosão atinja 70% assim que iniciar a bicagem externa para evitar o aprisionamento da ave pela casca dura.',
+                svg: `<svg viewBox="0 0 64 64"><path d="M32 8c9 0 14 7 14 14 0 4-2 9-4 11l4 17h-7l-2-10H27l-2 10h-7l4-17c-2-2-4-7-4-11 0-7 5-14 14-14z"/></svg>`
+            }
+        };
+
+        // BANCO DE DADOS DAS ETAPAS DA LINHA DO TEMPO
+        const timelineSteps = [
+            {
+                title: "Manejo dos Reprodutores",
+                do: "Fornecer ração balanceada (foco em Ca, P, Vitamina E e A), manter proporção macho:fêmea zootecnicamente correta (ex: 1:10 para galinhas pesadas) e seguir o calendário vacinal sanitário rigorosamente.",
+                why: "A qualidade biológica, imunidade e integridade física da casca originam-se exclusivamente da condição de saúde e escore corporal da matriz.",
+                error: "Utilizar ração de postura comercial comum para reprodutores, gerando ovos com baixa viabilidade embrionária e deficiências nutricionais no pintainho.",
+                example: "Lotes submetidos a estresse térmico acima de 32°C reduzem drasticamente a fertilidade do macho e a qualidade de casca da fêmea.",
+                alert: "O escore corporal das matrizes e a ausência de ectoparasitas na cama interferem diretamente no número de ovos limpos colhidos.",
+                illustration: `
+                    <div class="illustration-box">
+                        <strong style="color:var(--primary)">Conforto das Matrizes</strong>
+                        <div style="margin-top:10px; font-size:0.9rem; text-align:center;">
+                            [Ninhos Limpos] + [Ambiência Controlada] + [Água Fresca]<br>
+                            &darr;<br>
+                            <strong>Ovo Fértil de Alta Carga Biológica</strong>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "Coleta dos Ovos",
+                do: "Coletar no mínimo de 4 a 6 vezes ao dia. Utilizar bandejas plásticas limpas e desinfetadas. Registrar data, lote e horário.",
+                why: "Evita que o ovo permaneça exposto ao calor do ninho (induzindo desenvolvimento embrionário desordenado precoce) e minimiza o risco de contaminação bacteriana externa.",
+                error: "Realizar poucas coletas, permitindo que as aves quebrem ou sujem os ovos com fezes e barro das patas.",
+                example: "Ovos deixados no ninho em dias quentes iniciam uma pré-incubação inadequada, matando o embrião na fase de gástrula.",
+                alert: "Ovos trincados ou microtrincados nunca devem seguir para incubação, pois perderão água em excesso e servirão de porta de entrada para patógenos.",
+                illustration: `
+                    <div class="illustration-box">
+                        <span style="font-size:2.5rem;">🧺</span>
+                        <small style="color:var(--gray);text-align:center;margin-top:5px;">Frequência de Coleta Mínima: 4x ao dia em clima ameno, 6x no verão.</small>
+                    </div>`
+            },
+            {
+                title: "Seleção e Classificação",
+                do: "Descartar ovos muito grandes (gemas duplas), muito pequenos, deformados, com casca fina, trincados ou excessivamente sujos.",
+                why: "Garante a uniformidade física do lote de incubação, o que padroniza as trocas térmicas e estabiliza a janela de nascimento.",
+                error: "Tentar incubar ovos pontiagudos ou esféricos demais. Eles não se posicionam adequadamente nas células das bandejas.",
+                example: "Ovos de tamanhos discrepantes geram pintainhos desuniformes no campo, prejudicando o manejo de lote na granja de engorda.",
+                alert: "Ovos microtrincados podem ser identificados batendo levemente um contra o outro (som oco/chocho) ou via ovoscopia de recepção.",
+                illustration: `
+                    <div class="egg-comparison">
+                        <div class="egg-item">
+                            <svg viewBox="0 0 40 50"><ellipse cx="20" cy="25" rx="15" ry="20" fill="#fcdbb0"/></svg>
+                            <div><small style="color:green">Ideal</small></div>
+                        </div>
+                        <div class="egg-item">
+                            <svg viewBox="0 0 40 50"><ellipse cx="20" cy="25" rx="15" ry="20" fill="#fcdbb0" stroke="red" stroke-dasharray="4"/><line x1="10" y1="15" x2="25" y2="35" stroke="red" stroke-width="2"/></svg>
+                            <div><small style="color:var(--danger)">Trincado</small></div>
+                        </div>
+                        <div class="egg-item">
+                            <svg viewBox="0 0 40 50"><ellipse cx="20" cy="25" rx="15" ry="20" fill="#fcdbb0"/><circle cx="15" cy="20" r="3" fill="#795548"/><circle cx="25" cy="30" r="2" fill="#795548"/></svg>
+                            <div><small style="color:var(--danger)">Sujo</small></div>
+                        </div>
+                        <div class="egg-item">
+                            <svg viewBox="0 0 40 50"><path d="M10 25 C10 10, 30 5, 30 25 C30 40, 10 45, 10 25" fill="#fcdbb0"/></svg>
+                            <div><small style="color:var(--danger)">Deformado</small></div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "Higienização e Armazenamento",
+                do: "Armazenar com a ponta fina para baixo. Temperatura da sala de ovos entre 16°C a 18°C (para estoques de até 7 dias) com umidade relativa de 75-80%.",
+                why: "O posicionamento mantém a câmara de ar na extremidade correta (ponta larga). A temperatura baixa suspende a atividade celular embrionária sem matar o organismo.",
+                error: "Lavar ovos em água fria corrente. Isso causa contração interna, sugando bactérias (ex: Salmonella) para dentro do ovo através dos poros.",
+                example: "Armazenar ovos por mais de 7 dias sem viragem diária causa aderência da gema à membrana da casca, inviabilizando o embrião.",
+                alert: "Ovos destinados à incubação possuem uma película protetora natural (cutícula). A higienização úmida exige lavadoras automáticas com água em temperatura superior à do ovo e sanitizantes específicos.",
+                illustration: `
+                    <div class="illustration-box">
+                        <strong>Sala de Ovos Fria</strong>
+                        <div style="font-size:1.1rem; font-weight:bold; color:var(--primary); margin:10px 0;">16°C a 18°C</div>
+                        <div style="font-size:0.9rem; color:var(--accent);">Umidade: 75% - 80%</div>
+                    </div>`
+            },
+            {
+                title: "Pré-aquecimento dos Ovos",
+                do: "Retirar os ovos da sala fria de armazenamento e mantê-los em ambiente de transição a 24°C-25°C por 8 a 12 horas antes de abastecer a incubadora.",
+                why: "Evita o fenômeno de condensação de água na casca (suor), reduz o choque térmico drástico do embrião e equaliza o início do desenvolvimento.",
+                error: "Inserir ovos direto da câmara fria (16°C) para dentro da incubadora (37,5°C), causando estresse térmico severo e queda na temperatura da máquina.",
+                example: "A condensação superficial cria uma ponte líquida perfeita para micro-organismos entrarem pelos poros da casca.",
+                alert: "Garanta uma boa circulação de ar na sala de pré-aquecimento para que todos os carrinhos atinjam a temperatura ambiente de forma uniforme.",
+                illustration: `
+                    <div class="illustration-box">
+                        <span style="font-size:2rem;">🌡️ &rarr; 🥚 &rarr; 📦</span>
+                        <small style="margin-top:10px;text-align:center;">Transição gradual de temperatura impede o 'suor' na casca do ovo.</small>
+                    </div>`
+            },
+            {
+                title: "Incubação",
+                do: "Manter a máquina regulada (Típico: 37,5°C e 55-60% UR). Virar os ovos automaticamente a cada 1 ou 2 horas em ângulo de 45°.",
+                why: "A temperatura fixa garante a velocidade celular correta. A viragem impede que o embrião mude de posição e grude na parede interna da casca.",
+                error: "Falha mecânica no sistema de viragem ou falta de calibração dos sensores de umidade/temperatura.",
+                example: "Superaquecimentos temporários (acima de 39°C) são letais para os embriões ou geram malformações anatômicas graves.",
+                alert: "A necessidade de ventilação (renovação de O2 e retirada de CO2) aumenta exponencialmente ao longo do desenvolvimento do embrião.",
+                illustration: `
+                    <div class="illustration-box" style="width:100%">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; font-size:0.85rem;">
+                            <div style="background:white;padding:5px;border-radius:4px;"><strong>Temperatura:</strong> Alerta para desvios > 0.2°C.</div>
+                            <div style="background:white;padding:5px;border-radius:4px;"><strong>Umidade:</strong> Controla a perda de peso por evaporação.</div>
+                            <div style="background:white;padding:5px;border-radius:4px;"><strong>Viragem:</strong> Mínimo 24 vezes por dia (ângulo 45°).</div>
+                            <div style="background:white;padding:5px;border-radius:4px;"><strong>Ventilação:</strong> Oxigenação contínua do disco biológico.</div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "Ovoscopia",
+                do: "Projetar feixe de luz focado contra o ovo no período indicado (ex: 7º a 10º dia para galinhas). Retirar ovos brancos (inférteis) e mortes embrionárias.",
+                why: "Permite avaliar a taxa de fertilidade real do lote e extrair ovos contaminados ('bicheiros') que podem estourar e contaminar a máquina.",
+                error: "Demorar excessivamente no processo de ovoscopia manual, resfriando os ovos por muito tempo fora do equipamento.",
+                example: "Identificar um alto índice de ovos inférteis no 7º dia permite corrigir imediatamente o manejo de machos nas granjas de origem.",
+                alert: "Manuseie os ovos com luvas ou mãos perfeitamente limpas para evitar deposição de graxa ou patógenos na casca aquecida.",
+                illustration: `
+                    <div class="egg-comparison">
+                        <div class="egg-item">
+                            <svg viewBox="0 0 40 50"><ellipse cx="20" cy="25" rx="15" ry="20" fill="#fcdbb0"/><circle cx="20" cy="25" r="4" fill="red"/><path d="M20 25 Q15 20 10 23 M20 25 Q25 20 32 24 M20 25 Q18 35 15 38" stroke="red" stroke-width="1" fill="none"/></svg>
+                            <div><small>Fértil (Aranha)</small></div>
+                        </div>
+                        <div class="egg-item">
+                            <svg viewBox="0 0 40 50"><ellipse cx="20" cy="25" rx="15" ry="20" fill="#fef9e7"/></svg>
+                            <div><small>Infértil (Claro)</small></div>
+                        </div>
+                        <div class="egg-item">
+                            <svg viewBox="0 0 40 50"><ellipse cx="20" cy="25" rx="15" ry="20" fill="#fcdbb0"/><circle cx="20" cy="25" r="5" fill="#566573"/></svg>
+                            <div><small>Contaminado</small></div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "Transferência p/ Nascedouro",
+                do: "Mover os ovos da incubadora para as bandejas planas do nascedouro (Galinhas: 18º dia). Interromper definitivamente a viragem mecânica.",
+                why: "No nascedouro, o pintainho precisa se posicionar de forma fixa para iniciar a bicagem da casca. A umidade deve ser elevada para amaciar as membranas.",
+                error: "Deixar os ovos na bandeja de incubação inclinada, impedindo o nascimento correto ou gerando acidentes mecânicos de membros.",
+                example: "A transferência tardia (ex: 20º dia) causa o nascimento de aves dentro da incubadora, provocando desidratação severa.",
+                alert: "O ambiente de transferência deve ser isolado contra correntes de ar frio para que os ovos não sofram queda de temperatura interna abrupta.",
+                illustration: `
+                    <div class="illustration-box">
+                        <strong style="color:var(--danger)">ATENÇÃO OPERACIONAL</strong>
+                        <p style="font-size:0.85rem; text-align:center; margin-top:5px;">Parar a viragem dos ovos! O embrião está se posicionando para furar a câmara de ar interna.</p>
+                    </div>`
+            },
+            {
+                title: "Eclosão",
+                do: "Aumentar a umidade relativa (65-75%). Manter as portas do equipamento fechadas durante todo o pico de nascimento (janela). Monitorar a secagem.",
+                why: "Abrir a máquina causa queda instantânea da umidade, ressecando as membranas que grudam nas penas do pintainho, imobilizando-o.",
+                error: "Abrir a porta do nascedouro de forma ansiosa para retirar os primeiros pintainhos que nasceram.",
+                example: "Pintainhos retidos devido a membranas ressecadas fenotipicamente parecem fracos, mas sofreram falha de manejo operacional.",
+                alert: "Não ajude pintainhos a saírem da casca de forma precipitada. Aves que não eclodem sozinhas geralmente apresentam má formação ou umbigo mal cicatrizado.",
+                illustration: `
+                    <div class="illustration-box">
+                        <span style="font-size:2.5rem;">🐣</span>
+                        <small style="text-align:center; color:var(--primary); font-weight:600;">Portas Fechadas no Pico de Eclosão!</small>
+                    </div>`
+            },
+            {
+                title: "Manejo dos Pintainhos",
+                do: "Retirar apenas quando 95% do lote estiver seco. Avaliar cicatrização do umbigo, pernas e bicos. Classificar e alojar em pinteiros com aquecimento ajustado.",
+                why: "Garante que a ave saia protegida termicamente e com o umbigo fechado, reduzindo infecções generalizadas (onfalite) e mortalidade na primeira semana.",
+                error: "Retirar pintainhos molhados do nascedouro ou mantê-los em ambiente com vento ou piso frio.",
+                example: "Pintainhos amontoados abaixo do campânula de aquecimento sinalizam frio severo de campo, devendo-se ajustar a altura da fonte de calor.",
+                alert: "O fornecimento imediato de água limpa e ração inicial pré-inicial na chegada ao pinteiro estimula a absorção rápida do saco vitelino residual.",
+                illustration: `
+                    <div class="chick-behavior">
+                        <div class="chick-box">
+                            <div style="color:blue;font-weight:bold;">Amontoados</div>
+                            <small>Sinal de Frio Extremo</small>
+                        </div>
+                        <div class="chick-box">
+                            <div style="color:red;font-weight:bold;">Afastados</div>
+                            <small>Calor Excessivo</small>
+                        </div>
+                        <div class="chick-box">
+                            <div style="color:green;font-weight:bold;">Uniformizados</div>
+                            <small>Conforto Térmico Perfeito</small>
+                        </div>
+                    </div>`
+            }
+        ];
+
+        // BANCO DE DADOS DO QUIZ
+        const quizQuestions = [
+            {
+                q: "Qual parâmetro físico deve ser modificado (interrompido) imediatamente na transferência para o nascedouro?",
+                options: ["Aumento da ventilação", "Viragem dos ovos", "Controle de temperatura", "Umidificação"],
+                correct: 1,
+                feedback: "Correto! A viragem dos ovos deve ser interrompida por completo na transferência (3 dias antes da eclosão) para que o embrião se posicione corretamente para a bicagem."
+            },
+            {
+                q: "O que ocorre se lavarmos ovos sujos em água fria corrente de forma inadequada?",
+                options: ["A casca ganha resistência mecânica", "O embrião acelera o desenvolvimento", "Ocorre contração interna, puxando micro-organismos para o interior do ovo", "A câmara de ar muda de lado"],
+                correct: 2,
+                feedback: "Exato. A água fria causa a contração interna dos fluidos do ovo, gerando uma pressão negativa que suga bactérias presentes na casca para dentro através dos poros."
+            },
+            {
+                q: "Qual a consequência direta de uma temperatura persistentemente alta na incubadora?",
+                options: ["Nascimento de pintainhos maiores", "Aceleração desordenada do embrião com malformações ou mortalidade", "Aumento da umidade relativa da casca", "Prolongamento do tempo de incubação"],
+                correct: 1,
+                feedback: "Correto. Altas temperaturas aceleram o metabolismo de forma prejudicial, provocando anomalias anatômicas e alta mortalidade embrionária precoce."
+            },
+            {
+                q: "Por que não se deve abrir o nascedouro durante o pico de eclosão (janela de nascimento)?",
+                options: ["Porque os pintainhos assustam-se facilmente", "Causa queda brusca de umidade, ressecando membranas e prendendo a ave na casca", "Aumenta o oxigênio excessivamente", "Altera a cor da plumagem da ave"],
+                correct: 3, // índice corrigido na lógica abaixo dinamicamente
+                correctIndex: 1,
+                feedback: "Perfeito! A abertura rompe a umidade saturada do ar, secando as membranas internas do ovo que passam a agir como uma cola, imobilizando o pintainho."
+            },
+            {
+                q: "Qual é o posicionamento técnico correto do ovo nas bandejas de incubação?",
+                options: ["Ponta fina para baixo", "Deitado horizontalmente para todas as espécies", "Ponta fina para cima", "Indiferente, desde que fixo"],
+                correctIndex: 0,
+                feedback: "Correto! A ponta fina deve ficar virada para baixo para garantir que a câmara de ar (localizada na ponta larga) permaneça no topo, permitindo a respiração correta do embrião antes de furar a casca."
+            },
+            {
+                q: "Para que serve o período de pré-aquecimento dos ovos?",
+                options: ["Para esterilizar a casca contra fungos", "Para evitar condensação ('suor') na casca e mitigar choque térmico drástico", "Para determinar o sexo dos pintainhos", "Para aumentar a quantidade de gema"],
+                correctIndex: 1,
+                feedback: "Correto. O pré-aquecimento equilibra a temperatura do ovo com o ambiente antes do choque térmico da incubadora, eliminando a condensação capilar de água."
+            },
+            {
+                q: "A ovoscopia realizada entre o 7º e 10º dia de incubação em ovos de galinha serve primariamente para:",
+                options: ["Separar machos de fêmeas", "Identificar e descartar ovos inférteis (claros) e mortes precoces", "Medir a espessura da casca do ovo", "Verificar a coloração interna da gema"],
+                correctIndex: 1,
+                feedback: "Perfeito. Retirar ovos inférteis e mortes iniciais melhora a eficiência térmica e previne o estouro de ovos podres que espalham patógenos."
+            },
+            {
+                q: "Se observarmos pintainhos recém-chegados ao pinteiro amontoados embaixo da campânula, qual manejo deve ser adotado?",
+                options: ["Ligar ventiladores de teto", "Aumentar o aquecimento ou aproximar a fonte de calor, pois sentem frio", "Retirar a ração imediatamente", "Apagar as luzes do galpão"],
+                correctIndex: 1,
+                feedback: "Correto! O amontoamento é o indicador etológico padrão de estresse por frio. É preciso readequar o aquecimento para garantir conforto térmico."
+            }
+        ];
+
+        // LÓGICA DE INICIALIZAÇÃO DO SISTEMA
+        let currentQuizQuestion = 0;
+
+        window.onload = function() {
+            renderSpeciesSelector();
+            selectSpecies('galinha');
+            renderTimeline();
+            selectTimelineStep(0);
+            populateSimulatorOptions();
+            renderChecklist();
+            renderQuiz();
+        };
+
+        // RENDERIZAR SELETOR DE ESPÉCIES
+        function renderSpeciesSelector() {
+            const container = document.getElementById('species-selector');
+            container.innerHTML = '';
+            for (let key in speciesData) {
+                const sp = speciesData[key];
+                const card = document.createElement('div');
+                card.className = `species-card ${key === 'galinha' ? 'active' : ''}`;
+                card.id = `card-${key}`;
+                card.onclick = () => selectSpecies(key);
+                card.innerHTML = `${sp.svg}<h3>${sp.name}</h3>`;
+                container.appendChild(card);
+            }
+        }
+
+        function selectSpecies(key) {
+            document.querySelectorAll('.species-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`card-${key}`).classList.add('active');
+
+            const sp = speciesData[key];
+            const panel = document.getElementById('species-panel');
+            
+            panel.innerHTML = `
+                <h3 style="color:var(--primary); margin-bottom:15px; display:flex; align-items:center; gap:10px;">
+                    Dados Técnicos de Incubação: Aves de Porte (${sp.name})
+                </h3>
+                <div class="technical-table-wrapper">
+                    <table class="technical-table">
+                        <thead>
+                            <tr>
+                                <th>Período Médio</th>
+                                <th>Temperatura de Trabalho</th>
+                                <th>Umidade Inicial</th>
+                                <th>Umidade de Eclosão (Final)</th>
+                                <th>Cessar Viragem Mecânica</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>${sp.time}</strong></td>
+                                <td>${sp.temp}</td>
+                                <td>${sp.humiInit}</td>
+                                <td>${sp.humiEnd}</td>
+                                <td><span style="color:var(--danger);font-weight:600;">${sp.stopTurn}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:15px;">
+                    <strong>Cuidados Especiais de Manejo:</strong>
+                    <p style="margin-top:5px; color:#475569;">${sp.care}</p>
+                </div>
+                <div style="margin-top:15px; background:#f8fafc; padding:10px; border-left:4px solid var(--primary); font-style:italic;">
+                    <strong>Exemplo Prático de Campo:</strong> ${sp.example}
+                </div>
+                <div class="alert-box">
+                    <strong>Nota de Rodapé Técnica:</strong> Os valores de referência paramétricos descritos podem oscilar sutilmente dependendo do modelo do maquinário (estágio único ou múltiplo), linhagem comercial específica das matrizes, altitude barométrica regional e orientações do manual do fabricante.
+                </div>
+            `;
+        }
+
+        // RENDERIZAR LINHA DO TEMPO
+        function renderTimeline() {
+            const timeline = document.getElementById('timeline-flow');
+            timeline.innerHTML = '';
+            timelineSteps.forEach((step, index) => {
+                const containerNode = document.createElement('div');
+                containerNode.style.position = 'relative';
+
+                const node = document.createElement('div');
+                node.className = `timeline-step ${index === 0 ? 'active' : ''}`;
+                node.id = `step-node-${index}`;
+                node.innerText = index + 1;
+                node.onclick = () => selectTimelineStep(index);
+
+                const label = document.createElement('div');
+                label.className = 'timeline-label';
+                label.innerText = step.title;
+
+                containerNode.appendChild(node);
+                containerNode.appendChild(label);
+                timeline.appendChild(containerNode);
+            });
+        }
+
+        function selectTimelineStep(index) {
+            document.querySelectorAll('.timeline-step').forEach(n => n.classList.remove('active'));
+            document.getElementById(`step-node-${index}`).classList.add('active');
+
+            const step = timelineSteps[index];
+            const panel = document.getElementById('step-panel');
+
+            panel.innerHTML = `
+                <h3 style="color:var(--primary); margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:5px;">
+                    Etapa ${index + 1}: ${step.title}
+                </h3>
+                <div class="step-panel-grid">
+                    <div>
+                        <div class="sub-cards-grid">
+                            <div class="sub-card" style="border-left:4px solid var(--primary)">
+                                <h4>O que Fazer (Boas Práticas)</h4>
+                                <p style="font-size:0.9rem; color:#334155;">${step.do}</p>
+                            </div>
+                            <div class="sub-card" style="border-left:4px solid #3b82f6">
+                                <h4>Importância Zootécnica</h4>
+                                <p style="font-size:0.9rem; color:#334155;">${step.why}</p>
+                            </div>
+                        </div>
+                        <div class="sub-cards-grid">
+                            <div class="sub-card" style="border-left:4px solid var(--danger)">
+                                <h4>Erro Comum Operacional</h4>
+                                <p style="font-size:0.9rem; color:#334155;">${step.error}</p>
+                            </div>
+                            <div class="sub-card" style="border-left:4px solid var(--accent)">
+                                <h4>Exemplo Prático de Campo</h4>
+                                <p style="font-size:0.9rem; color:#334155;">${step.example}</p>
+                            </div>
+                        </div>
+                        <div class="alert-box danger">
+                            <strong>ALERTA TÉCNICO DE CAMPO:</strong> ${step.alert}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom:10px; color:var(--dark); font-size:0.95rem;">Esquema Didático Visual:</h4>
+                        ${step.illustration}
+                        <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                            <button class="btn-nav" onclick="navStep(${index - 1})" ${index === 0 ? 'disabled style="opacity:0.5"' : ''}>&larr; Voltar</button>
+                            <button class="btn-nav" onclick="navStep(${index + 1})" ${index === timelineSteps.length - 1 ? 'disabled style="opacity:0.5"' : ''}>Avançar &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function navStep(nextIndex) {
+            if (nextIndex >= 0 && nextIndex < timelineSteps.length) {
+                selectTimelineStep(nextIndex);
+                document.getElementById(`step-node-${nextIndex}`).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+
+        // POPULAR SELETORES DO SIMULADOR
+        function populateSimulatorOptions() {
+            const select = document.getElementById('sim-species');
+            select.innerHTML = '';
+            for (let key in speciesData) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.text = speciesData[key].name;
+                select.appendChild(option);
+            }
+            // Listener para recalcular automaticamente ao alterar dados
+            select.onchange = calculateSimulation;
+            document.getElementById('sim-date').onchange = calculateSimulation;
+            
+            // Setar data de hoje por padrão
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('sim-date').value = hoje;
+            calculateSimulation();
+        }
+
+        function calculateSimulation() {
+            const speciesKey = document.getElementById('sim-species').value;
+            const dateStr = document.getElementById('sim-date').value;
+            const resultBox = document.getElementById('sim-results');
+
+            if (!dateStr) return;
+
+            const startDate = new Date(dateStr + "T12:00:00"); // Evita problemas de fuso horário local
+            
+            let incDias = 21;
+            let ovoscopiaDia = 7;
+            let paradaViragemDia = 18;
+
+            // Ajuste fino dos dias com base na espécie informada
+            if(speciesKey === 'codorna') { incDias = 17; ovoscopiaDia = 6; paradaViragemDia = 14; }
+            else if(speciesKey === 'pato' || speciesKey === 'marreco' || speciesKey === 'peru') { incDias = 28; ovoscopiaDia = 10; paradaViragemDia = 25; }
+            else if(speciesKey === 'ganso') { incDias = 31; ovoscopiaDia = 12; paradaViragemDia = 28; }
+            else if(speciesKey === 'dangola') { incDias = 27; ovoscopiaDia = 9; paradaViragemDia = 24; }
+
+            const formatDate = (date) => date.toLocaleDateString('pt-BR');
+
+            const addDays = (date, days) => {
+                let result = new Date(date);
+                result.setDate(result.getDate() + days);
+                return result;
+            };
+
+            resultBox.innerHTML = `
+                <div class="result-item"><strong>Data de Abastecimento:</strong> <span>${formatDate(startDate)}</span></div>
+                <div class="result-item"><strong>Ideal p/ 1ª Ovoscopia (${ovoscopiaDia}º dia):</strong> <span style="color:var(--primary); font-weight:600;">${formatDate(addDays(startDate, ovoscopiaDia))}</span></div>
+                <div class="result-item"><strong>Parada de Viragem + Transf. (${paradaViragemDia}º dia):</strong> <span style="color:var(--accent); font-weight:600;">${formatDate(addDays(startDate, paradaViragemDia))}</span></div>
+                <div class="result-item"><strong>Previsão de Eclosão (~${incDias} dias):</strong> <span style="color:var(--primary); font-weight:bold; font-size:1.1rem;">${formatDate(addDays(startDate, incDias))}</span></div>
+            `;
+        }
+
+        // CHECKLIST
+        function renderChecklist() {
+            const container = document.getElementById('checklist-container');
+            const items = [
+                "Reprodutores com nutrição específica de matrizes e score corporal alinhado.",
+                "Ovos coletados com frequência adequada (minimizando exposição nos ninhos).",
+                "Ovos selecionados visualmente (descarte de trincados, sujos e deformados).",
+                "Incubadora e nascedouro previamente lavados, desinfetados e testados a vazio.",
+                "Sensores de temperatura e umidade devidamente aferidos e calibrados.",
+                "Mecanismo automático de viragem testado em ângulo operacional (45°).",
+                "Cronograma de ovoscopia fixado no painel do laboratório de avicultura.",
+                "Pinteiros de recepção limpos, desinfetados, com cama seca e aquecimento estabilizado."
+            ];
+            
+            container.innerHTML = '';
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "checklist-item";
+                div.innerHTML = `<input type="checkbox" id="chk-${index}"> <label for="chk-${index}">${item}</label>`;
+                container.appendChild(div);
+            });
+        }
+
+        // QUIZ
+        function renderQuiz() {
+            const container = document.getElementById('quiz-content');
+            const qData = quizQuestions[currentQuizQuestion];
+            
+            // Tratamento unificado de índice de correção padrão
+            const idxCorreto = qData.correctIndex !== undefined ? qData.correctIndex : qData.correct;
+
+            let optionsHtml = '';
+            qData.options.forEach((opt, idx) => {
+                optionsHtml += `<div class="quiz-option" onclick="checkQuizAnswer(${idx}, ${idxCorreto})">${opt}</div>`;
+            });
+
+            container.innerHTML = `
+                <span style="color:var(--accent); font-weight:bold; font-size:0.9rem;">Questão ${currentQuizQuestion + 1} de ${quizQuestions.length}</span>
+                <h3 style="margin-top:5px; margin-bottom:15px; font-size:1.15rem;">${qData.q}</h3>
+                <div>${optionsHtml}</div>
+                <div id="quiz-feedback" class="quiz-feedback"></div>
+                <button id="btn-next-quiz" class="btn-nav" style="display:none; margin-top:15px;" onclick="nextQuizQuestion()">Próxima Questão &rarr;</button>
+            `;
+        }
+
+        function checkQuizAnswer(selectedIdx, correctIdx) {
+            const options = document.querySelectorAll('.quiz-option');
+            // Bloqueia cliques extras após responder
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            const feedbackBox = document.getElementById('quiz-feedback');
+            const qData = quizQuestions[currentQuizQuestion];
+
+            if(selectedIdx === correctIdx) {
+                options[selectedIdx].classList.add('correct');
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--primary-light)';
+                feedbackBox.style.color = 'var(--primary)';
+                feedbackBox.innerHTML = qData.feedback;
+            } else {
+                options[selectedIdx].classList.add('incorrect');
+                options[correctIdx].classList.add('correct');
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--danger-light)';
+                feedbackBox.style.color = 'var(--danger)';
+                feedbackBox.innerHTML = `Incorreto. ` + qData.feedback;
+            }
+
+            document.getElementById('btn-next-quiz').style.display = 'inline-block';
+        }
+
+        function nextQuizQuestion() {
+            currentQuizQuestion++;
+            if(currentQuizQuestion >= quizQuestions.length) {
+                currentQuizQuestion = 0; // Reinicia o quiz de fixação
+            }
+            renderQuiz();
+        }
+    </script>
+</body>
+</html>
