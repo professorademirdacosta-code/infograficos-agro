@@ -608,6 +608,17 @@ th{background:#ddebf7;color:#0f3150}
   }
 }
 
+
+/* --- v36: resumo cronológico de partos e bloqueio pós-parto sem lançamento real --- */
+.partos-resumo-table{min-width:1900px}
+.partos-resumo-table th{position:sticky;top:0;z-index:1}
+.status-parto-pendente{background:#fff7ed;color:#9a3412}
+@media print{
+  #resumopartos.active{display:block!important}
+  #resumopartos .partos-resumo-table{min-width:0!important;table-layout:fixed}
+  #resumopartos th,#resumopartos td{font-size:5.1pt!important;padding:1.5px 2px!important;word-break:break-word}
+  @page{size:A4 landscape;margin:5mm}
+}
 </style>
 </head>
 <body>
@@ -626,6 +637,7 @@ th{background:#ddebf7;color:#0f3150}
     <button class="tab active" data-tab="painel">Painel</button>
     <button class="tab" data-tab="hoje">Hoje / 7 dias</button>
     <button class="tab" data-tab="calendario">Calendário</button>
+    <button class="tab" data-tab="resumopartos">Resumo de partos</button>
     <button class="tab" data-tab="cadastro">Cadastro</button>
     <button class="tab" data-tab="matrizes">Matrizes</button>
     <button class="tab" data-tab="fichamatriz">Ficha da matriz</button>
@@ -701,13 +713,15 @@ th{background:#ddebf7;color:#0f3150}
         </div>
         <div class="kv">
           <div><strong>Gestação média</strong>114 dias</div>
-          <div><strong>Confirmação de prenhez</strong>30 dias após cobertura</div>
+          <div><strong>Retorno ao cio</strong>Verificar aos 21 dias após a cobertura</div>
+          <div><strong>Confirmação de prenhez</strong>Ultrassonografia preferencialmente aos 28 dias (janela de 25–35 dias)</div>
           <div><strong>Entrada maternidade</strong>5 dias antes do parto</div>
           <div><strong>Desmame</strong>28 dias após parto</div><div><strong>Vazia/descarte</strong>45 dias após desmame sem nova cobertura</div>
           <div><strong>Creep feed</strong>7 dias após parto</div>
           <div><strong>Saída da creche</strong>60 dias após parto</div>
           <div><strong>Ferro</strong>3 dias após parto</div>
           <div><strong>Castração</strong>14 dias após parto</div>
+          <div><strong>Parvovirose suína</strong>Vacinar reprodutores conforme o programa sanitário da granja, bula do produto e orientação veterinária; priorizar imunização antes da cobertura e reforços programados.</div>
         </div>
       </div>
     </div>
@@ -766,6 +780,18 @@ th{background:#ddebf7;color:#0f3150}
         </div>
       </div>
       <div id="calendarioVisual"></div>
+    </div>
+  </section>
+
+  <section id="resumopartos" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Quadro cronológico de partos</h2>
+          <p>Somente partos reais lançados. Total do parto = vivos + natimortos + mumificados; “mortos ao parto” não é somado novamente para evitar dupla contagem.</p>
+        </div>
+      </div>
+      <div class="table-wrap"><table id="tResumoPartos" class="partos-resumo-table"></table></div>
     </div>
   </section>
 
@@ -1051,7 +1077,7 @@ let DATA = [
 ];
 
 const PARAMS = {
-  gestacao:114, confirmacaoPrenhez:30, entradaMaternidadeAntesParto:5,
+  gestacao:114, retornoCio:21, confirmacaoPrenhez:28, entradaMaternidadeAntesParto:5,
   transferenciaMaternidadeCreche:10, desmame:28, saidaCreche:60,
   suigenAntesParto:30, ferroAposParto:3, castracaoAposParto:14,
   creepFeed:7, suigenDose1:30, suigenReforco:60,
@@ -1220,7 +1246,7 @@ function normalizar(r){
  const cobertura=parseDate(r.cobertura);
  const partoPrev=parseDate(r.parto_previsto)||addDays(cobertura,PARAMS.gestacao);
  const partoReal=parseDate(r.parto_real);
- const partoBase=partoReal||partoPrev;
+ const partoBase=partoReal;
  const confirmacao=parseDate(r.confirmacao);
  return {...r,coberturaDt:cobertura,confirmacaoDt:confirmacao,partoPrevDt:partoPrev,partoRealDt:partoReal,partoBaseDt:partoBase,nascimentoDt:parseDate(r.nascimento)};
 }
@@ -1319,7 +1345,8 @@ function situacaoMatriz(r){
 
  const dc=diffDays(dataRef,r.coberturaDt);
  const falta=r.partoPrevDt?diffDays(r.partoPrevDt,dataRef):null;
- if(dc<PARAMS.confirmacaoPrenhez) return {txt:"A confirmar prenhez",cls:"b-repro",racao:"Ração gestação"};
+ if(dc<PARAMS.retornoCio) return {txt:"Aguardar retorno ao cio",cls:"b-repro",racao:"Ração gestação"};
+ if(dc<PARAMS.confirmacaoPrenhez) return {txt:"Prenhez presumida / confirmar",cls:"b-repro",racao:"Ração gestação"};
  if(falta!==null&&falta<=PARAMS.entradaMaternidadeAntesParto&&falta>=0) return {txt:"Pré-parto",cls:"b-parto",racao:"Ração pré-lactação"};
  if(dc<=PARAMS.gestacao) return {txt:"Gestação",cls:"b-ok",racao:dc>=85?"Ração pré-lactação":"Ração gestação"};
  return {txt:"Parto vencido/verificar",cls:"b-alerta",racao:"Verificar matriz"};
@@ -1333,10 +1360,12 @@ function situacaoLote(r){
 }
 
 function eventos(){
+ // Regra: eventos pré-parto podem usar a previsão; todo cronograma dos leitões e pós-parto exige parto_real.
  const evs=[];
  function add(r,data,tipo,acao){ if(!data||!isMatriz(r))return; evs.push({data,tipo,acao,matriz:r.nome||"",id:r.id||"",lote:r.lote||"",reprodutor:r.reprodutor||""}); }
  DATA.map(normalizar).forEach(r=>{
-   add(r,addDays(r.coberturaDt,PARAMS.confirmacaoPrenhez),"reprodutivo","Confirmar prenhez");
+   add(r,addDays(r.coberturaDt,PARAMS.retornoCio),"reprodutivo","Verificar retorno ao cio / prenhez presumida");
+   add(r,addDays(r.coberturaDt,PARAMS.confirmacaoPrenhez),"reprodutivo","Confirmar prenhez por ultrassonografia");
    add(r,addDays(r.partoPrevDt,-PARAMS.suigenAntesParto),"sanitario","Suigen da matriz");
    add(r,addDays(r.partoPrevDt,-PARAMS.entradaMaternidadeAntesParto),"manejo","Entrada na sala maternidade");
    add(r,r.partoPrevDt,"parto","Parto previsto");
@@ -1722,7 +1751,7 @@ function renderReprodutores(){
 }
 
 function renderSelLote(){
- const lotes=DATA.map(normalizar).filter(r=>isMatriz(r)&&(r.lote||r.partoBaseDt));
+ const lotes=DATA.map(normalizar).filter(r=>isMatriz(r)&&r.partoRealDt);
  $("#selLote").innerHTML=lotes.map((r,i)=>`<option value="${DATA.indexOf(r)}">${r.lote||"Sem lote"} — ${r.nome||"Matriz"} ${r.id?`(${r.id})`:""}</option>`).join("")||`<option>Sem lotes</option>`;
 }
 
@@ -1782,8 +1811,64 @@ function mortesPreDesmameTexto(r){
  return "—";
 }
 
+
+function primeiroValor(...vals){
+ for(const v of vals){ if(v !== null && v !== undefined && String(v).trim() !== "") return v; }
+ return "";
+}
+function numeroOuNulo(v){
+ if(v === null || v === undefined || String(v).trim() === "") return null;
+ const n=Number(String(v).replace(",","."));
+ return Number.isFinite(n)?n:null;
+}
+function fmtPeso(v){
+ const n=numeroOuNulo(v);
+ return n===null?"—":n.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:2})+" kg";
+}
+function dataDesmameRealOuPrevista(r){
+ const real=parseDate(r.data_desmame || r.desmame_data);
+ if(real) return {data:real, tipo:"real"};
+ if(r.partoRealDt) return {data:addDays(r.partoRealDt,PARAMS.desmame), tipo:"prevista"};
+ return {data:null,tipo:""};
+}
+function identificacaoReprodutor(r){
+ const id=primeiroValor(r.reprodutor_id,r.id_reprodutor,r.macho_id);
+ const nome=primeiroValor(r.reprodutor_nome,r.nome_reprodutor,r.reprodutor);
+ if(id && nome && !String(nome).includes(String(id))) return `${id} — ${nome}`;
+ return nome || id || "—";
+}
+function mortosAoPartoValor(r){
+ // Mantém apenas uma informação de perdas no parto.
+ // Aceita tanto a coluna nova "Mortos ao parto" quanto dados antigos em "Natimortos".
+ return primeiroValor(r.mortos_parto,r.mortos_ao_parto,r.natimortos,r.mortos);
+}
+
+function renderResumoPartos(){
+ const rs=DATA.map(normalizar).filter(r=>isMatriz(r)&&r.partoRealDt).sort((a,b)=>a.partoRealDt-b.partoRealDt);
+ const cab=`<thead><tr>
+  <th>Data do parto</th><th>Nº da mãe</th><th>Nome da mãe</th><th>Nº/nome do pai</th><th>Lote</th>
+  <th>Vivos</th><th>Mortos ao parto</th><th>Machos</th><th>Fêmeas</th><th>Total parto</th>
+  <th>Peso médio nascimento</th><th>Data desmame</th><th>Idade desmame</th><th>Desmamados</th><th>Peso médio desmame</th>
+  <th>Mortes pré-desmame</th><th>Mortalidade</th><th>Observações</th></tr></thead>`;
+ const corpo=rs.map(r=>{
+   const vivos=primeiroValor(r.nasc_vivos,somaCampos(r.nasc_machos,r.nasc_femeas));
+   const mortos=mortosAoPartoValor(r);
+   const totalInformado=numeroOuNulo(r.total_nascidos);
+   const partesTotal=[vivos,mortos].map(numeroOuNulo).filter(v=>v!==null);
+   const total=totalInformado!==null?totalInformado:(partesTotal.length?partesTotal.reduce((a,b)=>a+b,0):"—");
+   const d=dataDesmameRealOuPrevista(r);
+   const idade=d.data?diffDays(d.data,r.partoRealDt):null;
+   const desm=primeiroValor(r.desmamados,somaCampos(r.desm_machos,r.desm_femeas));
+   return `<tr><td><b>${fmt(r.partoRealDt)}</b></td><td>${r.id||"—"}</td><td>${r.nome||"—"}</td><td>${identificacaoReprodutor(r)}</td><td>${r.lote||"—"}</td>
+    <td>${valorCampo(vivos)}</td><td>${valorCampo(mortos)}</td><td>${valorCampo(r.nasc_machos)}</td><td>${valorCampo(r.nasc_femeas)}</td><td>${valorCampo(total)}</td>
+    <td>${fmtPeso(primeiroValor(r.peso_medio_nascimento,r.peso_medio_nasc))}</td><td>${d.data?fmt(d.data)+(d.tipo==="prevista"?"<br><span class='small'>(prevista)</span>":""):"—"}</td><td>${idade!==null?idade+" dias":"—"}</td><td>${valorCampo(desm)}</td><td>${fmtPeso(primeiroValor(r.peso_medio_desmame,r.peso_medio_desm))}</td>
+    <td>${mortesPreDesmameTexto(r)}</td><td>${mortalidadeTexto(r)}</td><td>${r.obs||"—"}</td></tr>`;
+ }).join("");
+ $("#tResumoPartos").innerHTML=cab+`<tbody>${corpo||`<tr><td colspan="18">Nenhum parto real lançado.</td></tr>`}</tbody>`;
+}
+
 function renderFichaLote(){
- const lotes=DATA.map(normalizar).filter(r=>isMatriz(r)&&(r.lote||r.partoBaseDt));
+ const lotes=DATA.map(normalizar).filter(r=>isMatriz(r)&&r.partoRealDt);
  const opt=$("#selLote").selectedIndex;
  const r=lotes[opt]||lotes[0]||{};
  const sl=situacaoLote(r);
@@ -1831,12 +1916,15 @@ function renderFichaLote(){
            <div><strong>Nascidos machos</strong>${valorCampo(r.nasc_machos)}</div>
            <div><strong>Nascidos fêmeas</strong>${valorCampo(r.nasc_femeas)}</div>
            <div><strong>Total nascidos vivos</strong>${valorCampo(totalNascidos)}</div>
-           <div><strong>Natimortos / mortos ao parto</strong>${valorCampo(r.natimortos)}</div>
+           <div><strong>Mortos ao parto</strong>${valorCampo(mortosAoPartoValor(r))}</div>
            <div><strong>Desmamados machos</strong>${valorCampo(r.desm_machos)}</div>
            <div><strong>Desmamados fêmeas</strong>${valorCampo(r.desm_femeas)}</div>
            <div><strong>Total desmamados</strong>${valorCampo(totalDesmamados)}</div>
            <div><strong>Mortes pré-desmame</strong>${mortesPreDesmameTexto(r)}</div>
            <div><strong>Mortalidade pré-desmame</strong>${mortalidadeTexto(r)}</div>
+           <div><strong>Peso médio ao nascer</strong>${fmtPeso(primeiroValor(r.peso_medio_nascimento,r.peso_medio_nasc))}</div>
+           <div><strong>Data do desmame</strong>${dataDesmameRealOuPrevista(r).data?fmt(dataDesmameRealOuPrevista(r).data):"—"}</div>
+           <div><strong>Peso médio ao desmame</strong>${fmtPeso(primeiroValor(r.peso_medio_desmame,r.peso_medio_desm))}</div>
          </div>
        </div>
 
@@ -1862,8 +1950,18 @@ function renderFichaLote(){
 
      <div class="ficha-side">
        <div class="card">
-         <h3 style="margin:0 0 5px 0">Procedimentos programados</h3>
-         ${tabelaEventosCompacta(evs, 12)}
+         <div style="display:flex;justify-content:space-between;gap:8px;align-items:end;flex-wrap:wrap">
+           <h3 style="margin:0">Procedimentos programados</h3>
+           <div class="no-print" style="min-width:190px">
+             <label for="modoCronogramaLote">Exibir eventos</label>
+             <select id="modoCronogramaLote">
+               <option value="proximos">Próximos manejos</option>
+               <option value="passados">Histórico passado</option>
+               <option value="todos">Todos os eventos</option>
+             </select>
+           </div>
+         </div>
+         <div id="cronogramaManejoLote" style="margin-top:7px"></div>
        </div>
        <div class="card" style="margin-top:8px">
          <h3 style="margin:0 0 5px 0">Registro de mortalidades do lote</h3>
@@ -1891,6 +1989,17 @@ function renderFichaLote(){
      </div>
    </div>
  </div>`;
+
+ const seletorModoLote=$("#modoCronogramaLote");
+ if(seletorModoLote){
+   const atualizarCronogramaLote=()=>{
+     const lista=eventosManejoPorModo(evs,seletorModoLote.value||"proximos");
+     const alvo=$("#cronogramaManejoLote");
+     if(alvo) alvo.innerHTML=tabelaEventosCompacta(lista,12);
+   };
+   seletorModoLote.addEventListener("change",atualizarCronogramaLote);
+   atualizarCronogramaLote();
+ }
 }
 
 function renderNutricao(){
@@ -1925,7 +2034,7 @@ function mapCSV(rows){
    categoria:val(r,["Categoria"])||"Matriz", cobertura:val(r,["Data cobertura","Cobertura"]),
    reprodutor:val(r,["Macho Reprodutor","Reprodutor"]), confirmacao:val(r,["Data confirmação prenhez","Confirmacao"]),
    parto_previsto:val(r,["Data parto base","Parto previsto"]), parto_real:val(r,["Data parto real","Parto real"]),
-   lote:val(r,["Lote"]), nasc_vivos:val(r,["Total nascidos vivos","Nascidos vivos"]), desmamados:val(r,["Desmamados"]),
+   lote:val(r,["Lote"]), nasc_vivos:val(r,["Total nascidos vivos","Nascidos vivos"]), total_nascidos:val(r,["Total nascidos","Total do parto"]), natimortos:val(r,["Natimortos"]), mumificados:val(r,["Mumificados"]), mortos_parto:val(r,["Mortos ao parto","Mortos no parto"]), desmamados:val(r,["Desmamados"]),
    perc_mortalidade:val(r,["% mortalidade pré-desmame","% mortalidade"]), obs:val(r,["Observações","Obs"])
  }));
 }
@@ -2079,7 +2188,15 @@ function mapJSON(payload){
      lote:pegarFlex(r,["Lote","Número do lote","Numero do lote","Lote nascido"]),
      nasc_machos:pegarFlex(r,["Nascidos machos","Machos nascidos"]),
      nasc_femeas:pegarFlex(r,["Nascidos fêmeas","Nascidos femeas","Fêmeas nascidas","Femeas nascidas"]),
+     mortos_parto:pegarFlex(r,["Mortos ao parto","Mortos no parto","Mortos" ]),
      natimortos:pegarFlex(r,["Natimortos","Natimorto"]),
+     mumificados:pegarFlex(r,["Mumificados","Mumificado"]),
+     total_nascidos:pegarFlex(r,["Total nascidos","Total do parto","Total nascimento","Total de nascidos"]),
+     peso_medio_nascimento:pegarFlex(r,["Peso médio nascimento","Peso medio nascimento","Peso médio ao nascer","Peso medio ao nascer","Peso médio de nascimento do lote"]),
+     data_desmame:pegarFlex(r,["Data do desmame","Data desmame","Desmame real"]),
+     peso_medio_desmame:pegarFlex(r,["Peso médio desmame","Peso medio desmame","Peso médio ao desmame","Peso medio ao desmame"]),
+     reprodutor_id:pegarFlex(r,["ID reprodutor","ID do reprodutor","Número do pai","Numero do pai","ID macho"]),
+     reprodutor_nome:pegarFlex(r,["Nome reprodutor","Nome do reprodutor","Nome do pai"]),
      desm_machos:pegarFlex(r,["Desmamados machos","Machos desmamados"]),
      desm_femeas:pegarFlex(r,["Desmamados fêmeas","Desmamados femeas","Fêmeas desmamadas","Femeas desmamadas"]),
      nasc_vivos:pegarFlex(r,["Total nascidos vivos","Nascidos vivos","Total vivos"]),
@@ -2159,8 +2276,9 @@ function matrizLabel(r){
 function periodosRacaoMatriz(r){
  if(!r || !r.coberturaDt) return [];
  const cob = r.coberturaDt;
- const parto = r.partoBaseDt || addDays(cob, PARAMS.gestacao);
- const desmame = addDays(parto, PARAMS.desmame);
+ const partoPrevisto = r.partoPrevDt || addDays(cob, PARAMS.gestacao);
+ const partoReal = r.partoRealDt;
+ const desmame = partoReal ? addDays(partoReal, PARAMS.desmame) : null;
  const items = [];
 
  function add(inicio, fim, fase, racao, qtd, obs=""){
@@ -2175,16 +2293,20 @@ function periodosRacaoMatriz(r){
  add(addDays(cob,111), addDays(cob,111), "Pré-parto", "Ração pré-lactação", "3,0 kg/dia", "Redução gradual antes do parto.");
  add(addDays(cob,112), addDays(cob,112), "Pré-parto", "Ração pré-lactação", "2,0 kg/dia", "Redução gradual antes do parto.");
  add(addDays(cob,113), addDays(cob,113), "Pré-parto", "Ração pré-lactação", "1,0 kg/dia", "Redução gradual antes do parto.");
- add(parto, parto, "Parto", "Água + açúcar / conforme manejo", "0,5 kg + açúcar", "Dia provável/real do parto.");
+ add(partoPrevisto, partoPrevisto, "Parto previsto", "Água + açúcar / conforme manejo", "Preparar manejo", "Data estimada; não gera cronograma dos leitões.");
 
- add(addDays(parto,1), addDays(parto,1), "Pós-parto", "Ração lactação", "2,0 kg/dia", "1º dia pós-parto.");
- add(addDays(parto,2), addDays(parto,2), "Pós-parto", "Ração lactação", "2,5 kg/dia", "2º dia pós-parto.");
- add(addDays(parto,3), addDays(parto,3), "Pós-parto", "Ração lactação", "3,0 kg/dia", "3º dia pós-parto.");
- add(addDays(parto,4), addDays(parto,4), "Pós-parto", "Ração lactação", "3,5 kg/dia", "4º dia pós-parto.");
- add(addDays(parto,5), addDays(parto,5), "Pós-parto", "Ração lactação", "4,0 kg/dia", "5º dia pós-parto.");
- add(addDays(parto,6), addDays(desmame,-2), "Lactação", "Ração lactação", "À vontade", "Do 6º dia até antes do ajuste pré-desmame.");
- add(addDays(desmame,-1), addDays(desmame,-1), "Pré-desmame", "Ração lactação", "2,5 kg/dia", "1 dia antes do desmame.");
- add(desmame, addDays(desmame,5), "Pós-desmame / retorno ao cio", "Ração lactação", "2,0 kg/dia", "Até manifestação de cio ou nova cobertura.");
+ // Nenhum cálculo pós-parto é criado sem o lançamento da data real do parto.
+ if(partoReal){
+   add(partoReal, partoReal, "Parto real", "Água + açúcar / conforme manejo", "0,5 kg + açúcar", "Cronograma pós-parto iniciado pela data real.");
+   add(addDays(partoReal,1), addDays(partoReal,1), "Pós-parto", "Ração lactação", "2,0 kg/dia", "1º dia pós-parto.");
+   add(addDays(partoReal,2), addDays(partoReal,2), "Pós-parto", "Ração lactação", "2,5 kg/dia", "2º dia pós-parto.");
+   add(addDays(partoReal,3), addDays(partoReal,3), "Pós-parto", "Ração lactação", "3,0 kg/dia", "3º dia pós-parto.");
+   add(addDays(partoReal,4), addDays(partoReal,4), "Pós-parto", "Ração lactação", "3,5 kg/dia", "4º dia pós-parto.");
+   add(addDays(partoReal,5), addDays(partoReal,5), "Pós-parto", "Ração lactação", "4,0 kg/dia", "5º dia pós-parto.");
+   add(addDays(partoReal,6), addDays(desmame,-2), "Lactação", "Ração lactação", "À vontade", "Do 6º dia até antes do ajuste pré-desmame.");
+   add(addDays(desmame,-1), addDays(desmame,-1), "Pré-desmame", "Ração lactação", "2,5 kg/dia", "1 dia antes do desmame.");
+   add(desmame, addDays(desmame,5), "Pós-desmame / retorno ao cio", "Ração lactação", "2,0 kg/dia", "Até manifestação de cio ou nova cobertura.");
+ }
 
  return items;
 }
@@ -2309,7 +2431,23 @@ function tabelaEventosCompacta(evs, limite=12){
      <td>${badge(e.tipo,tipoCls(e.tipo))}</td>
      <td><b>${e.acao}</b></td>
    </tr>`).join("")}</tbody>
- </table></div>${evs.length>limite?`<div class="small">+ ${evs.length-limite} manejos no histórico completo.</div>`:""}`;
+ </table></div>${evs.length>limite?`<div class="small">+ ${evs.length-limite} eventos não exibidos.</div>`:""}`;
+}
+
+function eventosManejoPorModo(manejos, modo){
+ const ordenados=[...manejos].sort((a,b)=>a.data-b.data);
+ if(modo==="passados") return ordenados.filter(e=>e.data<dataRef).sort((a,b)=>b.data-a.data);
+ if(modo==="todos") return ordenados;
+ return ordenados.filter(e=>e.data>=dataRef);
+}
+
+function atualizarCronogramaManejoMatriz(manejos){
+ const sel=$("#modoCronogramaMatriz");
+ const alvo=$("#cronogramaManejoMatriz");
+ if(!sel || !alvo) return;
+ const modo=sel.value||"proximos";
+ const lista=eventosManejoPorModo(manejos,modo);
+ alvo.innerHTML=tabelaEventosCompacta(lista,14);
 }
 
 function renderFichaMatriz(){
@@ -2391,8 +2529,18 @@ function renderFichaMatriz(){
 
      <div class="ficha-side">
        <div class="card ficha-card">
-         <h3>Cronograma de manejo</h3>
-         ${tabelaEventosCompacta(manejos, 14)}
+         <div style="display:flex;justify-content:space-between;gap:8px;align-items:end;flex-wrap:wrap">
+           <h3 style="margin:0">Cronograma de manejo</h3>
+           <div class="no-print" style="min-width:190px">
+             <label for="modoCronogramaMatriz">Exibir eventos</label>
+             <select id="modoCronogramaMatriz">
+               <option value="proximos">Próximos manejos</option>
+               <option value="passados">Histórico passado</option>
+               <option value="todos">Todos os eventos</option>
+             </select>
+           </div>
+         </div>
+         <div id="cronogramaManejoMatriz" style="margin-top:7px"></div>
        </div>
        <div class="card ficha-card" style="margin-top:8px">
          <h3>Anotações do colaborador</h3>
@@ -2403,7 +2551,15 @@ function renderFichaMatriz(){
      </div>
    </div>
  </div>`;
+
+ const seletorModo=$("#modoCronogramaMatriz");
+ if(seletorModo){
+   seletorModo.addEventListener("change",()=>atualizarCronogramaManejoMatriz(manejos));
+   atualizarCronogramaManejoMatriz(manejos);
+ }
 }
+
+
 
 function renderRelatorios(){
  const regs = DATA.map(normalizar);
@@ -2457,7 +2613,7 @@ function renderRelatorios(){
 
 function renderTudo(){
  dataRef=parseDate($("#dataRef").value)||new Date();
- preencherFiltrosSuspensos(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderRelatorios(); renderNutricao();
+ preencherFiltrosSuspensos(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderResumoPartos(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderRelatorios(); renderNutricao();
 }
 
 $$(".tab").forEach(b=>b.addEventListener("click",()=>{
@@ -2470,11 +2626,12 @@ $$(".tab").forEach(b=>b.addEventListener("click",()=>{
   if(b.dataset.tab==="fichalote") renderFichaLote();
   if(b.dataset.tab==="hoje") renderHoje();
   if(b.dataset.tab==="relatorios") renderRelatorios();
+  if(b.dataset.tab==="resumopartos") renderResumoPartos();
 }));
-$("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderRelatorios();});
-$("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
-$("#filtroReprodutor").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
-$("#filtroLote").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderResumoPartos();renderRelatorios();});
+$("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderResumoPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#filtroReprodutor").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderResumoPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#filtroLote").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderCalendario();renderResumoPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
 $("#dataRef").addEventListener("change",renderTudo);
 $("#mesCalendario").addEventListener("change",()=>{renderCalendario();renderHoje();});
 $("#btnHoje").addEventListener("click",()=>{$("#dataRef").value=iso(new Date());renderTudo();});
