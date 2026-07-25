@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Zootécnico - Setor de Suinocultura - ETEC v67.3</title>
+<title>Controle Zootécnico - Setor de Suinocultura - ETEC v68.0</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -1094,6 +1094,18 @@ th{background:#ddebf7;color:#0f3150}
   .peso-resumo-v66{font-size:4.9pt!important;padding:1.3px 2px!important;border-radius:4px!important;line-height:1.05!important}
 }
 
+
+/* --- v68: quadro cronológico de partos e históricos recolhíveis --- */
+.historico-eventos{margin-top:8px;border:1px solid var(--linha);border-radius:10px;background:#f8fafc;padding:7px}
+.historico-eventos summary{cursor:pointer;font-weight:900;color:var(--azul)}
+.historico-eventos[open] summary{margin-bottom:7px}
+.partos-resumo{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:900px){.partos-resumo{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.partos-resumo{grid-template-columns:1fr}}
+@media print{
+  .historico-eventos{display:none!important}
+  #partos.active{display:block!important}
+}
 </style>
 </head>
 <body>
@@ -1104,8 +1116,8 @@ th{background:#ddebf7;color:#0f3150}
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v67.3</h1>
-      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v67.2</div>
+      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v68.0</h1>
+      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v68.0 — quadro de partos e fichas com eventos futuros priorizados</div>
     </div>
   </div>
   <nav>
@@ -1113,6 +1125,7 @@ th{background:#ddebf7;color:#0f3150}
     <button class="tab" data-tab="hoje">Hoje / 7 dias</button>
     <button class="tab" data-tab="fichasemanal">Ficha semanal</button>
     <button class="tab" data-tab="calendario">Calendário</button>
+    <button class="tab" data-tab="partos">Quadro de partos</button>
     <button class="tab" data-tab="cadastro">Cadastro</button>
     <button class="tab" data-tab="matrizes">Matrizes</button>
     <button class="tab" data-tab="fichamatriz">Ficha da matriz</button>
@@ -1169,7 +1182,7 @@ th{background:#ddebf7;color:#0f3150}
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v67.2, a Ficha semanal diferencia manejo de lote/matriz, busca sempre o ciclo mais atual da matriz e recalcula ração/quantidade automaticamente, evitando usar ciclos antigos ou quantidades manuais desatualizadas da aba Semanal.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v68.0, a Ficha semanal diferencia manejo de lote/matriz, busca sempre o ciclo mais atual da matriz e recalcula ração/quantidade automaticamente, evitando usar ciclos antigos ou quantidades manuais desatualizadas da aba Semanal.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
@@ -1196,6 +1209,7 @@ th{background:#ddebf7;color:#0f3150}
           <div><strong>Saída da creche</strong>60 dias após parto</div>
           <div><strong>Ferro</strong>3 dias após parto</div>
           <div><strong>Castração</strong>14 dias após parto</div>
+          <div><strong>Parvovirose suína</strong>Vacinar matrizes e leitoas conforme o programa sanitário adotado na granja e orientação do médico-veterinário.</div>
         </div>
       </div>
     </div>
@@ -1286,6 +1300,19 @@ th{background:#ddebf7;color:#0f3150}
         </div>
       </div>
       <div id="calendarioVisual"></div>
+    </div>
+  </section>
+
+  <section id="partos" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Quadro cronológico de partos</h2>
+          <p>Partos reais em ordem cronológica, com identificação dos pais e resultado correto da leitegada.</p>
+        </div>
+      </div>
+      <div id="metricasPartos" class="grid metrics partos-resumo"></div>
+      <div class="table-wrap" style="margin-top:12px"><table id="tPartos"></table></div>
     </div>
   </section>
 
@@ -2760,6 +2787,30 @@ function somaCampos(...vals){
  return achou ? total : "—";
 }
 
+
+function mortosAoPartoValor(r){
+ const candidatos = [r.mortos_parto, r.mortosParto, r.mortos_ao_parto, r.natimortos];
+ for(const v of candidatos){
+   if(v !== null && v !== undefined && v !== ""){
+     const n = Number(String(v).replace(",", "."));
+     if(!isNaN(n)) return n;
+   }
+ }
+ return 0;
+}
+
+function vivosAoPartoValor(r){
+ const bruto = r.nasc_vivos !== null && r.nasc_vivos !== undefined && r.nasc_vivos !== ""
+   ? r.nasc_vivos
+   : somaCampos(r.nasc_machos, r.nasc_femeas);
+ const n = Number(String(bruto).replace(",", "."));
+ return isNaN(n) ? 0 : n;
+}
+
+function totalAoPartoValor(r){
+ return vivosAoPartoValor(r) + mortosAoPartoValor(r);
+}
+
 function mortalidadeTexto(r){
  // Mortalidade pré-desmame = (nascidos vivos - desmamados) / nascidos vivos * 100.
  // Natimortos/mortos ao parto não entram nesse cálculo, pois não são nascidos vivos.
@@ -2858,7 +2909,8 @@ function renderFichaLote(){
            <div><strong>Nascidos machos</strong>${valorCampo(r.nasc_machos)}</div>
            <div><strong>Nascidos fêmeas</strong>${valorCampo(r.nasc_femeas)}</div>
            <div><strong>Total nascidos vivos</strong>${valorCampo(totalNascidos)}</div>
-           <div><strong>Natimortos / mortos ao parto</strong>${valorCampo(r.natimortos)}</div>
+           <div><strong>Mortos ao parto</strong>${valorCampo(mortosAoPartoValor(r))}</div>
+           <div><strong>Total ao parto</strong>${valorCampo(totalAoPartoValor(r))}</div>
            <div><strong>Desmamados machos</strong>${valorCampo(r.desm_machos)}</div>
            <div><strong>Desmamados fêmeas</strong>${valorCampo(r.desm_femeas)}</div>
            <div><strong>Total desmamados</strong>${valorCampo(totalDesmamados)}</div>
@@ -2909,7 +2961,7 @@ function renderFichaLote(){
      <div class="ficha-side">
        <div class="card">
          <h3 style="margin:0 0 5px 0">Procedimentos programados</h3>
-         ${tabelaEventosCompacta(evs, 12)}
+         ${blocoEventosPriorizados(evs, 12)}
        </div>
        <div class="card" style="margin-top:8px">
          <h3 style="margin:0 0 5px 0">Registro de mortalidades do lote</h3>
@@ -3203,6 +3255,7 @@ function mapJSON(payload){
      lote:pegarFlex(r,["Lote","Número do lote","Numero do lote","Lote nascido"]),
      nasc_machos:pegarFlex(r,["Nascidos machos","Machos nascidos"]),
      nasc_femeas:pegarFlex(r,["Nascidos fêmeas","Nascidos femeas","Fêmeas nascidas","Femeas nascidas"]),
+     mortos_parto:pegarFlex(r,["Mortos ao parto","Mortos parto","Natimortos","Natimorto","Mumificados","Mortos/natimortos"]),
      natimortos:pegarFlex(r,["Natimortos","Natimorto"]),
      desm_machos:pegarFlex(r,["Desmamados machos","Machos desmamados"]),
      desm_femeas:pegarFlex(r,["Desmamados fêmeas","Desmamados femeas","Fêmeas desmamadas","Femeas desmamadas"]),
@@ -3417,6 +3470,21 @@ function manejosDaMatriz(r){
  if(!r) return [];
  const todos = eventos().filter(e => e.id===r.id || e.matriz===r.nome);
  return todos.sort((a,b)=>a.data-b.data);
+}
+
+function separarEventosPorData(evs){
+ const futuros = evs.filter(e=>e.data >= dataRef).sort((a,b)=>a.data-b.data);
+ const passados = evs.filter(e=>e.data < dataRef).sort((a,b)=>b.data-a.data);
+ return {futuros, passados};
+}
+
+function blocoEventosPriorizados(evs, limite=14){
+ const grupos = separarEventosPorData(evs);
+ const principal = grupos.futuros.length ? grupos.futuros : grupos.passados.slice(0, limite);
+ const titulo = grupos.futuros.length ? "Próximos eventos" : "Últimos eventos registrados";
+ return `<div class="small" style="margin-bottom:5px"><b>${titulo}</b></div>
+   ${tabelaEventosCompacta(principal, limite)}
+   ${grupos.passados.length ? `<details class="historico-eventos"><summary>Ver histórico passado (${grupos.passados.length})</summary>${tabelaEventosCompacta(grupos.passados, 999)}</details>` : ""}`;
 }
 
 function eventosHojeSeteDias(){
@@ -4286,12 +4354,14 @@ function renderFichaMatriz(){
        <div class="card ficha-card" style="margin-bottom:0">
          <h3>Histórico reprodutivo</h3>
          <div class="table-wrap"><table class="compact-table">
-           <thead><tr><th>Cobertura</th><th>Parto</th><th>Lote</th><th>Nascidos</th><th>Desmamados</th></tr></thead>
+           <thead><tr><th>Cobertura</th><th>Parto</th><th>Lote</th><th>Vivos</th><th>Mortos ao parto</th><th>Total ao parto</th><th>Desmamados</th></tr></thead>
            <tbody>${historico.map(h=>`<tr>
              <td>${fmt(h.coberturaDt)}</td>
              <td>${fmt(h.partoRealDt || h.partoPrevDt)}</td>
              <td>${h.lote || "—"}</td>
-             <td>${h.nasc_vivos || somaCampos(h.nasc_machos,h.nasc_femeas)}</td>
+             <td>${vivosAoPartoValor(h)}</td>
+             <td>${mortosAoPartoValor(h)}</td>
+             <td>${totalAoPartoValor(h)}</td>
              <td>${h.desmamados || somaCampos(h.desm_machos,h.desm_femeas)}</td>
            </tr>`).join("")}</tbody>
          </table></div>
@@ -4301,7 +4371,7 @@ function renderFichaMatriz(){
      <div class="ficha-side">
        <div class="card ficha-card">
          <h3>Cronograma de manejo</h3>
-         ${tabelaEventosCompacta(manejos, 14)}
+         ${blocoEventosPriorizados(manejos, 14)}
        </div>
        <div class="card ficha-card" style="margin-top:8px">
          <h3>Anotações do colaborador</h3>
@@ -4312,6 +4382,45 @@ function renderFichaMatriz(){
      </div>
    </div>
  </div>`;
+}
+
+
+function renderQuadroPartos(){
+ const partos = DATA.map(normalizar)
+   .filter(r=>isMatriz(r) && r.partoRealDt)
+   .sort((a,b)=>a.partoRealDt-b.partoRealDt);
+
+ const totalVivos = partos.reduce((s,r)=>s+vivosAoPartoValor(r),0);
+ const totalMortos = partos.reduce((s,r)=>s+mortosAoPartoValor(r),0);
+ const totalGeral = totalVivos + totalMortos;
+ const mediaVivos = partos.length ? (totalVivos/partos.length).toFixed(1).replace(".",",") : "—";
+
+ const metricas = [
+   ["Partos registrados", partos.length],
+   ["Nascidos vivos", totalVivos],
+   ["Mortos ao parto", totalMortos],
+   ["Total ao parto", totalGeral],
+   ["Média de vivos/parto", mediaVivos]
+ ];
+ const m = $("#metricasPartos");
+ if(m) m.innerHTML = metricas.map(x=>`<div class="metric"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+
+ const t = $("#tPartos");
+ if(!t) return;
+ t.innerHTML = `<thead><tr>
+   <th>Data do parto</th><th>Nº e nome da mãe</th><th>Nº e nome do pai</th>
+   <th>Lote</th><th>Vivos</th><th>Mortos ao parto</th><th>Total ao parto</th><th>Desmamados</th>
+ </tr></thead><tbody>` +
+ partos.map(r=>`<tr>
+   <td><b>${fmt(r.partoRealDt)}</b></td>
+   <td>${r.id||"—"} — ${r.nome||"—"}</td>
+   <td>${r.reprodutor||"—"}</td>
+   <td>${r.lote||"—"}</td>
+   <td>${vivosAoPartoValor(r)}</td>
+   <td>${mortosAoPartoValor(r)}</td>
+   <td><b>${totalAoPartoValor(r)}</b></td>
+   <td>${valorCampo(r.desmamados || somaCampos(r.desm_machos,r.desm_femeas))}</td>
+ </tr>`).join("") + `</tbody>`;
 }
 
 function renderRelatorios(){
@@ -4777,7 +4886,7 @@ function renderFichaSemanalColaborador(){
 
 function renderTudo(){
  dataRef=parseDate($("#dataRef").value)||new Date();
- preencherFiltrosSuspensos(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderLeitoes(); renderFichaSemanalColaborador(); renderRelatorios(); renderNutricao();
+ preencherFiltrosSuspensos(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderQuadroPartos(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderLeitoes(); renderFichaSemanalColaborador(); renderRelatorios(); renderNutricao();
 }
 
 
@@ -4812,11 +4921,12 @@ $$(".tab").forEach(b=>b.addEventListener("click",()=>{
   if(b.dataset.tab==="fichasemanal") renderFichaSemanalColaborador();
   if(b.dataset.tab==="leitoes") renderLeitoes();
   if(b.dataset.tab==="relatorios") renderRelatorios();
+  if(b.dataset.tab==="partos") renderQuadroPartos();
 }));
-$("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderRelatorios();});
-$("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
-$("#filtroReprodutor").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
-$("#filtroLote").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderRelatorios();});
+$("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#filtroReprodutor").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
+$("#filtroLote").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
 $("#dataRef").addEventListener("change",renderTudo);
 $("#mesCalendario").addEventListener("change",()=>{renderCalendario();renderHoje();});
 $("#btnHoje").addEventListener("click",()=>{$("#dataRef").value=iso(new Date());renderTudo();});
