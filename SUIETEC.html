@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Zootécnico - Setor de Suinocultura - ETEC v68.0</title>
+<title>Controle Zootécnico - Setor de Suinocultura - ETEC v69.0</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -1106,6 +1106,132 @@ th{background:#ddebf7;color:#0f3150}
   .historico-eventos{display:none!important}
   #partos.active{display:block!important}
 }
+
+/* --- v69: navegação profissional por módulos e submenus --- */
+header{
+  position:relative;
+  z-index:20;
+}
+.menu-principal{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.menu-principal .module-tab{
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.25);
+  padding:10px 15px;
+  transition:.18s ease;
+}
+.menu-principal .module-tab:hover{
+  background:rgba(255,255,255,.22);
+  transform:translateY(-1px);
+}
+.menu-principal .module-tab.active{
+  background:var(--amarelo);
+  color:#172033;
+  border-color:var(--amarelo);
+  box-shadow:0 5px 14px rgba(0,0,0,.18);
+}
+.subnav-shell{
+  max-width:1600px;
+  margin:0 auto;
+  padding:12px 14px 0;
+}
+.subnav-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  background:#fff;
+  border:1px solid var(--linha);
+  border-bottom:0;
+  border-radius:15px 15px 0 0;
+  padding:9px 13px;
+}
+.subnav-label{
+  display:block;
+  color:#64748b;
+  font-size:.7rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+#moduloAtual{
+  color:var(--azul);
+  font-size:1.05rem;
+}
+.breadcrumb{
+  color:#64748b;
+  font-size:.83rem;
+  font-weight:700;
+  text-align:right;
+}
+.submenu-group{
+  display:none;
+  gap:7px;
+  flex-wrap:wrap;
+  background:#fff;
+  border:1px solid var(--linha);
+  border-radius:0 0 15px 15px;
+  padding:10px 12px;
+  box-shadow:0 8px 20px rgba(15,49,80,.06);
+}
+.submenu-group.active{
+  display:flex;
+}
+.submenu-group .tab{
+  background:#edf4fb;
+  color:#163a5d;
+  border:1px solid #cbdbea;
+  padding:8px 12px;
+  border-radius:9px;
+  font-size:.86rem;
+  transition:.15s ease;
+}
+.submenu-group .tab:hover{
+  background:#dcebf8;
+}
+.submenu-group .tab.active{
+  background:var(--azul);
+  color:#fff;
+  border-color:var(--azul);
+  box-shadow:0 4px 10px rgba(31,78,121,.2);
+}
+@media(max-width:900px){
+  .menu-principal{
+    width:100%;
+    justify-content:flex-start;
+  }
+  .menu-principal .module-tab{
+    flex:1 1 30%;
+  }
+  .subnav-top{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .breadcrumb{text-align:left}
+}
+@media(max-width:560px){
+  header{padding:12px}
+  .menu-principal .module-tab{
+    flex:1 1 46%;
+    width:auto;
+  }
+  .subnav-shell{padding:8px 8px 0}
+  .submenu-group{
+    display:none;
+    flex-direction:column;
+  }
+  .submenu-group.active{display:flex}
+  .submenu-group .tab{width:100%;text-align:left}
+}
+@media print{
+  .subnav-shell{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -1116,26 +1242,60 @@ th{background:#ddebf7;color:#0f3150}
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v68.0</h1>
-      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v68.0 — quadro de partos e fichas com eventos futuros priorizados</div>
+      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v69.0</h1>
+      <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v69.0 — navegação profissional por módulos e submenus</div>
     </div>
   </div>
-  <nav>
-    <button class="tab active" data-tab="painel">Painel</button>
-    <button class="tab" data-tab="hoje">Hoje / 7 dias</button>
-    <button class="tab" data-tab="fichasemanal">Ficha semanal</button>
-    <button class="tab" data-tab="calendario">Calendário</button>
-    <button class="tab" data-tab="partos">Quadro de partos</button>
-    <button class="tab" data-tab="cadastro">Cadastro</button>
-    <button class="tab" data-tab="matrizes">Matrizes</button>
-    <button class="tab" data-tab="fichamatriz">Ficha da matriz</button>
-    <button class="tab" data-tab="reprodutores">Reprodutores</button>
-    <button class="tab" data-tab="fichalote">Ficha do lote</button>
-    <button class="tab" data-tab="leitoes">Leitões</button>
-    <button class="tab" data-tab="relatorios">Relatórios</button>
-    <button class="tab" data-tab="nutricao">Nutrição</button>
+  <nav class="menu-principal" aria-label="Módulos principais">
+    <button class="module-tab active" data-module="painel">Painel</button>
+    <button class="module-tab" data-module="animais">Animais</button>
+    <button class="module-tab" data-module="reproducao">Reprodução</button>
+    <button class="module-tab" data-module="manejo">Manejo</button>
+    <button class="module-tab" data-module="nutricao">Nutrição</button>
+    <button class="module-tab" data-module="relatorios">Relatórios</button>
   </nav>
 </header>
+
+<div class="subnav-shell no-print">
+  <div class="subnav-top">
+    <div>
+      <span class="subnav-label">Módulo atual</span>
+      <strong id="moduloAtual">Painel</strong>
+    </div>
+    <div class="breadcrumb" id="breadcrumbAtual">Painel › Visão geral</div>
+  </div>
+
+  <div class="submenu-group active" data-submenu="painel">
+    <button class="tab active" data-tab="painel" data-page-title="Visão geral">Visão geral</button>
+  </div>
+
+  <div class="submenu-group" data-submenu="animais">
+    <button class="tab" data-tab="cadastro" data-page-title="Cadastro geral">Cadastro geral</button>
+    <button class="tab" data-tab="matrizes" data-page-title="Matrizes">Matrizes</button>
+    <button class="tab" data-tab="reprodutores" data-page-title="Reprodutores">Reprodutores</button>
+    <button class="tab" data-tab="leitoes" data-page-title="Leitões">Leitões</button>
+    <button class="tab" data-tab="fichalote" data-page-title="Ficha do lote">Ficha do lote</button>
+  </div>
+
+  <div class="submenu-group" data-submenu="reproducao">
+    <button class="tab" data-tab="fichamatriz" data-page-title="Ficha da matriz">Ficha da matriz</button>
+    <button class="tab" data-tab="partos" data-page-title="Quadro de partos">Quadro de partos</button>
+  </div>
+
+  <div class="submenu-group" data-submenu="manejo">
+    <button class="tab" data-tab="hoje" data-page-title="Hoje e próximos 7 dias">Hoje / 7 dias</button>
+    <button class="tab" data-tab="fichasemanal" data-page-title="Ficha semanal">Ficha semanal</button>
+    <button class="tab" data-tab="calendario" data-page-title="Calendário mensal">Calendário</button>
+  </div>
+
+  <div class="submenu-group" data-submenu="nutricao">
+    <button class="tab" data-tab="nutricao" data-page-title="Roteiro nutricional">Roteiro nutricional</button>
+  </div>
+
+  <div class="submenu-group" data-submenu="relatorios">
+    <button class="tab" data-tab="relatorios" data-page-title="Relatórios zootécnicos">Relatórios zootécnicos</button>
+  </div>
+</div>
 
 <main>
   <section class="panel no-print">
@@ -1182,12 +1342,15 @@ th{background:#ddebf7;color:#0f3150}
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v68.0, a Ficha semanal diferencia manejo de lote/matriz, busca sempre o ciclo mais atual da matriz e recalcula ração/quantidade automaticamente, evitando usar ciclos antigos ou quantidades manuais desatualizadas da aba Semanal.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v69.0, a Ficha semanal diferencia manejo de lote/matriz, busca sempre o ciclo mais atual da matriz e recalcula ração/quantidade automaticamente, evitando usar ciclos antigos ou quantidades manuais desatualizadas da aba Semanal.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
 
   <section id="painel" class="section active">
+    <div class="panel no-print" style="padding:11px 14px">
+      <div class="small"><b>Navegação por módulos:</b> escolha uma área no menu superior e, depois, selecione a informação desejada no submenu. Somente a página escolhida será exibida.</div>
+    </div>
     <div class="grid metrics" id="metricas"></div>
     <div class="grid two">
       <div class="panel">
@@ -4909,7 +5072,49 @@ function sincronizarAoAbrir(){
   }
 }
 
+
+const MODULOS = {
+  painel:{titulo:"Painel", padrao:"painel"},
+  animais:{titulo:"Animais", padrao:"cadastro"},
+  reproducao:{titulo:"Reprodução", padrao:"fichamatriz"},
+  manejo:{titulo:"Manejo", padrao:"hoje"},
+  nutricao:{titulo:"Nutrição", padrao:"nutricao"},
+  relatorios:{titulo:"Relatórios", padrao:"relatorios"}
+};
+
+function atualizarNavegacao(modulo, tituloPagina){
+  const cfg = MODULOS[modulo] || MODULOS.painel;
+  $$(".module-tab").forEach(x=>x.classList.toggle("active", x.dataset.module===modulo));
+  $$(".submenu-group").forEach(x=>x.classList.toggle("active", x.dataset.submenu===modulo));
+  const modAtual = $("#moduloAtual");
+  const breadcrumb = $("#breadcrumbAtual");
+  if(modAtual) modAtual.textContent = cfg.titulo;
+  if(breadcrumb) breadcrumb.textContent = cfg.titulo + " › " + (tituloPagina || "Visão geral");
+}
+
+function abrirPagina(tabId, moduloForcado=null){
+  const botao = $(`.tab[data-tab="${tabId}"]`);
+  if(!botao) return;
+  const grupo = botao.closest(".submenu-group");
+  const modulo = moduloForcado || (grupo ? grupo.dataset.submenu : "painel");
+  atualizarNavegacao(modulo, botao.dataset.pageTitle || botao.textContent.trim());
+  botao.click();
+}
+
+$$(".module-tab").forEach(b=>b.addEventListener("click",()=>{
+  const modulo = b.dataset.module;
+  const cfg = MODULOS[modulo];
+  if(!cfg) return;
+  const botaoPadrao = $(`.submenu-group[data-submenu="${modulo}"] .tab[data-tab="${cfg.padrao}"]`);
+  atualizarNavegacao(modulo, botaoPadrao ? (botaoPadrao.dataset.pageTitle || botaoPadrao.textContent.trim()) : cfg.titulo);
+  if(botaoPadrao) botaoPadrao.click();
+}));
+
 $$(".tab").forEach(b=>b.addEventListener("click",()=>{
+  const grupoAtual = b.closest(".submenu-group");
+  if(grupoAtual){
+    atualizarNavegacao(grupoAtual.dataset.submenu, b.dataset.pageTitle || b.textContent.trim());
+  }
   $$(".tab").forEach(x=>x.classList.remove("active"));
   b.classList.add("active");
   $$(".section").forEach(s=>s.classList.remove("active"));
