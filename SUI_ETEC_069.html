@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Zootécnico - Setor de Suinocultura - ETEC v71.0</title>
+<title>Controle Zootécnico - Setor de Suinocultura - ETEC v72.1</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -1421,6 +1421,35 @@ header{
   .subnav-shell{display:none!important}
 }
 
+
+
+/* --- v72: controle de execução de atividades com PIN --- */
+.b-realizada{background:#dcfce7;color:#166534}
+.event.realizada{outline:2px solid #22c55e;outline-offset:-1px;opacity:.9}
+.event.realizada::before{content:"✓ ";font-weight:900;color:#166534}
+.atividade-acoes{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:5px}
+.btn-realizar{background:#166534!important;color:#fff!important;padding:7px 9px!important;font-size:.76rem!important}
+.btn-corrigir{background:#eef6ff!important;color:#0f3150!important;border:1px solid #93c5fd!important;padding:6px 8px!important;font-size:.72rem!important}
+.atividade-detalhe{display:block;margin-top:4px;font-size:.72rem;line-height:1.25;color:#475569}
+.atividade-detalhe.ok{color:#166534;font-weight:800}
+.atividade-detalhe.atraso{color:#92400e;font-weight:800}
+.atividade-origem{display:inline-block;margin-left:4px;padding:2px 5px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:.65rem;font-weight:800}
+.atividade-modal{width:min(620px,94vw);border:0;border-radius:16px;padding:0;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.atividade-modal::backdrop{background:rgba(15,23,42,.55)}
+.atividade-modal-head{background:linear-gradient(135deg,var(--azul),#102f4a);color:#fff;padding:15px 17px}
+.atividade-modal-head h3{margin:0;font-size:1.15rem}
+.atividade-modal-body{padding:16px}
+.atividade-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.atividade-modal-grid .full{grid-column:1/-1}
+.atividade-modal-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--linha)}
+.atividade-modal-actions .direita{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.atividade-aviso{margin-top:8px;padding:8px 10px;border-radius:9px;background:#eff6ff;color:#1e3a8a;font-size:.8rem}
+.atividade-aviso.erro{background:#fff1f2;color:#991b1b;border:1px solid #fecaca}
+.atividade-aviso.ok{background:#ecfdf5;color:#166534;border:1px solid #86efac}
+.pin-status{display:inline-flex;align-items:center;gap:6px;border:1px solid #cbd5e1;border-radius:999px;padding:6px 9px;background:#fff;font-size:.76rem;font-weight:800;color:#334155}
+@media(max-width:620px){.atividade-modal-grid{grid-template-columns:1fr}.atividade-modal-grid .full{grid-column:auto}.atividade-modal-actions,.atividade-modal-actions .direita{flex-direction:column}.atividade-modal-actions button{width:100%}}
+@media print{.atividade-acoes,.atividade-modal,.btn-realizar,.btn-corrigir,.pin-status{display:none!important}}
+
 </style>
 </head>
 <body>
@@ -1431,7 +1460,7 @@ header{
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v71.0</h1>
+      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v72.1</h1>
       <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v71.0 — confirmação de cio, quadro comparativo e linha do tempo reprodutiva</div>
     </div>
   </div>
@@ -1523,16 +1552,16 @@ header{
       <button class="btn" id="btnHoje">Hoje</button>
       <button class="btn" onclick="window.print()">Imprimir / Salvar PDF</button>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div id="syncResumo" class="sync-resumo">Dados locais carregados. Sincronizando automaticamente quando aberto fora da prévia do ChatGPT.</div><button class="btn mini-reload" onclick="if(typeof carregarDadosAppsScript==='function'){carregarDadosAppsScript(false)}">Atualizar dados</button></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div id="syncResumo" class="sync-resumo">Dados locais carregados. Sincronizando automaticamente quando aberto fora da prévia do ChatGPT.</div><button class="btn mini-reload" onclick="if(typeof carregarDadosAppsScript==='function'){carregarDadosAppsScript(false)}">Atualizar dados</button><button class="btn mini-reload" onclick="abrirConfiguracaoPinAtividades()">🔒 PIN atividades</button><span id="statusPinAtividades" class="pin-status">PIN local não configurado</span></div>
     <div class="sheet-box tecnico-sync">
       <div>
         <label>URL do Apps Script Web App — método recomendado</label>
-        <input id="scriptUrl" value="https://script.google.com/macros/s/AKfycbw2M7UWgLFYJ-7ShNWoT6oEIn9XQGSFfPpE_eD1QJbSyFT1Bdf6Wk-TTFw4BG4Eh5IUiw/exec" placeholder="Cole aqui a URL do Web App do Apps Script">
+        <input id="scriptUrl" value="https://script.google.com/macros/s/AKfycbx1miG88LzPyfkZzP4CwsrZH4GVbkWPnyvt8fahIn75n4wKeXymrBTzkBul0hAcQE03FA/exec" placeholder="Cole aqui a URL do Web App do Apps Script">
       </div>
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v69.0, a Ficha semanal diferencia manejo de lote/matriz, busca sempre o ciclo mais atual da matriz e recalcula ração/quantidade automaticamente, evitando usar ciclos antigos ou quantidades manuais desatualizadas da aba Semanal.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v72.0, além das rotinas anteriores, o painel permite registrar a execução dos manejos com data, responsável, observação e PIN. Atividades concluídas deixam de contar como atraso, mas permanecem visíveis no histórico.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
@@ -1771,10 +1800,58 @@ header{
   </section>
 </main>
 
+<dialog id="modalAtividade" class="atividade-modal no-print">
+  <form id="formAtividade" onsubmit="event.preventDefault();salvarAtividadeModal();">
+    <div class="atividade-modal-head">
+      <h3 id="atividadeModalTitulo">Registrar atividade realizada</h3>
+    </div>
+    <div class="atividade-modal-body">
+      <div id="atividadeResumo" class="atividade-aviso"></div>
+      <div class="atividade-modal-grid" style="margin-top:12px">
+        <div>
+          <label>Data prevista</label>
+          <input id="atividadeDataPrevista" type="date" disabled>
+        </div>
+        <div>
+          <label>Data realizada *</label>
+          <input id="atividadeDataRealizada" type="date" required>
+        </div>
+        <div class="full">
+          <label>Responsável *</label>
+          <input id="atividadeResponsavel" placeholder="Nome de quem realizou ou conferiu" required>
+        </div>
+        <div class="full">
+          <label>Observação</label>
+          <textarea id="atividadeObservacao" rows="3" placeholder="Opcional: intercorrências, produto/lote utilizado, motivo de atraso..."></textarea>
+        </div>
+        <div class="full">
+          <label>PIN de autorização *</label>
+          <input id="atividadePin" type="password" inputmode="numeric" autocomplete="off" placeholder="Digite o PIN do responsável" required>
+          <div id="atividadePinAjuda" class="small" style="margin-top:4px"></div>
+        </div>
+      </div>
+      <div id="atividadeMensagem" class="atividade-aviso" style="display:none"></div>
+      <div class="atividade-modal-actions">
+        <button id="btnExcluirAtividade" type="button" class="btn" style="display:none;background:#fee2e2;color:#991b1b" onclick="excluirAtividadeModal()">Excluir registro</button>
+        <div class="direita">
+          <button type="button" class="btn" onclick="fecharModalAtividade()">Cancelar</button>
+          <button type="submit" class="btn btn-realizar">✓ Salvar realização</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</dialog>
+
 <script>
 let LEITOES = [];
 let SEMANAL = [];
 let PESAGENS_LOTES = [];
+let ATIVIDADES_REALIZADAS_SERVIDOR = [];
+let ATIVIDADES_API_ATIVA = false;
+let EVENTO_ATIVIDADE_EM_EDICAO = null;
+const CHAVE_ATIVIDADES_LOCAL_V72 = "sui_etec_atividades_realizadas_v72";
+const CHAVE_PIN_LOCAL_V72 = "sui_etec_pin_atividades_v72";
+const CHAVE_RESPONSAVEL_LOCAL_V72 = "sui_etec_responsavel_atividades_v72";
 let DATA = [
   {
     "id": "24-1104",
@@ -2304,6 +2381,248 @@ function renderAlertaRepeticaoCio(){
   </div>`;
 }
 
+
+
+// --- v72: execução das atividades do cronograma ---
+function normalizarChaveAtividade(v){
+  return String(v || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+}
+function chaveEventoAtividade(e){
+  const animal = String(e.id || e.matriz || "sem-animal").trim();
+  const ciclo = String(e.ciclo || "").trim() || (e.data ? iso(e.data) : "sem-data");
+  const acao = normalizarChaveAtividade(e.acao || "atividade");
+  return `${animal}__${ciclo}__${acao}`;
+}
+function lerAtividadesLocais(){
+  try{return JSON.parse(localStorage.getItem(CHAVE_ATIVIDADES_LOCAL_V72) || "{}") || {}}
+  catch(e){return {}}
+}
+function salvarMapaAtividadesLocais(mapa){
+  localStorage.setItem(CHAVE_ATIVIDADES_LOCAL_V72, JSON.stringify(mapa || {}));
+}
+function registroAtividadeServidor(chave){
+  const lista=(ATIVIDADES_REALIZADAS_SERVIDOR || []).filter(x=>x && x.chave===chave && x.dataRealizada);
+  if(!lista.length) return null;
+  return lista.sort((a,b)=>String(b.registradoEm||"").localeCompare(String(a.registradoEm||"")))[0];
+}
+function registroAtividadeLocal(chave){
+  const x=lerAtividadesLocais()[chave];
+  return x && x.dataRealizada ? x : null;
+}
+function registroAtividadeSalvo(e){
+  const chave=chaveEventoAtividade(e);
+  const local=registroAtividadeLocal(chave);
+  const remoto=registroAtividadeServidor(chave);
+  if(local && remoto){
+    const dl=String(local.registradoEm||"");
+    const dr=String(remoto.registradoEm||"");
+    return dl>=dr?local:remoto;
+  }
+  return local || remoto || null;
+}
+function registroAtividadeAutomatico(e){
+  const ac=String(e.acao||"");
+  if(ac==="Cobertura realizada/registrada"){
+    return {chave:chaveEventoAtividade(e),dataRealizada:iso(e.data),responsavel:"Registro zootécnico",observacao:"Cobertura já registrada nos dados da matriz.",automatico:true,origem:"dados"};
+  }
+  if(ac.startsWith("Repetição de cio registrada") || ac.startsWith("Não repetiu cio")){
+    return {chave:chaveEventoAtividade(e),dataRealizada:iso(e.data),responsavel:"Registro reprodutivo",observacao:"Situação já confirmada no controle reprodutivo.",automatico:true,origem:"dados"};
+  }
+  if(ac==="Parto previsto" && e.partoReal){
+    return {chave:chaveEventoAtividade(e),dataRealizada:e.partoReal,responsavel:"Registro de parto",observacao:"Parto real já informado nos dados zootécnicos.",automatico:true,origem:"dados"};
+  }
+  return null;
+}
+function registroAtividade(e){return registroAtividadeAutomatico(e) || registroAtividadeSalvo(e)}
+function atividadeRealizada(e){return !!registroAtividade(e)}
+function atrasoExecucaoAtividade(e,reg){
+  if(!reg || !reg.dataRealizada) return null;
+  const dr=parseDate(reg.dataRealizada);
+  if(!dr || !e.data) return null;
+  return diffDays(dr,e.data);
+}
+function textoExecucaoAtividade(e,reg){
+  if(!reg) return "";
+  const d=atrasoExecucaoAtividade(e,reg);
+  if(d===null) return `Realizada em ${fmt(parseDate(reg.dataRealizada))}`;
+  if(d===0) return `Realizada no prazo — ${fmt(parseDate(reg.dataRealizada))}`;
+  if(d>0) return `Realizada em ${fmt(parseDate(reg.dataRealizada))} — ${d} dia(s) após o previsto`;
+  return `Realizada em ${fmt(parseDate(reg.dataRealizada))} — ${Math.abs(d)} dia(s) antes do previsto`;
+}
+function htmlExecucaoAtividade(e,reg){
+  const chave=chaveEventoAtividade(e);
+  if(reg){
+    const origem=reg.automatico?"automático":(reg.origem==="servidor"?"planilha":"registro");
+    const detalhe=textoExecucaoAtividade(e,reg);
+    return `<div class="atividade-acoes"><span class="badge b-realizada">✓ REALIZADA</span><span class="atividade-origem">${origem}</span></div>
+      <span class="atividade-detalhe ok">${esc(detalhe)}</span>
+      ${reg.responsavel?`<span class="atividade-detalhe">Responsável: <b>${esc(reg.responsavel)}</b>${reg.observacao?` · ${esc(reg.observacao)}`:""}</span>`:""}
+      ${!reg.automatico?`<div class="atividade-acoes"><button type="button" class="btn btn-corrigir" data-editar-atividade="1" data-chave="${esc(chave)}">Corrigir registro</button></div>`:""}`;
+  }
+  return `<div class="atividade-acoes"><button type="button" class="btn btn-realizar" data-registrar-atividade="1" data-chave="${esc(chave)}">✓ Registrar realização</button></div>`;
+}
+function prazoEventoAtividade(e,reg){
+  if(reg) return textoExecucaoAtividade(e,reg);
+  const d=diffDays(e.data,dataRef);
+  if(d<0) return `${Math.abs(d)} dia(s) atrasado`;
+  if(d===0) return "Hoje";
+  if(d===1) return "Amanhã";
+  return `Em ${d} dias`;
+}
+function buscarEventoPorChaveAtividade(chave){
+  return eventos().find(e=>chaveEventoAtividade(e)===chave) || null;
+}
+function atualizarStatusPinAtividades(){
+  const el=$("#statusPinAtividades");
+  if(!el) return;
+  if(ATIVIDADES_API_ATIVA){el.textContent="🔐 PIN protegido pelo Apps Script";return;}
+  el.textContent=localStorage.getItem(CHAVE_PIN_LOCAL_V72)?"🔒 PIN local configurado":"🔓 Defina o PIN no primeiro registro";
+}
+async function hashPinAtividade(pin){
+  const txt=String(pin||"");
+  try{
+    if(window.crypto && crypto.subtle){
+      const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(txt));
+      return "sha256:"+[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
+  }catch(e){}
+  let h=2166136261;
+  for(let i=0;i<txt.length;i++){h^=txt.charCodeAt(i);h=Math.imul(h,16777619)}
+  return "local:"+(h>>>0).toString(16);
+}
+async function validarOuCriarPinLocal(pin){
+  pin=String(pin||"").trim();
+  if(pin.length<4) throw new Error("O PIN deve ter pelo menos 4 caracteres.");
+  const salvo=localStorage.getItem(CHAVE_PIN_LOCAL_V72);
+  const atual=await hashPinAtividade(pin);
+  if(!salvo){
+    const conf=prompt("Primeiro uso neste navegador. Digite novamente o PIN para confirmar:");
+    if(conf===null || String(conf).trim()!==pin) throw new Error("A confirmação do PIN não confere.");
+    localStorage.setItem(CHAVE_PIN_LOCAL_V72,atual);
+    atualizarStatusPinAtividades();
+    return true;
+  }
+  if(atual!==salvo) throw new Error("PIN incorreto.");
+  return true;
+}
+async function abrirConfiguracaoPinAtividades(){
+  if(ATIVIDADES_API_ATIVA){alert("Nesta instalação o PIN das atividades é validado pelo Apps Script. A alteração deve ser feita no servidor.");return;}
+  const existe=localStorage.getItem(CHAVE_PIN_LOCAL_V72);
+  if(existe){
+    const antigo=prompt("Digite o PIN atual:");
+    if(antigo===null) return;
+    try{await validarOuCriarPinLocal(antigo)}catch(e){alert(e.message);return;}
+  }
+  const novo=prompt(existe?"Digite o novo PIN (mínimo 4 caracteres):":"Defina o PIN das atividades (mínimo 4 caracteres):");
+  if(novo===null) return;
+  if(String(novo).trim().length<4){alert("O PIN deve ter pelo menos 4 caracteres.");return;}
+  const confirmar=prompt("Digite novamente o novo PIN:");
+  if(confirmar===null || String(confirmar).trim()!==String(novo).trim()){alert("A confirmação do PIN não confere.");return;}
+  localStorage.setItem(CHAVE_PIN_LOCAL_V72,await hashPinAtividade(String(novo).trim()));
+  atualizarStatusPinAtividades();
+  alert("PIN das atividades atualizado neste navegador.");
+}
+function mostrarMensagemAtividade(msg,tipo=""){
+  const el=$("#atividadeMensagem"); if(!el) return;
+  el.style.display="block"; el.textContent=msg; el.className="atividade-aviso"+(tipo?" "+tipo:"");
+}
+function fecharModalAtividade(){const d=$("#modalAtividade");if(d&&d.open)d.close();EVENTO_ATIVIDADE_EM_EDICAO=null}
+function abrirRegistroAtividadePorChave(chave){
+  const e=buscarEventoPorChaveAtividade(chave);
+  if(!e){alert("Não encontrei esta atividade no cronograma atual.");return;}
+  EVENTO_ATIVIDADE_EM_EDICAO=e;
+  const reg=registroAtividadeSalvo(e);
+  $("#atividadeModalTitulo").textContent=reg?"Corrigir atividade realizada":"Registrar atividade realizada";
+  $("#atividadeResumo").innerHTML=`<b>${esc(e.acao)}</b><br>${esc(e.matriz||e.id||"—")}${e.baia?` · Baia ${esc(e.baia)}`:""}${e.lote?` · Lote ${esc(e.lote)}`:""}`;
+  $("#atividadeDataPrevista").value=iso(e.data);
+  $("#atividadeDataRealizada").value=reg?.dataRealizada || iso(new Date());
+  $("#atividadeResponsavel").value=reg?.responsavel || localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72) || "";
+  $("#atividadeObservacao").value=reg?.observacao || "";
+  $("#atividadePin").value="";
+  $("#atividadePinAjuda").textContent=ATIVIDADES_API_ATIVA?"O PIN será validado no Apps Script.":(localStorage.getItem(CHAVE_PIN_LOCAL_V72)?"PIN configurado neste navegador.":"Primeiro registro: o PIN informado será definido como PIN deste navegador.");
+  $("#btnExcluirAtividade").style.display=reg?"inline-block":"none";
+  $("#atividadeMensagem").style.display="none";
+  const d=$("#modalAtividade"); if(d) d.showModal();
+  setTimeout(()=>$("#atividadeDataRealizada")?.focus(),50);
+}
+function chamarJSONPComParametros(url,params){
+  return new Promise((resolve,reject)=>{
+    const callback="cb_suinos_atividade_"+Date.now()+"_"+Math.floor(Math.random()*100000);
+    const sep=url.includes("?")?"&":"?";
+    const script=document.createElement("script");
+    const timer=setTimeout(()=>{delete window[callback];script.remove();reject(new Error("Tempo esgotado ao salvar a atividade."));},15000);
+    window[callback]=data=>{clearTimeout(timer);delete window[callback];script.remove();resolve(data)};
+    script.onerror=()=>{clearTimeout(timer);delete window[callback];script.remove();reject(new Error("Falha de comunicação com o Apps Script."))};
+    const qs=new URLSearchParams({...params,callback,_ts:Date.now()}).toString();
+    script.src=url+sep+qs; document.body.appendChild(script);
+  });
+}
+async function enviarAtividadeServidor(reg,pin,excluir=false){
+  const url=$("#scriptUrl")?.value.trim();
+  if(!url) throw new Error("URL do Apps Script não configurada.");
+  const resp=await chamarJSONPComParametros(url,{
+    modo:excluir?"excluirAtividade":"registrarAtividade",
+    pin,
+    chave:reg.chave,
+    data_prevista:reg.dataPrevista||"",
+    data_realizada:reg.dataRealizada||"",
+    id:reg.id||"",
+    matriz:reg.matriz||"",
+    lote:reg.lote||"",
+    baia:reg.baia||"",
+    tipo:reg.tipo||"",
+    acao:reg.acao||"",
+    ciclo:reg.ciclo||"",
+    responsavel:reg.responsavel||"",
+    observacao:reg.observacao||""
+  });
+  if(!resp || resp.ok!==true) throw new Error(resp?.erro || resp?.message || "O Apps Script não confirmou o salvamento.");
+  return resp;
+}
+async function salvarAtividadeModal(){
+  const e=EVENTO_ATIVIDADE_EM_EDICAO; if(!e) return;
+  const pin=$("#atividadePin").value.trim();
+  const dataRealizada=$("#atividadeDataRealizada").value;
+  const responsavel=$("#atividadeResponsavel").value.trim();
+  const observacao=$("#atividadeObservacao").value.trim();
+  if(!dataRealizada){mostrarMensagemAtividade("Informe a data em que a atividade foi realizada.","erro");return;}
+  if(!responsavel){mostrarMensagemAtividade("Informe o responsável pela atividade.","erro");return;}
+  if(!pin){mostrarMensagemAtividade("Digite o PIN de autorização.","erro");return;}
+  const reg={
+    chave:chaveEventoAtividade(e),dataPrevista:iso(e.data),dataRealizada,id:e.id||"",matriz:e.matriz||"",lote:e.lote||"",baia:e.baia||"",tipo:e.tipo||"",acao:e.acao||"",ciclo:e.ciclo||"",
+    responsavel,observacao,registradoEm:new Date().toISOString(),origem:ATIVIDADES_API_ATIVA?"servidor":"local"
+  };
+  try{
+    mostrarMensagemAtividade("Salvando...","");
+    if(ATIVIDADES_API_ATIVA){
+      await enviarAtividadeServidor(reg,pin,false);
+      await carregarDadosAppsScript(true);
+    }else{
+      await validarOuCriarPinLocal(pin);
+      const mapa=lerAtividadesLocais(); mapa[reg.chave]=reg; salvarMapaAtividadesLocais(mapa);
+      localStorage.setItem(CHAVE_RESPONSAVEL_LOCAL_V72,responsavel);
+      renderTudo();
+    }
+    fecharModalAtividade();
+  }catch(err){mostrarMensagemAtividade(err.message||String(err),"erro")}
+}
+async function excluirAtividadeModal(){
+  const e=EVENTO_ATIVIDADE_EM_EDICAO; if(!e) return;
+  const pin=$("#atividadePin").value.trim();
+  if(!pin){mostrarMensagemAtividade("Digite o PIN para excluir o registro.","erro");return;}
+  if(!confirm("Excluir o registro de realização desta atividade? O manejo voltará a aparecer como pendente/atrasado.")) return;
+  const reg=registroAtividadeSalvo(e) || {chave:chaveEventoAtividade(e)};
+  try{
+    if(ATIVIDADES_API_ATIVA){
+      await enviarAtividadeServidor(reg,pin,true); await carregarDadosAppsScript(true);
+    }else{
+      await validarOuCriarPinLocal(pin);
+      const mapa=lerAtividadesLocais(); delete mapa[reg.chave]; salvarMapaAtividadesLocais(mapa); renderTudo();
+    }
+    fecharModalAtividade();
+  }catch(err){mostrarMensagemAtividade(err.message||String(err),"erro")}
+}
+
 function normalizar(r){
  const cobertura=parseDate(r.cobertura);
  const partoPrev=parseDate(r.parto_previsto)||addDays(cobertura,PARAMS.gestacao);
@@ -2792,7 +3111,7 @@ function situacaoLote(r){
 
 function eventos(){
  const evs=[];
- function add(r,data,tipo,acao){ if(!data||!isMatriz(r))return; evs.push({data,tipo,acao,matriz:r.nome||"",id:r.id||"",lote:r.lote||"",reprodutor:r.reprodutor||"",baia:baiaDoRegistro(r)}); }
+ function add(r,data,tipo,acao){ if(!data||!isMatriz(r))return; evs.push({data,tipo,acao,matriz:r.nome||"",id:r.id||"",lote:r.lote||"",reprodutor:r.reprodutor||"",baia:baiaDoRegistro(r),ciclo:r.coberturaDt?iso(r.coberturaDt):"",partoReal:r.partoRealDt?iso(r.partoRealDt):""}); }
  DATA.map(normalizar).forEach(r=>{
    add(r,r.coberturaDt,"reprodutivo","Cobertura realizada/registrada");
    add(r,addDays(r.coberturaDt,PARAMS.confirmacaoPrenhez),"reprodutivo",
@@ -3019,9 +3338,12 @@ function renderProximos(){
    if(fl && String(e.lote||"")!==String(fl)) return false;
    return true;
  }).slice(0,30);
- $("#tProximos").innerHTML=`<thead><tr><th>Data</th><th>Prazo</th><th>Tipo</th><th>Matriz</th><th>Baia</th><th>Reprodutor</th><th>Lote</th><th>Ação</th></tr></thead><tbody>`+
- evs.map(e=>{const d=diffDays(e.data,dataRef); const prazo=d===0?"Hoje":d>0?`Em ${d} dia(s)`:`${Math.abs(d)} dia(s) atrasado`;
- return `<tr><td>${fmt(e.data)}</td><td>${prazo}</td><td>${badge(e.tipo,tipoCls(e.tipo))}</td><td>${e.matriz} ${e.id?`(${e.id})`:""}</td><td>${e.baia||"—"}</td><td>${e.reprodutor||"—"}</td><td>${e.lote||"—"}</td><td><b>${e.acao}</b></td></tr>`}).join("")+`</tbody>`;
+ $("#tProximos").innerHTML=`<thead><tr><th>Data</th><th>Prazo / execução</th><th>Tipo</th><th>Matriz</th><th>Baia</th><th>Reprodutor</th><th>Lote</th><th>Ação</th></tr></thead><tbody>`+
+ evs.map(e=>{
+   const reg=registroAtividade(e);
+   const prazo=prazoEventoAtividade(e,reg);
+   return `<tr class="${reg?"linha-realizada":""}"><td>${fmt(e.data)}</td><td>${reg?badge("✓ Realizada","b-realizada"):`<b>${esc(prazo)}</b>`}${reg?`<span class="atividade-detalhe ok">${esc(prazo)}</span>`:""}</td><td>${badge(e.tipo,tipoCls(e.tipo))}</td><td>${e.matriz} ${e.id?`(${e.id})`:""}</td><td>${e.baia||"—"}</td><td>${e.reprodutor||"—"}</td><td>${e.lote||"—"}</td><td><b>${e.acao}</b>${htmlExecucaoAtividade(e,reg)}</td></tr>`;
+ }).join("")+`</tbody>`;
 }
 
 function renderCalendario(){
@@ -3043,7 +3365,7 @@ function renderCalendario(){
    const d=addDays(start,i), inM=d.getMonth()===m-1, today=iso(d)===iso(dataRef);
    const todays=evs.filter(e=>iso(e.data)===iso(d));
    days+=`<div class="day ${inM?"":"out"} ${today?"today":""}"><div class="day-num">${d.getDate()}</div>`+
-   todays.map(e=>`<div class="event ${e.tipo}"><b>${e.matriz} ${e.id?`(${e.id})`:""}</b>${e.baia ? ` — Baia ${e.baia}` : ""} - ${e.acao}</div>`).join("")+`</div>`;
+   todays.map(e=>{const reg=registroAtividade(e);return `<div class="event ${e.tipo} ${reg?"realizada":""}"><b>${e.matriz} ${e.id?`(${e.id})`:""}</b>${e.baia ? ` — Baia ${e.baia}` : ""} - ${e.acao}${reg?`<span style="display:block;font-size:.66rem;font-weight:900">Realizada: ${fmt(parseDate(reg.dataRealizada))}</span>`:""}</div>`}).join("")+`</div>`;
  }
  $("#calendarioVisual").innerHTML=`<div class="calendar-layout">
    <div class="cal-head">${nomes[m-1]} ${y}</div>
@@ -3618,6 +3940,7 @@ function carregarJSONP(url){
 }
 
 function mapJSON(payload){
+ ATIVIDADES_API_ATIVA = false;
  // Aceita dois formatos:
  // 1) array simples vindo de uma única aba;
  // 2) objeto {cadastro:[...], dados:[...]} vindo do Apps Script novo.
@@ -3626,6 +3949,7 @@ function mapJSON(payload){
  var leitoesRows = [];
  var semanalRows = [];
  var pesagensRows = [];
+ var atividadesRows = [];
 
  if(Array.isArray(payload)){
    dadosRows = payload;
@@ -3635,6 +3959,8 @@ function mapJSON(payload){
    leitoesRows = payload.leitoes || payload["Leitões"] || payload["Leitoes"] || payload.leitoes_individuais || [];
    semanalRows = payload.semanal || payload["Semanal"] || payload["semanal"] || payload.resumoSemanal || payload.fichaSemanal || payload.ficha_semanal || payload["Ficha Semanal"] || payload["Ficha_Semanal"] || payload["Resumo Semanal"] || [];
    pesagensRows = payload.pesagens_lotes || payload.PESAGENS_LOTES || payload["Pesagens_Lotes"] || payload["Pesagens Lotes"] || payload.pesagens || [];
+    atividadesRows = payload.atividades_realizadas || payload.atividadesRealizadas || payload["Atividades Realizadas"] || payload["Atividades_Realizadas"] || [];
+    ATIVIDADES_API_ATIVA = payload.atividades_api === true || payload.atividadesApi === true;
  }
 
  function limparChave(s){
@@ -3822,6 +4148,32 @@ function mapJSON(payload){
    };
  }
 
+ function mapAtividadeRealizada(r){
+   const dataPrevista=pegarFlex(r,["Data prevista","Data Prevista","data_prevista"]);
+   const dataRealizada=pegarFlex(r,["Data realizada","Data Realizada","data_realizada"]);
+   const id=pegarFlex(r,["ID","ID matriz","ID da matriz"]);
+   const matriz=pegarFlex(r,["Matriz","Nome da matriz","Nome"]);
+   const acao=pegarFlex(r,["Atividade","Ação","Acao","Manejo","Procedimento"]);
+   const ciclo=pegarFlex(r,["Ciclo","Cobertura","Data cobertura","Data da cobertura"]);
+   const chave=pegarFlex(r,["Chave","Chave atividade","ID atividade","Id atividade"])
+     || `${String(id||matriz||"sem-animal").trim()}__${String(ciclo||dataPrevista||"sem-data").trim()}__${normalizarChaveAtividade(acao||"atividade")}`;
+   return {
+     chave,
+     dataPrevista,
+     dataRealizada,
+     id,
+     matriz,
+     lote:pegarFlex(r,["Lote"]),
+     baia:pegarFlex(r,["Baia","Baía"]),
+     tipo:pegarFlex(r,["Tipo","Categoria"]),
+     acao,
+     responsavel:pegarFlex(r,["Responsável","Responsavel"]),
+     observacao:pegarFlex(r,["Observação","Observacao","Obs"]),
+     registradoEm:pegarFlex(r,["Registrado em","Registro","Data/hora registro","Timestamp"]) || "",
+     origem:"servidor"
+   };
+ }
+
  function mapPesagem(r){
    return {
      data:pegarFlex(r,["Data","Data pesagem","Data da pesagem"]),
@@ -3848,6 +4200,8 @@ function mapJSON(payload){
 
  LEITOES = leitoesRows.map(mapLeitao).filter(l=>l.id || l.nome || l.lote || l.dataNascimento);
  PESAGENS_LOTES = pesagensRows.map(mapPesagem).filter(p=>p.data || p.lote || p.peso_medio_kg);
+ ATIVIDADES_REALIZADAS_SERVIDOR = atividadesRows.map(mapAtividadeRealizada).filter(a=>a.chave && a.dataRealizada);
+ atualizarStatusPinAtividades();
  
  function expandirSemanalBaias(rows){
    const saida = [];
@@ -4659,15 +5013,15 @@ function enriquecerLinhaSemanal(x){
 function renderHoje(){
  const fim = addDays(dataRef, 7);
  const inicioAtrasados = addDays(dataRef, -14);
- // Mostra apenas atrasos recentes + hoje + próximos 7 dias.
- // Evita que o painel fique dominado por manejos históricos antigos.
  const evs = eventos()
    .filter(e=>e.data >= inicioAtrasados && e.data <= fim)
    .sort((a,b)=>a.data-b.data);
 
- const atrasados = evs.filter(e=>e.data < dataRef);
- const hoje = evs.filter(e=>diffDays(e.data,dataRef)===0);
- const proximos = evs.filter(e=>e.data > dataRef && e.data <= fim);
+ const pendentes=evs.filter(e=>!atividadeRealizada(e));
+ const realizadas=evs.filter(e=>atividadeRealizada(e));
+ const atrasados = pendentes.filter(e=>e.data < dataRef);
+ const hoje = pendentes.filter(e=>diffDays(e.data,dataRef)===0);
+ const proximos = pendentes.filter(e=>e.data > dataRef && e.data <= fim);
 
  const partos = proximos.concat(hoje).filter(e=>String(e.tipo).toLowerCase().includes("parto"));
  const sanitarios = proximos.concat(hoje).filter(e=>String(e.tipo).toLowerCase().includes("san"));
@@ -4676,43 +5030,41 @@ function renderHoje(){
 
  $("#cardsHoje").innerHTML = [
    ["Atrasados recentes", atrasados.length],
-   ["Hoje", hoje.length],
+   ["Hoje pendentes", hoje.length],
    ["Próximos 7 dias", proximos.length],
-   ["Partos a observar", partos.length],
-   ["Sanitários", sanitarios.length],
+   ["Realizadas no período", realizadas.length],
+   ["Sanitários pendentes", sanitarios.length],
    ["Desmames/transferências", desmames.length + transferencias.length]
  ].map(x=>`<div class="today-card"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
 
  const linhas = [
    ...hoje.map(e=>({...e,grupo:"Hoje"})),
    ...proximos.map(e=>({...e,grupo:"Próximos 7 dias"})),
-   ...atrasados.map(e=>({...e,grupo:"Atrasado recente"}))
+   ...atrasados.map(e=>({...e,grupo:"Atrasado recente"})),
+   ...realizadas.map(e=>({...e,grupo:"Realizada"}))
  ];
 
  $("#tHoje").innerHTML = `<thead><tr>
-   <th>Status</th><th>Data</th><th>Prazo</th><th>Tipo</th><th>Matriz/animal</th><th>Baia</th><th>Lote</th><th>Ação necessária</th>
+   <th>Status</th><th>Data prevista</th><th>Prazo / execução</th><th>Tipo</th><th>Matriz/animal</th><th>Baia</th><th>Lote</th><th>Ação necessária</th><th>Registro</th>
  </tr></thead><tbody>`+
  linhas.map(e=>{
+   const reg=registroAtividade(e);
    const dias = diffDays(e.data,dataRef);
-   let prazo = "";
-   if(dias < 0) prazo = `${Math.abs(dias)} dia(s) atrasado`;
-   else if(dias === 0) prazo = "Hoje";
-   else if(dias === 1) prazo = "Amanhã";
-   else prazo = `Em ${dias} dias`;
-
-   const cls = dias < 0 ? "b-alerta" : dias === 0 ? "b-parto" : "b-info";
+   const prazo = prazoEventoAtividade(e,reg);
+   const cls = reg ? "b-realizada" : dias < 0 ? "b-alerta" : dias === 0 ? "b-parto" : "b-info";
    const ref = buscarRegistroPorAnimalOuLote(e.lote || e.id || e.matriz, e.lote ? "lote" : "matriz");
    const baia = e.baia || (ref ? baiaTexto(ref) : "—");
 
    return `<tr>
-     <td>${badge(e.grupo,cls)}</td>
+     <td>${badge(reg?"✓ Realizada":e.grupo,cls)}</td>
      <td>${fmt(e.data)}</td>
-     <td><b>${prazo}</b></td>
+     <td><b>${esc(prazo)}</b></td>
      <td>${badge(e.tipo,tipoCls(e.tipo))}</td>
      <td>${e.matriz || "—"} ${e.id?`(${e.id})`:""}</td>
      <td>${baia}</td>
      <td>${e.lote || "—"}</td>
      <td><b>${e.acao}</b></td>
+     <td>${htmlExecucaoAtividade(e,reg)}</td>
    </tr>`;
  }).join("")+`</tbody>`;
 }
@@ -5592,6 +5944,7 @@ function renderFichaSemanalColaborador(){
 
 function renderTudo(){
  dataRef=parseDate($("#dataRef").value)||new Date();
+ atualizarStatusPinAtividades();
  preencherFiltrosSuspensos(); renderAlertaRepeticaoCio(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderQuadroPartos(); renderDesempenhoReprodutivoV71(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderLeitoes(); renderFichaSemanalColaborador(); renderRelatorios(); renderNutricao();
 }
 
@@ -5705,6 +6058,14 @@ async function carregarDadosAppsScript(silencioso=false){
 
 $("#btnCarregarScript").addEventListener("click",()=>carregarDadosAppsScript(false));
 $("#busca").addEventListener("input",renderTudo);
+document.addEventListener("click",e=>{
+  const bReg=e.target && e.target.closest ? e.target.closest("[data-registrar-atividade],[data-editar-atividade]") : null;
+  if(bReg){
+    e.preventDefault();
+    abrirRegistroAtividadePorChave(bReg.dataset.chave || "");
+  }
+});
+
 document.addEventListener("change",e=>{
   if(e.target && e.target.id==="selMatrizDesempenho"){
     MATRIZ_DESEMPENHO_V71=e.target.value;
