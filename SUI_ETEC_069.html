@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Zootécnico - Setor de Suinocultura - ETEC v72.1</title>
+<title>Controle Zootécnico - Setor de Suinocultura - ETEC v75.0</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -1448,6 +1448,49 @@ header{
 .atividade-aviso.ok{background:#ecfdf5;color:#166534;border:1px solid #86efac}
 .pin-status{display:inline-flex;align-items:center;gap:6px;border:1px solid #cbd5e1;border-radius:999px;padding:6px 9px;background:#fff;font-size:.76rem;font-weight:800;color:#334155}
 @media(max-width:620px){.atividade-modal-grid{grid-template-columns:1fr}.atividade-modal-grid .full{grid-column:auto}.atividade-modal-actions,.atividade-modal-actions .direita{flex-direction:column}.atividade-modal-actions button{width:100%}}
+
+/* --- v73: lançamento de cobertura direto pelo HTML --- */
+.lancamento-card-v73{border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(180deg,#f8fbff,#fff);padding:14px;margin-top:10px}
+.lancamento-grid-v73{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lancamento-grid-v73 .full{grid-column:1/-1}
+.lancamento-resumo-v73{border:1px solid #c7d7e8;border-radius:12px;background:#eef6ff;padding:10px;line-height:1.4}
+.lancamento-previsoes-v73{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lancamento-previsoes-v73 div{border:1px solid #d1fae5;border-radius:10px;background:#ecfdf5;padding:9px}
+.lancamento-previsoes-v73 strong{display:block;color:#166534;margin-bottom:2px}
+.lancamento-aviso-v73{margin-top:10px;border-radius:10px;padding:9px 11px;font-weight:800;background:#eff6ff;border:1px solid #93c5fd;color:#1e3a8a}
+.lancamento-aviso-v73.erro{background:#fff1f2;border-color:#fda4af;color:#9f1239}
+.lancamento-aviso-v73.ok{background:#ecfdf5;border-color:#86efac;color:#166534}
+.btn-lancamento-v73{background:#166534!important;color:#fff!important}
+@media(max-width:700px){.lancamento-grid-v73,.lancamento-previsoes-v73{grid-template-columns:1fr}.lancamento-grid-v73 .full{grid-column:auto}}
+@media print{#lancamentocobertura{display:none!important}}
+/* --- v74: proteção de ciclo ativo + lançamento de parto --- */
+.lancamento-alerta-ciclo-v74{border:2px solid #f59e0b;border-radius:12px;background:#fffbeb;color:#92400e;padding:11px 12px;line-height:1.4}
+.lancamento-alerta-ciclo-v74 strong{color:#9a3412}
+.lancamento-confirmacao-v74{display:flex;gap:8px;align-items:flex-start;margin-top:9px;padding-top:8px;border-top:1px solid #fcd34d;font-weight:800}
+.lancamento-confirmacao-v74 input{width:auto;margin-top:2px;transform:scale(1.15)}
+.lancamento-nota-calculo-v74{grid-column:1/-1;color:#475569;font-size:.78rem;padding:2px 3px}
+.parto-metricas-v74{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.parto-metricas-v74 div{border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;padding:9px}
+.parto-metricas-v74 strong{display:block;color:#1e3a8a;margin-bottom:2px}
+.parto-diferenca-v74.ok{color:#166534;font-weight:800}
+.parto-diferenca-v74.alerta{color:#92400e;font-weight:800}
+@media(max-width:850px){.parto-metricas-v74{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.parto-metricas-v74{grid-template-columns:1fr}}
+@media print{#lancamentoparto{display:none!important}}
+
+/* --- v75: proteção de parto antigo/atípico + lançamento de desmame --- */
+.parto-alerta-v75{border:2px solid #ef4444;border-radius:12px;background:#fff1f2;color:#991b1b;padding:10px 12px;line-height:1.35}
+.parto-alerta-v75 label{display:flex;gap:8px;align-items:flex-start;margin-top:8px;padding-top:8px;border-top:1px solid #fecaca;font-weight:900;color:#991b1b}
+.parto-alerta-v75 input{width:auto;margin-top:2px;transform:scale(1.15)}
+.desmame-metricas-v75{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.desmame-metricas-v75 div{border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;padding:9px}
+.desmame-metricas-v75 strong{display:block;color:#166534;margin-bottom:2px}
+.desmame-atraso-v75{font-weight:900}
+.desmame-atraso-v75.ok{color:#166534}.desmame-atraso-v75.alerta{color:#92400e}.desmame-atraso-v75.erro{color:#991b1b}
+@media(max-width:1000px){.desmame-metricas-v75{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.desmame-metricas-v75{grid-template-columns:1fr}}
+@media print{#lancamentodesmame{display:none!important}}
+
 @media print{.atividade-acoes,.atividade-modal,.btn-realizar,.btn-corrigir,.pin-status{display:none!important}}
 
 </style>
@@ -1460,7 +1503,7 @@ header{
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v72.1</h1>
+      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v75.0</h1>
       <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v71.0 — confirmação de cio, quadro comparativo e linha do tempo reprodutiva</div>
     </div>
   </div>
@@ -1496,12 +1539,15 @@ header{
   </div>
 
   <div class="submenu-group" data-submenu="reproducao">
+    <button class="tab" data-tab="lancamentocobertura" data-page-title="Registrar cobertura">Registrar cobertura</button>
+    <button class="tab" data-tab="lancamentoparto" data-page-title="Registrar parto">Registrar parto</button>
     <button class="tab" data-tab="fichamatriz" data-page-title="Ficha da matriz">Ficha da matriz</button>
     <button class="tab" data-tab="partos" data-page-title="Quadro de partos">Quadro de partos</button>
     <button class="tab" data-tab="desempenhoreprodutivo" data-page-title="Desempenho reprodutivo">Desempenho reprodutivo</button>
   </div>
 
   <div class="submenu-group" data-submenu="manejo">
+    <button class="tab" data-tab="lancamentodesmame" data-page-title="Registrar desmame">Registrar desmame</button>
     <button class="tab" data-tab="hoje" data-page-title="Hoje e próximos 7 dias">Hoje / 7 dias</button>
     <button class="tab" data-tab="fichasemanal" data-page-title="Ficha semanal">Ficha semanal</button>
     <button class="tab" data-tab="calendario" data-page-title="Calendário mensal">Calendário</button>
@@ -1552,7 +1598,7 @@ header{
       <button class="btn" id="btnHoje">Hoje</button>
       <button class="btn" onclick="window.print()">Imprimir / Salvar PDF</button>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div id="syncResumo" class="sync-resumo">Dados locais carregados. Sincronizando automaticamente quando aberto fora da prévia do ChatGPT.</div><button class="btn mini-reload" onclick="if(typeof carregarDadosAppsScript==='function'){carregarDadosAppsScript(false)}">Atualizar dados</button><button class="btn mini-reload" onclick="abrirConfiguracaoPinAtividades()">🔒 PIN atividades</button><span id="statusPinAtividades" class="pin-status">PIN local não configurado</span></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div id="syncResumo" class="sync-resumo">Dados locais carregados. Sincronizando automaticamente quando aberto fora da prévia do ChatGPT.</div><button class="btn mini-reload" onclick="if(typeof carregarDadosAppsScript==='function'){carregarDadosAppsScript(false)}">Atualizar dados</button><button class="btn mini-reload" onclick="abrirConfiguracaoPinAtividades()">🔒 PIN do sistema</button><span id="statusPinAtividades" class="pin-status">PIN local não configurado</span></div>
     <div class="sheet-box tecnico-sync">
       <div>
         <label>URL do Apps Script Web App — método recomendado</label>
@@ -1561,7 +1607,7 @@ header{
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v72.0, além das rotinas anteriores, o painel permite registrar a execução dos manejos com data, responsável, observação e PIN. Atividades concluídas deixam de contar como atraso, mas permanecem visíveis no histórico.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v75.0, coberturas, partos e desmames podem ser lançados diretamente pelo HTML com o mesmo PIN protegido pelo Apps Script. O Google Sheets permanece como base de dados e histórico, sem precisar ser usado no dia a dia.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
@@ -1623,6 +1669,205 @@ header{
         <button class="btn" onclick="window.print()">Imprimir / Salvar PDF</button>
       </div>
       <div id="fichaSemanalColaborador"></div>
+    </div>
+  </section>
+
+  <section id="lancamentocobertura" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Registrar cobertura</h2>
+          <p>Lançamento direto no sistema. O mesmo PIN usado nas atividades autoriza a gravação na planilha e no histórico.</p>
+        </div>
+        <span class="badge b-ok">ETAPA 1 · cobertura protegida</span>
+      </div>
+
+      <form id="formCoberturaV73" class="lancamento-card-v73" onsubmit="event.preventDefault();salvarCoberturaV73();">
+        <div class="lancamento-grid-v73">
+          <div>
+            <label>Matriz *</label>
+            <select id="coberturaMatrizV73" required></select>
+          </div>
+          <div>
+            <label>Data da cobertura *</label>
+            <input id="coberturaDataV73" type="date" required>
+          </div>
+          <div>
+            <label>Reprodutor *</label>
+            <select id="coberturaReprodutorV73" required></select>
+          </div>
+          <div>
+            <label>Método</label>
+            <select id="coberturaMetodoV73">
+              <option value="Monta natural">Monta natural</option>
+              <option value="Inseminação artificial">Inseminação artificial</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div>
+            <label>Responsável pelo lançamento *</label>
+            <input id="coberturaResponsavelV73" placeholder="Nome de quem está lançando" required>
+          </div>
+          <div>
+            <label>PIN do sistema *</label>
+            <input id="coberturaPinV73" type="password" inputmode="numeric" autocomplete="off" placeholder="Mesmo PIN já configurado" required>
+          </div>
+          <div class="full">
+            <label>Observação</label>
+            <textarea id="coberturaObservacaoV73" rows="3" placeholder="Ex.: cio bem caracterizado, segunda cobertura, observação de manejo..."></textarea>
+          </div>
+          <div class="full lancamento-resumo-v73" id="coberturaResumoV73"></div>
+          <div class="full lancamento-alerta-ciclo-v74" id="coberturaAlertaCicloV74" style="display:none">
+            <strong>⚠ ATENÇÃO — MATRIZ COM CICLO ATIVO</strong>
+            <div id="coberturaAlertaCicloTextoV74"></div>
+            <label class="lancamento-confirmacao-v74">
+              <input type="checkbox" id="coberturaConfirmarCicloV74">
+              <span>Confirmo que se trata de uma nova cobertura e desejo registrar um novo ciclo para esta matriz.</span>
+            </label>
+          </div>
+          <div class="full lancamento-previsoes-v73">
+            <div><strong>Verificação de repetição de cio</strong><span id="coberturaConfirmacaoV73">—</span></div>
+            <div><strong>Parto previsto</strong><span id="coberturaPartoPrevistoV73">—</span></div>
+            <div class="lancamento-nota-calculo-v74">Datas calculadas automaticamente a partir da <b>Data da cobertura</b> informada acima; por isso, trocar somente a matriz não altera essas previsões.</div>
+          </div>
+        </div>
+        <div id="coberturaMensagemV73" class="lancamento-aviso-v73" style="display:none"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button type="button" class="btn" onclick="limparCoberturaV73()">Limpar</button>
+          <button type="submit" class="btn btn-lancamento-v73">✓ Registrar cobertura</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="lancamentoparto" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Registrar parto</h2>
+          <p>Conclui o ciclo reprodutivo da matriz, cria o lote automaticamente e inicia o cronograma dos leitões. Usa o mesmo PIN do sistema.</p>
+        </div>
+        <span class="badge b-ok">ETAPA 2 · parto protegido</span>
+      </div>
+
+      <form id="formPartoV74" class="lancamento-card-v73" onsubmit="event.preventDefault();salvarPartoV74();">
+        <div class="lancamento-grid-v73">
+          <div>
+            <label>Matriz com ciclo ativo *</label>
+            <select id="partoMatrizV74" required></select>
+          </div>
+          <div>
+            <label>Data do parto *</label>
+            <input id="partoDataV74" type="date" required>
+          </div>
+          <div>
+            <label>Hora de início do parto</label>
+            <input id="partoHoraV74" type="time">
+          </div>
+          <div>
+            <label>Responsável pelo lançamento *</label>
+            <input id="partoResponsavelV74" placeholder="Nome de quem está lançando" required>
+          </div>
+          <div>
+            <label>Nascidos vivos — machos *</label>
+            <input id="partoMachosV74" type="number" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label>Nascidos vivos — fêmeas *</label>
+            <input id="partoFemeasV74" type="number" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label>Mortos ao parto / natimortos *</label>
+            <input id="partoMortosV74" type="number" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label>PIN do sistema *</label>
+            <input id="partoPinV74" type="password" inputmode="numeric" autocomplete="off" placeholder="Mesmo PIN já configurado" required>
+          </div>
+          <div class="full">
+            <label>Observação do parto</label>
+            <textarea id="partoObservacaoV74" rows="3" placeholder="Ex.: necessidade de auxílio, intervalo prolongado, condição da matriz, observação da leitegada..."></textarea>
+          </div>
+          <div class="full lancamento-resumo-v73" id="partoResumoV74"></div>
+          <div class="full parto-alerta-v75" id="partoAlertaV75" style="display:none">
+            <div id="partoAlertaTextoV75"></div>
+            <label><input id="partoConfirmarAtipicoV75" type="checkbox"> Conferi a cobertura e a data do parto e confirmo que este lançamento está correto.</label>
+          </div>
+          <div class="full parto-metricas-v74">
+            <div><strong>Nascidos vivos</strong><span id="partoVivosTotalV74">0</span></div>
+            <div><strong>Total ao parto</strong><span id="partoTotalGeralV74">0</span></div>
+            <div><strong>Lote que será criado</strong><span id="partoLoteV74">—</span></div>
+            <div><strong>Desmame previsto</strong><span id="partoDesmameV74">—</span></div>
+          </div>
+        </div>
+        <div id="partoMensagemV74" class="lancamento-aviso-v73" style="display:none"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button type="button" class="btn" onclick="limparPartoV74()">Limpar</button>
+          <button type="submit" class="btn btn-lancamento-v73">✓ Registrar parto</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="lancamentodesmame" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Registrar desmame</h2>
+          <p>Registra o resultado real do desmame no mesmo ciclo do parto e atualiza automaticamente a quantidade do lote. Usa o mesmo PIN do sistema.</p>
+        </div>
+        <span class="badge b-ok">ETAPA 3 · desmame protegido</span>
+      </div>
+
+      <form id="formDesmameV75" class="lancamento-card-v73" onsubmit="event.preventDefault();salvarDesmameV75();">
+        <div class="lancamento-grid-v73">
+          <div>
+            <label>Lote / matriz ainda não desmamado *</label>
+            <select id="desmameLoteV75" required></select>
+          </div>
+          <div>
+            <label>Data do desmame *</label>
+            <input id="desmameDataV75" type="date" required>
+          </div>
+          <div>
+            <label>Desmamados — machos *</label>
+            <input id="desmameMachosV75" type="number" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label>Desmamados — fêmeas *</label>
+            <input id="desmameFemeasV75" type="number" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label>Peso médio ao desmame (kg)</label>
+            <input id="desmamePesoMedioV75" type="number" min="0" step="0.01" placeholder="Ex.: 7,50">
+          </div>
+          <div>
+            <label>Responsável pelo lançamento *</label>
+            <input id="desmameResponsavelV75" placeholder="Nome de quem está lançando" required>
+          </div>
+          <div>
+            <label>PIN do sistema *</label>
+            <input id="desmamePinV75" type="password" inputmode="numeric" autocomplete="off" placeholder="Mesmo PIN já configurado" required>
+          </div>
+          <div class="full">
+            <label>Observação do desmame</label>
+            <textarea id="desmameObservacaoV75" rows="3" placeholder="Ex.: condição da leitegada, transferência, refugos, observações de manejo..."></textarea>
+          </div>
+          <div class="full lancamento-resumo-v73" id="desmameResumoV75"></div>
+          <div class="full desmame-metricas-v75">
+            <div><strong>Nascidos vivos</strong><span id="desmameNascidosV75">—</span></div>
+            <div><strong>Total desmamados</strong><span id="desmameTotalV75">0</span></div>
+            <div><strong>Mortes pré-desmame</strong><span id="desmameMortesV75">—</span></div>
+            <div><strong>Mortalidade pré-desmame</strong><span id="desmameMortalidadeV75">—</span></div>
+            <div><strong>Peso total estimado</strong><span id="desmamePesoTotalV75">—</span></div>
+          </div>
+        </div>
+        <div id="desmameMensagemV75" class="lancamento-aviso-v73" style="display:none"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button type="button" class="btn" onclick="limparDesmameV75()">Limpar</button>
+          <button type="submit" class="btn btn-lancamento-v73">✓ Registrar desmame</button>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -1848,6 +2093,9 @@ let SEMANAL = [];
 let PESAGENS_LOTES = [];
 let ATIVIDADES_REALIZADAS_SERVIDOR = [];
 let ATIVIDADES_API_ATIVA = false;
+let LANCAMENTOS_API_V73 = false;
+let PARTOS_API_V74 = false;
+let DESMAMES_API_V75 = false;
 let EVENTO_ATIVIDADE_EM_EDICAO = null;
 const CHAVE_ATIVIDADES_LOCAL_V72 = "sui_etec_atividades_realizadas_v72";
 const CHAVE_PIN_LOCAL_V72 = "sui_etec_pin_atividades_v72";
@@ -2431,6 +2679,9 @@ function registroAtividadeAutomatico(e){
   if(ac==="Parto previsto" && e.partoReal){
     return {chave:chaveEventoAtividade(e),dataRealizada:e.partoReal,responsavel:"Registro de parto",observacao:"Parto real já informado nos dados zootécnicos.",automatico:true,origem:"dados"};
   }
+  if(ac==="Desmame / saída da matriz" && e.dataDesmame){
+    return {chave:chaveEventoAtividade(e),dataRealizada:e.dataDesmame,responsavel:"Registro de desmame",observacao:"Desmame real já informado nos dados zootécnicos.",automatico:true,origem:"dados"};
+  }
   return null;
 }
 function registroAtividade(e){return registroAtividadeAutomatico(e) || registroAtividadeSalvo(e)}
@@ -2475,7 +2726,7 @@ function buscarEventoPorChaveAtividade(chave){
 function atualizarStatusPinAtividades(){
   const el=$("#statusPinAtividades");
   if(!el) return;
-  if(ATIVIDADES_API_ATIVA){el.textContent="🔐 PIN protegido pelo Apps Script";return;}
+  if(ATIVIDADES_API_ATIVA){el.textContent="🔐 PIN do sistema protegido pelo Apps Script";return;}
   el.textContent=localStorage.getItem(CHAVE_PIN_LOCAL_V72)?"🔒 PIN local configurado":"🔓 Defina o PIN no primeiro registro";
 }
 async function hashPinAtividade(pin){
@@ -2623,6 +2874,345 @@ async function excluirAtividadeModal(){
   }catch(err){mostrarMensagemAtividade(err.message||String(err),"erro")}
 }
 
+
+// --- v74: cobertura protegida + registro de parto direto pelo HTML ---
+function matrizCoberturaSelecionadaV73(){
+  const v=$("#coberturaMatrizV73")?.value || "";
+  if(!v) return null;
+  return animaisUnicosPorCategoria("matriz").find(r=>String(r.id||r.nome||"")===String(v)) || null;
+}
+function registrosProdutivosMatrizV74(chave){
+  const alvo=String(chave||"").trim();
+  if(!alvo) return [];
+  return DATA.map(normalizar).filter(r=>isMatriz(r) && (String(r.id||"")===alvo || (!r.id && String(r.nome||"")===alvo)));
+}
+function cicloAtivoMatrizV74(chave){
+  return registrosProdutivosMatrizV74(chave)
+    .filter(r=>r.coberturaDt && !r.partoRealDt)
+    .sort((a,b)=>b.coberturaDt-a.coberturaDt)[0] || null;
+}
+function ciclosAtivosParaPartoV74(){
+  const mapa=new Map();
+  DATA.map(normalizar).filter(r=>isMatriz(r) && r.coberturaDt && !r.partoRealDt && !animalDescartado(r)).forEach(r=>{
+    const k=String(r.id||r.nome||""); if(!k) return;
+    const atual=mapa.get(k);
+    if(!atual || r.coberturaDt>atual.coberturaDt) mapa.set(k,r);
+  });
+  return [...mapa.values()].sort((a,b)=>String(a.nome||a.id||"").localeCompare(String(b.nome||b.id||""),"pt-BR"));
+}
+function renderLancamentoCoberturaV73(){
+  const sm=$("#coberturaMatrizV73"), sr=$("#coberturaReprodutorV73");
+  if(!sm || !sr) return;
+  const vm=sm.value, vr=sr.value;
+  const matrizes=animaisUnicosPorCategoria("matriz").filter(r=>!animalDescartado(r)).sort((a,b)=>String(a.nome||a.id||"").localeCompare(String(b.nome||b.id||""),"pt-BR"));
+  const reps=animaisUnicosPorCategoria("reprodutor").filter(r=>!animalDescartado(r)).sort((a,b)=>String(a.nome||a.id||"").localeCompare(String(b.nome||b.id||""),"pt-BR"));
+  sm.innerHTML='<option value="">Selecione a matriz...</option>'+matrizes.map(r=>`<option value="${esc(r.id||r.nome)}">${esc(matrizLabel(r))}${r.baia?` · Baia ${esc(baiaTexto(r))}`:""}</option>`).join("");
+  sr.innerHTML='<option value="">Selecione o reprodutor...</option>'+reps.map(r=>`<option value="${esc(r.id||r.nome)}">${esc((r.id||"—")+" — "+(r.nome||"Reprodutor"))}</option>`).join("");
+  if([...sm.options].some(o=>o.value===vm)) sm.value=vm;
+  if([...sr.options].some(o=>o.value===vr)) sr.value=vr;
+  const dc=$("#coberturaDataV73"); if(dc && !dc.value) dc.value=iso(new Date());
+  const resp=$("#coberturaResponsavelV73"); if(resp && !resp.value) resp.value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";
+  atualizarPrevisaoCoberturaV73();
+}
+function atualizarPrevisaoCoberturaV73(){
+  const r=matrizCoberturaSelecionadaV73();
+  const d=parseDate($("#coberturaDataV73")?.value);
+  const resumo=$("#coberturaResumoV73");
+  if(resumo){
+    if(!r) resumo.innerHTML='<b>Selecione uma matriz.</b> O sistema mostrará aqui a situação atual antes de gravar uma nova cobertura.';
+    else resumo.innerHTML=`<b>${esc(matrizLabel(r))}</b> · Baia ${esc(baiaTexto(r))}<br><b>Situação atual:</b> ${esc(situacaoMatriz(r).txt)}${r.coberturaDt?` · <b>Última cobertura:</b> ${esc(fmt(r.coberturaDt))}`:""}`;
+  }
+  const conf=$("#coberturaConfirmacaoV73"), parto=$("#coberturaPartoPrevistoV73");
+  if(conf) conf.textContent=d?fmt(addDays(d,PARAMS.confirmacaoPrenhez)):"—";
+  if(parto) parto.textContent=d?fmt(addDays(d,PARAMS.gestacao)):"—";
+
+  const chave=r?String(r.id||r.nome||""):"";
+  const ciclo=chave?cicloAtivoMatrizV74(chave):null;
+  const box=$("#coberturaAlertaCicloV74"), txt=$("#coberturaAlertaCicloTextoV74"), ck=$("#coberturaConfirmarCicloV74");
+  if(box){
+    if(ciclo){
+      box.style.display="block";
+      const ver=addDays(ciclo.coberturaDt,PARAMS.confirmacaoPrenhez), pp=addDays(ciclo.coberturaDt,PARAMS.gestacao);
+      if(txt) txt.innerHTML=`Já existe uma cobertura em <b>${esc(fmt(ciclo.coberturaDt))}</b>${ciclo.reprodutor?` com <b>${esc(ciclo.reprodutor)}</b>`:""}. Verificação prevista: <b>${esc(fmt(ver))}</b> · parto previsto: <b>${esc(fmt(pp))}</b>. Registre outra cobertura somente se for realmente um novo serviço/ciclo.`;
+    }else{
+      box.style.display="none";
+      if(ck) ck.checked=false;
+    }
+  }
+}
+function mostrarMensagemCoberturaV73(msg,tipo=""){
+  const el=$("#coberturaMensagemV73"); if(!el) return;
+  el.style.display="block"; el.textContent=msg; el.className="lancamento-aviso-v73"+(tipo?" "+tipo:"");
+}
+function limparCoberturaV73(){
+  const f=$("#formCoberturaV73"); if(f) f.reset();
+  const d=$("#coberturaDataV73"); if(d) d.value=iso(new Date());
+  const r=$("#coberturaResponsavelV73"); if(r) r.value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";
+  const m=$("#coberturaMensagemV73"); if(m) m.style.display="none";
+  renderLancamentoCoberturaV73();
+}
+async function salvarCoberturaV73(){
+  if(!LANCAMENTOS_API_V73){mostrarMensagemCoberturaV73("A gravação direta exige o Apps Script atualizado. Atualize a implantação antes de registrar cobertura.","erro");return;}
+  const matriz=matrizCoberturaSelecionadaV73();
+  const data=$("#coberturaDataV73")?.value || "";
+  const reprodutor=$("#coberturaReprodutorV73")?.value || "";
+  const metodo=$("#coberturaMetodoV73")?.value || "";
+  const responsavel=$("#coberturaResponsavelV73")?.value.trim() || "";
+  const observacao=$("#coberturaObservacaoV73")?.value.trim() || "";
+  const pin=$("#coberturaPinV73")?.value.trim() || "";
+  if(!matriz){mostrarMensagemCoberturaV73("Selecione a matriz.","erro");return;}
+  if(!data){mostrarMensagemCoberturaV73("Informe a data da cobertura.","erro");return;}
+  if(!reprodutor){mostrarMensagemCoberturaV73("Selecione o reprodutor.","erro");return;}
+  if(!responsavel){mostrarMensagemCoberturaV73("Informe o responsável pelo lançamento.","erro");return;}
+  if(!pin){mostrarMensagemCoberturaV73("Digite o PIN do sistema.","erro");return;}
+  const ciclo=cicloAtivoMatrizV74(String(matriz.id||matriz.nome||""));
+  const confirmarCiclo=$("#coberturaConfirmarCicloV74")?.checked===true;
+  if(ciclo && !confirmarCiclo){mostrarMensagemCoberturaV73("Esta matriz já possui um ciclo ativo. Marque a confirmação amarela antes de registrar uma nova cobertura.","erro");return;}
+  const prevConf=addDays(parseDate(data),PARAMS.confirmacaoPrenhez), prevParto=addDays(parseDate(data),PARAMS.gestacao);
+  try{
+    mostrarMensagemCoberturaV73("Gravando cobertura na planilha e no histórico...","");
+    const url=$("#scriptUrl")?.value.trim();
+    const resp=await chamarJSONPComParametros(url,{
+      modo:"registrarCobertura",pin,matriz_id:matriz.id||matriz.nome||"",matriz_nome:matriz.nome||"",baia:baiaTexto(matriz)||"",
+      data_cobertura:data,reprodutor,metodo,responsavel,observacao,confirmar_ciclo_ativo:confirmarCiclo?"sim":"nao"
+    });
+    if(!resp || resp.ok!==true) throw new Error(resp?.erro || resp?.mensagem || "O Apps Script não confirmou o lançamento.");
+    localStorage.setItem(CHAVE_RESPONSAVEL_LOCAL_V72,responsavel);
+    await carregarDadosAppsScript(true);
+    if($("#coberturaPinV73")) $("#coberturaPinV73").value="";
+    if($("#coberturaObservacaoV73")) $("#coberturaObservacaoV73").value="";
+    if($("#coberturaConfirmarCicloV74")) $("#coberturaConfirmarCicloV74").checked=false;
+    mostrarMensagemCoberturaV73(`✓ Cobertura registrada com sucesso. Verificação de cio: ${fmt(prevConf)} · Parto previsto: ${fmt(prevParto)}.`,"ok");
+    renderLancamentoCoberturaV73();
+  }catch(err){mostrarMensagemCoberturaV73(err.message||String(err),"erro");}
+}
+
+function cicloPartoSelecionadoV74(){
+  const v=$("#partoMatrizV74")?.value || "";
+  if(!v) return null;
+  return ciclosAtivosParaPartoV74().find(r=>String(r.id||r.nome||"")===String(v)) || null;
+}
+function renderLancamentoPartoV74(){
+  const sm=$("#partoMatrizV74"); if(!sm) return;
+  const atual=sm.value;
+  const ciclos=ciclosAtivosParaPartoV74();
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const normais=[], antigos=[];
+  ciclos.forEach(r=>{
+    const dias=diffDays(hoje,r.coberturaDt);
+    (dias>130?antigos:normais).push({r,dias});
+  });
+  let op='<option value="">Selecione a matriz...</option>';
+  if(normais.length) op+='<optgroup label="Ciclos atuais / compatíveis">'+normais.map(x=>`<option value="${esc(x.r.id||x.r.nome)}">${esc(matrizLabel(x.r))} · Cobertura ${esc(fmt(x.r.coberturaDt))}</option>`).join("")+'</optgroup>';
+  if(antigos.length) op+='<optgroup label="⚠ Ciclos antigos/inconsistentes — conferir dados">'+antigos.map(x=>`<option value="${esc(x.r.id||x.r.nome)}">⚠ ${esc(matrizLabel(x.r))} · Cobertura ${esc(fmt(x.r.coberturaDt))} · ${x.dias} dias</option>`).join("")+'</optgroup>';
+  sm.innerHTML=op;
+  if([...sm.options].some(o=>o.value===atual)) sm.value=atual;
+  const d=$("#partoDataV74"); if(d && !d.value) d.value=iso(new Date());
+  const resp=$("#partoResponsavelV74"); if(resp && !resp.value) resp.value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";
+  atualizarResumoPartoV74();
+}
+function estadoPartoAtipicoV75(){
+  const r=cicloPartoSelecionadoV74();
+  const d=parseDate($("#partoDataV74")?.value);
+  if(!r) return {exige:false, motivos:[], diasGestacao:null, diasAberto:null};
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const diasAberto=diffDays(hoje,r.coberturaDt);
+  const diasGestacao=d?diffDays(d,r.coberturaDt):null;
+  const motivos=[];
+  if(diasAberto>130) motivos.push(`cobertura aberta há ${diasAberto} dias`);
+  if(diasGestacao!==null && Math.abs(diasGestacao-PARAMS.gestacao)>10) motivos.push(`data informada corresponde a ${diasGestacao} dias de gestação`);
+  return {exige:motivos.length>0,motivos,diasGestacao,diasAberto};
+}
+function atualizarResumoPartoV74(){
+  const r=cicloPartoSelecionadoV74();
+  const d=parseDate($("#partoDataV74")?.value);
+  const machos=Math.max(0,Number($("#partoMachosV74")?.value||0));
+  const femeas=Math.max(0,Number($("#partoFemeasV74")?.value||0));
+  const mortos=Math.max(0,Number($("#partoMortosV74")?.value||0));
+  const resumo=$("#partoResumoV74");
+  if(resumo){
+    if(!r) resumo.innerHTML='<b>Selecione uma matriz com ciclo ativo.</b> Ciclos com mais de 130 dias aparecem separados para conferência.';
+    else{
+      const previsto=addDays(r.coberturaDt,PARAMS.gestacao);
+      const dif=d?diffDays(d,previsto):null;
+      let txtDif="";
+      if(dif!==null){
+        txtDif=dif===0?' · <span class="parto-diferenca-v74 ok">na data prevista</span>':dif>0?` · <span class="parto-diferenca-v74 ${Math.abs(dif)<=7?"ok":"alerta"}">${dif} dia(s) depois do previsto</span>`:` · <span class="parto-diferenca-v74 ${Math.abs(dif)<=7?"ok":"alerta"}">${Math.abs(dif)} dia(s) antes do previsto</span>`;
+      }
+      resumo.innerHTML=`<b>${esc(matrizLabel(r))}</b> · Baia ${esc(baiaTexto(r))}<br><b>Cobertura:</b> ${esc(fmt(r.coberturaDt))} · <b>Reprodutor:</b> ${esc(r.reprodutor||"—")} · <b>Parto previsto:</b> ${esc(fmt(previsto))}${txtDif}`;
+    }
+  }
+  const estado=estadoPartoAtipicoV75();
+  const alerta=$("#partoAlertaV75"), txt=$("#partoAlertaTextoV75");
+  if(alerta){
+    alerta.style.display=estado.exige?"block":"none";
+    if(txt) txt.innerHTML=estado.exige?`<b>⚠ Confira antes de registrar.</b> ${esc(estado.motivos.join("; "))}. Esse registro só será aceito após a confirmação abaixo.`:"";
+    if(!estado.exige && $("#partoConfirmarAtipicoV75")) $("#partoConfirmarAtipicoV75").checked=false;
+  }
+  const vivos=machos+femeas, total=vivos+mortos;
+  if($("#partoVivosTotalV74")) $("#partoVivosTotalV74").textContent=String(vivos);
+  if($("#partoTotalGeralV74")) $("#partoTotalGeralV74").textContent=String(total);
+  if($("#partoLoteV74")) $("#partoLoteV74").textContent=(r&&d)?gerarLotePadraoNovo(d,r.id||r.nome):"—";
+  if($("#partoDesmameV74")) $("#partoDesmameV74").textContent=d?fmt(addDays(d,PARAMS.desmame)):"—";
+}
+function mostrarMensagemPartoV74(msg,tipo=""){
+  const el=$("#partoMensagemV74"); if(!el) return;
+  el.style.display="block"; el.textContent=msg; el.className="lancamento-aviso-v73"+(tipo?" "+tipo:"");
+}
+function limparPartoV74(){
+  const f=$("#formPartoV74"); if(f) f.reset();
+  if($("#partoDataV74")) $("#partoDataV74").value=iso(new Date());
+  if($("#partoMachosV74")) $("#partoMachosV74").value="0";
+  if($("#partoFemeasV74")) $("#partoFemeasV74").value="0";
+  if($("#partoMortosV74")) $("#partoMortosV74").value="0";
+  if($("#partoResponsavelV74")) $("#partoResponsavelV74").value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";
+  if($("#partoMensagemV74")) $("#partoMensagemV74").style.display="none";
+  if($("#partoConfirmarAtipicoV75")) $("#partoConfirmarAtipicoV75").checked=false;
+  renderLancamentoPartoV74();
+}
+async function salvarPartoV74(){
+  if(!PARTOS_API_V74){mostrarMensagemPartoV74("O registro de parto exige o Apps Script da Etapa 2 implantado. Atualize a implantação antes de gravar.","erro");return;}
+  const ciclo=cicloPartoSelecionadoV74();
+  const data=$("#partoDataV74")?.value || "";
+  const hora=$("#partoHoraV74")?.value || "";
+  const machos=Math.max(0,parseInt($("#partoMachosV74")?.value||"0",10)||0);
+  const femeas=Math.max(0,parseInt($("#partoFemeasV74")?.value||"0",10)||0);
+  const mortos=Math.max(0,parseInt($("#partoMortosV74")?.value||"0",10)||0);
+  const responsavel=$("#partoResponsavelV74")?.value.trim() || "";
+  const observacao=$("#partoObservacaoV74")?.value.trim() || "";
+  const pin=$("#partoPinV74")?.value.trim() || "";
+  if(!ciclo){mostrarMensagemPartoV74("Selecione uma matriz com cobertura ativa e sem parto registrado.","erro");return;}
+  if(!data){mostrarMensagemPartoV74("Informe a data do parto.","erro");return;}
+  if((machos+femeas+mortos)<=0){mostrarMensagemPartoV74("Informe pelo menos um leitão nascido vivo ou morto ao parto.","erro");return;}
+  if(!responsavel){mostrarMensagemPartoV74("Informe o responsável pelo lançamento.","erro");return;}
+  if(!pin){mostrarMensagemPartoV74("Digite o PIN do sistema.","erro");return;}
+  const estadoAtipico=estadoPartoAtipicoV75();
+  const confirmarAtipico=$("#partoConfirmarAtipicoV75")?.checked===true;
+  if(estadoAtipico.exige && !confirmarAtipico){mostrarMensagemPartoV74("Este ciclo/data exige conferência. Marque a confirmação vermelha antes de registrar.","erro");return;}
+  try{
+    mostrarMensagemPartoV74("Gravando parto, criando o lote e atualizando o cronograma...","");
+    const url=$("#scriptUrl")?.value.trim();
+    const resp=await chamarJSONPComParametros(url,{
+      modo:"registrarParto",pin,matriz_id:ciclo.id||ciclo.nome||"",matriz_nome:ciclo.nome||"",data_parto:data,hora_parto:hora,
+      nasc_machos:machos,nasc_femeas:femeas,mortos_parto:mortos,responsavel,observacao,confirmar_parto_atipico:confirmarAtipico?"sim":"nao"
+    });
+    if(!resp || resp.ok!==true) throw new Error(resp?.erro || resp?.mensagem || "O Apps Script não confirmou o parto.");
+    localStorage.setItem(CHAVE_RESPONSAVEL_LOCAL_V72,responsavel);
+    await carregarDadosAppsScript(true);
+    if($("#partoPinV74")) $("#partoPinV74").value="";
+    if($("#partoObservacaoV74")) $("#partoObservacaoV74").value="";
+    mostrarMensagemPartoV74(`✓ Parto registrado. Lote ${resp.lote||"criado"} · ${machos+femeas} vivo(s) · ${mortos} morto(s) ao parto.`,"ok");
+    renderLancamentoPartoV74();
+  }catch(err){mostrarMensagemPartoV74(err.message||String(err),"erro");}
+}
+
+
+// --- v75: registro de desmame direto pelo HTML ---
+function lotesPendentesDesmameV75(){
+  const mapa=new Map();
+  DATA.map(normalizar).filter(r=>isMatriz(r) && r.partoRealDt && r.lote && !animalDescartado(r)).forEach(r=>{
+    const total=Number(String(r.desmamados || somaCampos(r.desm_machos,r.desm_femeas) || 0).replace(",","."))||0;
+    if(r.dataDesmameDt || total>0) return;
+    const k=loteKey(r.lote)||String(r.id||r.nome||"");
+    const atual=mapa.get(k);
+    if(!atual || r.partoRealDt>atual.partoRealDt) mapa.set(k,r);
+  });
+  return [...mapa.values()].sort((a,b)=>a.partoRealDt-b.partoRealDt);
+}
+function cicloDesmameSelecionadoV75(){
+  const v=$("#desmameLoteV75")?.value || "";
+  if(!v) return null;
+  return lotesPendentesDesmameV75().find(r=>loteKey(r.lote)===loteKey(v)) || null;
+}
+function renderLancamentoDesmameV75(){
+  const s=$("#desmameLoteV75"); if(!s) return;
+  const atual=s.value, regs=lotesPendentesDesmameV75();
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const atuais=[], antigos=[];
+  regs.forEach(r=>{const idade=diffDays(hoje,r.partoRealDt); (idade>75?antigos:atuais).push({r,idade});});
+  let op='<option value="">Selecione o lote...</option>';
+  if(atuais.length) op+='<optgroup label="Lotes aguardando desmame">'+atuais.map(x=>`<option value="${esc(x.r.lote)}">${esc(x.r.lote)} · ${esc(matrizLabel(x.r))} · Parto ${esc(fmt(x.r.partoRealDt))}</option>`).join("")+'</optgroup>';
+  if(antigos.length) op+='<optgroup label="⚠ Lotes antigos sem desmame registrado — revisar">'+antigos.map(x=>`<option value="${esc(x.r.lote)}">⚠ ${esc(x.r.lote)} · ${esc(matrizLabel(x.r))} · ${x.idade} dias</option>`).join("")+'</optgroup>';
+  s.innerHTML=op;
+  if([...s.options].some(o=>o.value===atual)) s.value=atual;
+  const d=$("#desmameDataV75"); if(d && !d.value) d.value=iso(new Date());
+  const resp=$("#desmameResponsavelV75"); if(resp && !resp.value) resp.value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";
+  atualizarResumoDesmameV75();
+}
+function atualizarResumoDesmameV75(){
+  const r=cicloDesmameSelecionadoV75();
+  const d=parseDate($("#desmameDataV75")?.value);
+  const machos=Math.max(0,Number($("#desmameMachosV75")?.value||0));
+  const femeas=Math.max(0,Number($("#desmameFemeasV75")?.value||0));
+  const peso=Math.max(0,Number(String($("#desmamePesoMedioV75")?.value||0).replace(",","."))||0);
+  const total=machos+femeas;
+  const vivos=r?vivosAoPartoValor(r):0;
+  const mortes=r&&vivos>0?Math.max(0,vivos-total):null;
+  const mort=r&&vivos>0?(mortes/vivos)*100:null;
+  const resumo=$("#desmameResumoV75");
+  if(resumo){
+    if(!r) resumo.innerHTML='<b>Selecione um lote ainda não desmamado.</b> O lançamento será gravado na mesma linha do parto.';
+    else{
+      const previsto=addDays(r.partoRealDt,PARAMS.desmame);
+      const dif=d?diffDays(d,previsto):null;
+      let prazo="";
+      if(dif!==null) prazo=dif===0?' · <span class="desmame-atraso-v75 ok">na data prevista</span>':dif>0?` · <span class="desmame-atraso-v75 ${dif<=10?"alerta":"erro"}">${dif} dia(s) depois do previsto</span>`:` · <span class="desmame-atraso-v75 ${Math.abs(dif)<=5?"alerta":"erro"}">${Math.abs(dif)} dia(s) antes do previsto</span>`;
+      resumo.innerHTML=`<b>Lote ${esc(r.lote)}</b> · ${esc(matrizLabel(r))} · Baia ${esc(baiaTexto(r))}<br><b>Parto:</b> ${esc(fmt(r.partoRealDt))} · <b>Desmame previsto:</b> ${esc(fmt(previsto))}${prazo}`;
+    }
+  }
+  if($("#desmameNascidosV75")) $("#desmameNascidosV75").textContent=r?String(vivos):"—";
+  if($("#desmameTotalV75")) $("#desmameTotalV75").textContent=String(total);
+  if($("#desmameMortesV75")) $("#desmameMortesV75").textContent=mortes===null?"—":String(mortes);
+  if($("#desmameMortalidadeV75")) $("#desmameMortalidadeV75").textContent=mort===null?"—":mort.toFixed(1).replace(".",",")+"%";
+  if($("#desmamePesoTotalV75")) $("#desmamePesoTotalV75").textContent=(peso>0&&total>0)?(peso*total).toFixed(1).replace(".",",")+" kg":"—";
+}
+function mostrarMensagemDesmameV75(msg,tipo=""){
+  const el=$("#desmameMensagemV75"); if(!el) return;
+  el.style.display="block"; el.textContent=msg; el.className="lancamento-aviso-v73"+(tipo?" "+tipo:"");
+}
+function limparDesmameV75(){
+  const f=$("#formDesmameV75"); if(f) f.reset();
+  if($("#desmameDataV75")) $("#desmameDataV75").value=iso(new Date());
+  if($("#desmameMachosV75")) $("#desmameMachosV75").value="0";
+  if($("#desmameFemeasV75")) $("#desmameFemeasV75").value="0";
+  if($("#desmameResponsavelV75")) $("#desmameResponsavelV75").value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";
+  if($("#desmameMensagemV75")) $("#desmameMensagemV75").style.display="none";
+  renderLancamentoDesmameV75();
+}
+async function salvarDesmameV75(){
+  if(!DESMAMES_API_V75){mostrarMensagemDesmameV75("O registro de desmame exige o Apps Script da Etapa 3 implantado. Atualize a implantação antes de gravar.","erro");return;}
+  const ciclo=cicloDesmameSelecionadoV75();
+  const data=$("#desmameDataV75")?.value || "";
+  const machos=Math.max(0,parseInt($("#desmameMachosV75")?.value||"0",10)||0);
+  const femeas=Math.max(0,parseInt($("#desmameFemeasV75")?.value||"0",10)||0);
+  const peso=$("#desmamePesoMedioV75")?.value || "";
+  const responsavel=$("#desmameResponsavelV75")?.value.trim() || "";
+  const observacao=$("#desmameObservacaoV75")?.value.trim() || "";
+  const pin=$("#desmamePinV75")?.value.trim() || "";
+  if(!ciclo){mostrarMensagemDesmameV75("Selecione um lote com parto registrado e ainda sem desmame.","erro");return;}
+  if(!data){mostrarMensagemDesmameV75("Informe a data do desmame.","erro");return;}
+  if((machos+femeas)<=0){mostrarMensagemDesmameV75("Informe pelo menos um leitão desmamado.","erro");return;}
+  const vivos=vivosAoPartoValor(ciclo);
+  if(vivos>0 && (machos+femeas)>vivos){mostrarMensagemDesmameV75(`O total desmamado não pode ser maior que os ${vivos} nascidos vivos.`,"erro");return;}
+  if(!responsavel){mostrarMensagemDesmameV75("Informe o responsável pelo lançamento.","erro");return;}
+  if(!pin){mostrarMensagemDesmameV75("Digite o PIN do sistema.","erro");return;}
+  try{
+    mostrarMensagemDesmameV75("Gravando desmame e atualizando o lote...","");
+    const url=$("#scriptUrl")?.value.trim();
+    const resp=await chamarJSONPComParametros(url,{
+      modo:"registrarDesmame",pin,matriz_id:ciclo.id||ciclo.nome||"",matriz_nome:ciclo.nome||"",lote:ciclo.lote||"",
+      data_desmame:data,desm_machos:machos,desm_femeas:femeas,peso_medio_kg:peso,responsavel,observacao
+    });
+    if(!resp || resp.ok!==true) throw new Error(resp?.erro || resp?.mensagem || "O Apps Script não confirmou o desmame.");
+    localStorage.setItem(CHAVE_RESPONSAVEL_LOCAL_V72,responsavel);
+    await carregarDadosAppsScript(true);
+    if($("#desmamePinV75")) $("#desmamePinV75").value="";
+    if($("#desmameObservacaoV75")) $("#desmameObservacaoV75").value="";
+    mostrarMensagemDesmameV75(`✓ Desmame registrado. ${resp.desmamados||machos+femeas} leitão(ões) · lote ${resp.lote||ciclo.lote}.`,"ok");
+    renderLancamentoDesmameV75();
+  }catch(err){mostrarMensagemDesmameV75(err.message||String(err),"erro");}
+}
+
 function normalizar(r){
  const cobertura=parseDate(r.cobertura);
  const partoPrev=parseDate(r.parto_previsto)||addDays(cobertura,PARAMS.gestacao);
@@ -2634,7 +3224,7 @@ function normalizar(r){
  const confirmacao= cobertura ? addDays(cobertura,PARAMS.confirmacaoPrenhez) : confirmacaoPlanilha;
  const loteOriginal = String(r.lote || "").trim();
  const lotePadrao = normalizarCodigoLoteNovo(loteOriginal, partoBase, r.id || r.matriz || r.matrizId);
- return {...r,loteOriginal:loteOriginal,lote:lotePadrao,coberturaDt:cobertura,confirmacaoPlanilhaDt:confirmacaoPlanilha,confirmacaoDt:confirmacao,partoPrevDt:partoPrev,partoRealDt:partoReal,partoBaseDt:partoBase,nascimentoDt:parseDate(r.nascimento)};
+ return {...r,loteOriginal:loteOriginal,lote:lotePadrao,coberturaDt:cobertura,confirmacaoPlanilhaDt:confirmacaoPlanilha,confirmacaoDt:confirmacao,partoPrevDt:partoPrev,partoRealDt:partoReal,partoBaseDt:partoBase,nascimentoDt:parseDate(r.nascimento),dataDesmameDt:parseDate(r.dataDesmame)};
 }
 
 function baiaDoRegistro(r){
@@ -2685,7 +3275,7 @@ function baiaTexto(r){
 
 function dataUltimoDesmamePorMatriz(id, nome){
  const regs = DATA.map(normalizar).filter(x => isMatriz(x) && (x.id===id || (nome && x.nome===nome)) && x.partoBaseDt);
- const desmames = regs.map(x => addDays(x.partoBaseDt, PARAMS.desmame)).filter(Boolean).sort((a,b)=>b-a);
+ const desmames = regs.map(x => x.dataDesmameDt || addDays(x.partoBaseDt, PARAMS.desmame)).filter(Boolean).sort((a,b)=>b-a);
  return desmames[0] || null;
 }
 
@@ -3111,7 +3701,7 @@ function situacaoLote(r){
 
 function eventos(){
  const evs=[];
- function add(r,data,tipo,acao){ if(!data||!isMatriz(r))return; evs.push({data,tipo,acao,matriz:r.nome||"",id:r.id||"",lote:r.lote||"",reprodutor:r.reprodutor||"",baia:baiaDoRegistro(r),ciclo:r.coberturaDt?iso(r.coberturaDt):"",partoReal:r.partoRealDt?iso(r.partoRealDt):""}); }
+ function add(r,data,tipo,acao){ if(!data||!isMatriz(r))return; evs.push({data,tipo,acao,matriz:r.nome||"",id:r.id||"",lote:r.lote||"",reprodutor:r.reprodutor||"",baia:baiaDoRegistro(r),ciclo:r.coberturaDt?iso(r.coberturaDt):"",partoReal:r.partoRealDt?iso(r.partoRealDt):"",dataDesmame:r.dataDesmameDt?iso(r.dataDesmameDt):""}); }
  DATA.map(normalizar).forEach(r=>{
    add(r,r.coberturaDt,"reprodutivo","Cobertura realizada/registrada");
    add(r,addDays(r.coberturaDt,PARAMS.confirmacaoPrenhez),"reprodutivo",
@@ -3737,6 +4327,8 @@ function renderFichaLote(){
            <div><strong>Desmamados machos</strong>${valorCampo(r.desm_machos)}</div>
            <div><strong>Desmamados fêmeas</strong>${valorCampo(r.desm_femeas)}</div>
            <div><strong>Total desmamados</strong>${valorCampo(totalDesmamados)}</div>
+           <div><strong>Data real do desmame</strong>${r.dataDesmameDt?fmt(r.dataDesmameDt):"—"}</div>
+           <div><strong>Peso médio ao desmame</strong>${r.pesoMedioDesmame?kg(Number(String(r.pesoMedioDesmame).replace(",",".")),2):"—"}</div>
            <div><strong>Mortes pré-desmame</strong>${mortesPreDesmameTexto(r)}</div>
            <div><strong>Mortalidade pré-desmame</strong>${mortalidadeTexto(r)}</div>
          </div>
@@ -3941,6 +4533,9 @@ function carregarJSONP(url){
 
 function mapJSON(payload){
  ATIVIDADES_API_ATIVA = false;
+ LANCAMENTOS_API_V73 = false;
+ PARTOS_API_V74 = false;
+ DESMAMES_API_V75 = false;
  // Aceita dois formatos:
  // 1) array simples vindo de uma única aba;
  // 2) objeto {cadastro:[...], dados:[...]} vindo do Apps Script novo.
@@ -3961,6 +4556,9 @@ function mapJSON(payload){
    pesagensRows = payload.pesagens_lotes || payload.PESAGENS_LOTES || payload["Pesagens_Lotes"] || payload["Pesagens Lotes"] || payload.pesagens || [];
     atividadesRows = payload.atividades_realizadas || payload.atividadesRealizadas || payload["Atividades Realizadas"] || payload["Atividades_Realizadas"] || [];
     ATIVIDADES_API_ATIVA = payload.atividades_api === true || payload.atividadesApi === true;
+    LANCAMENTOS_API_V73 = payload.lancamentos_api_v73 === true || payload.lancamentosApiV73 === true;
+    PARTOS_API_V74 = payload.partos_api_v74 === true || payload.partosApiV74 === true;
+    DESMAMES_API_V75 = payload.desmames_api_v75 === true || payload.desmamesApiV75 === true;
  }
 
  function limparChave(s){
@@ -4088,6 +4686,9 @@ function mapJSON(payload){
      desm_femeas:pegarFlex(r,["Desmamados fêmeas","Desmamados femeas","Fêmeas desmamadas","Femeas desmamadas"]),
      nasc_vivos:pegarFlex(r,["Total nascidos vivos","Nascidos vivos","Total vivos"]),
      desmamados:pegarFlex(r,["Desmamados","Total desmamados"]),
+     dataDesmame:pegarFlex(r,["Data desmame","Data do desmame","Desmame real","Data desmame real"]),
+     pesoMedioDesmame:pegarFlex(r,["Peso médio desmame kg","Peso medio desmame kg","Peso ao desmame","Peso médio ao desmame"]),
+     pesoTotalDesmame:pegarFlex(r,["Peso total desmame kg","Peso total ao desmame"]),
      dataVenda:pegarFlex(r,["Data venda","Data da venda","Data saída","Data saida","Data de saída","Data de saida"]),
      qtdVendidos:pegarFlex(r,["Qtd vendidos","Quantidade vendida","Vendidos","Qtd saída","Qtd saida","Quantidade saída","Quantidade saida"]),
      pesoMedioVenda:pegarFlex(r,["Peso médio venda","Peso medio venda","Peso médio","Peso medio","Peso venda"]),
@@ -5945,7 +6546,7 @@ function renderFichaSemanalColaborador(){
 function renderTudo(){
  dataRef=parseDate($("#dataRef").value)||new Date();
  atualizarStatusPinAtividades();
- preencherFiltrosSuspensos(); renderAlertaRepeticaoCio(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderQuadroPartos(); renderDesempenhoReprodutivoV71(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderLeitoes(); renderFichaSemanalColaborador(); renderRelatorios(); renderNutricao();
+ preencherFiltrosSuspensos(); renderLancamentoCoberturaV73(); renderLancamentoPartoV74(); renderLancamentoDesmameV75(); renderAlertaRepeticaoCio(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderQuadroPartos(); renderDesempenhoReprodutivoV71(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderLeitoes(); renderFichaSemanalColaborador(); renderRelatorios(); renderNutricao();
 }
 
 
@@ -5972,7 +6573,7 @@ function sincronizarAoAbrir(){
 const MODULOS = {
   painel:{titulo:"Painel", padrao:"painel"},
   animais:{titulo:"Animais", padrao:"cadastro"},
-  reproducao:{titulo:"Reprodução", padrao:"fichamatriz"},
+  reproducao:{titulo:"Reprodução", padrao:"lancamentocobertura"},
   manejo:{titulo:"Manejo", padrao:"hoje"},
   nutricao:{titulo:"Nutrição", padrao:"nutricao"},
   relatorios:{titulo:"Relatórios", padrao:"relatorios"}
@@ -6023,6 +6624,9 @@ $$(".tab").forEach(b=>b.addEventListener("click",()=>{
   if(b.dataset.tab==="leitoes") renderLeitoes();
   if(b.dataset.tab==="relatorios") renderRelatorios();
   if(b.dataset.tab==="partos") renderQuadroPartos();
+  if(b.dataset.tab==="lancamentocobertura") renderLancamentoCoberturaV73();
+  if(b.dataset.tab==="lancamentoparto") renderLancamentoPartoV74();
+  if(b.dataset.tab==="lancamentodesmame") renderLancamentoDesmameV75();
 }));
 $("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderRelatorios();});
 $("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
@@ -6066,7 +6670,25 @@ document.addEventListener("click",e=>{
   }
 });
 
+document.addEventListener("input",e=>{
+  if(e.target && (e.target.id==="partoMachosV74" || e.target.id==="partoFemeasV74" || e.target.id==="partoMortosV74" || e.target.id==="partoDataV74")){
+    atualizarResumoPartoV74();
+  }
+  if(e.target && (e.target.id==="desmameMachosV75" || e.target.id==="desmameFemeasV75" || e.target.id==="desmamePesoMedioV75" || e.target.id==="desmameDataV75")){
+    atualizarResumoDesmameV75();
+  }
+});
+
 document.addEventListener("change",e=>{
+  if(e.target && (e.target.id==="coberturaMatrizV73" || e.target.id==="coberturaDataV73")){
+    atualizarPrevisaoCoberturaV73();
+  }
+  if(e.target && (e.target.id==="partoMatrizV74" || e.target.id==="partoDataV74" || e.target.id==="partoMachosV74" || e.target.id==="partoFemeasV74" || e.target.id==="partoMortosV74")){
+    atualizarResumoPartoV74();
+  }
+  if(e.target && (e.target.id==="desmameLoteV75" || e.target.id==="desmameDataV75" || e.target.id==="desmameMachosV75" || e.target.id==="desmameFemeasV75" || e.target.id==="desmamePesoMedioV75")){
+    atualizarResumoDesmameV75();
+  }
   if(e.target && e.target.id==="selMatrizDesempenho"){
     MATRIZ_DESEMPENHO_V71=e.target.value;
     renderTabelaDesempenhoV71();
