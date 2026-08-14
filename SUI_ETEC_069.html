@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Controle Zootécnico - Setor de Suinocultura - ETEC v75.0</title>
+<title>Controle Zootécnico - Setor de Suinocultura - ETEC v76.1</title>
 <style>
 :root {
   --azul:#1f4e79;
@@ -1389,6 +1389,24 @@ header{
   border-color:var(--azul);
   box-shadow:0 4px 10px rgba(31,78,121,.2);
 }
+
+/* --- v76.2: destaque visual para abas operacionais de preenchimento --- */
+.submenu-group .tab[data-tab^="lancamento"]{
+  background:#e8f7ec;
+  color:#166534;
+  border:1px solid #b7e0c2;
+  font-weight:800;
+}
+.submenu-group .tab[data-tab^="lancamento"]:hover{
+  background:#d8f0df;
+  border-color:#93d2a6;
+}
+.submenu-group .tab[data-tab^="lancamento"].active{
+  background:#198754;
+  color:#fff;
+  border-color:#198754;
+  box-shadow:0 4px 10px rgba(25,135,84,.22);
+}
 @media(max-width:900px){
   .menu-principal{
     width:100%;
@@ -1491,6 +1509,18 @@ header{
 @media(max-width:560px){.desmame-metricas-v75{grid-template-columns:1fr}}
 @media print{#lancamentodesmame{display:none!important}}
 
+/* --- v76: baixas/mortalidade e transferência de baia --- */
+.mov-v76-resumo{border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;padding:10px;line-height:1.35}
+.mov-v76-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mov-v76-grid .full{grid-column:1/-1}
+.mov-v76-alerta{border:1px solid #fdba74;border-radius:10px;background:#fff7ed;color:#9a3412;padding:9px;font-weight:800}
+.mov-v76-info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mov-v76-info div{border:1px solid #c7d7e8;border-radius:10px;background:#f8fafc;padding:8px}
+.mov-v76-info strong{display:block;color:var(--azul);margin-bottom:2px}
+@media(max-width:800px){.mov-v76-grid,.mov-v76-info{grid-template-columns:1fr}}
+@media print{#lancamentobaixa,#lancamentotransferencia{display:none!important}}
+
+
 @media print{.atividade-acoes,.atividade-modal,.btn-realizar,.btn-corrigir,.pin-status{display:none!important}}
 
 </style>
@@ -1503,7 +1533,7 @@ header{
       <circle cx="39" cy="42" r="7" fill="#1f4e79"/>
     </svg>
     <div>
-      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v75.0</h1>
+      <h1>Controle Zootécnico - Setor de Suinocultura - ETEC v76.1</h1>
       <div class="sub">Cadastro, calendário, ficha de lote e ficha semanal limpa por baia — v71.0 — confirmação de cio, quadro comparativo e linha do tempo reprodutiva</div>
     </div>
   </div>
@@ -1548,6 +1578,8 @@ header{
 
   <div class="submenu-group" data-submenu="manejo">
     <button class="tab" data-tab="lancamentodesmame" data-page-title="Registrar desmame">Registrar desmame</button>
+    <button class="tab" data-tab="lancamentobaixa" data-page-title="Registrar baixa / mortalidade">Baixa / mortalidade</button>
+    <button class="tab" data-tab="lancamentotransferencia" data-page-title="Transferir baia">Transferir baia</button>
     <button class="tab" data-tab="hoje" data-page-title="Hoje e próximos 7 dias">Hoje / 7 dias</button>
     <button class="tab" data-tab="fichasemanal" data-page-title="Ficha semanal">Ficha semanal</button>
     <button class="tab" data-tab="calendario" data-page-title="Calendário mensal">Calendário</button>
@@ -1607,7 +1639,7 @@ header{
       <button class="btn" id="btnCarregarScript">Recarregar dados</button>
     </div>
     <div class="notice">
-      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v75.0, coberturas, partos e desmames podem ser lançados diretamente pelo HTML com o mesmo PIN protegido pelo Apps Script. O Google Sheets permanece como base de dados e histórico, sem precisar ser usado no dia a dia.</span><br>
+      <b>Status:</b> <span id="statusCarga">Ao abrir, o sistema carrega os dados locais. A sincronização com a planilha é feita ao clicar em Atualizar dados. Na v76.0, coberturas, partos, desmames, baixas e transferências de baia podem ser lançados diretamente pelo HTML com o mesmo PIN protegido pelo Apps Script. O Google Sheets permanece como base de dados e histórico, sem precisar ser usado no dia a dia.</span><br>
       Nesta versão, o carregamento recomendado é pelo <b>Apps Script Web App</b>. Ele lê as abas Cadastro e Dados Suínos, calcula automaticamente a idade pela data de nascimento e entrega os dados ao HTML por JSONP, evitando bloqueios de CORS e o erro <b>Failed to fetch</b>.
     </div>
   </section>
@@ -1871,6 +1903,64 @@ header{
     </div>
   </section>
 
+  <section id="lancamentobaixa" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Registrar baixa / mortalidade</h2>
+          <p>Registra óbito, venda, abate, descarte ou saída. Para lotes, a quantidade é descontada do saldo operacional; para animais individuais, o status também é atualizado.</p>
+        </div>
+        <span class="badge b-ok">ETAPA 4 · baixa protegida</span>
+      </div>
+      <form id="formBaixaV76" class="lancamento-card-v73" onsubmit="event.preventDefault();salvarBaixaV76();">
+        <div class="mov-v76-grid">
+          <div><label>Registrar baixa de *</label><select id="baixaEscopoV76"><option value="lote">Lote / grupo de animais</option><option value="animal">Animal individual</option></select></div>
+          <div><label>Tipo de baixa *</label><select id="baixaTipoV76"><option value="Mortalidade / óbito">Mortalidade / óbito</option><option value="Venda">Venda</option><option value="Abate">Abate</option><option value="Descarte">Descarte</option><option value="Saída do setor">Saída do setor</option></select></div>
+          <div class="full"><label>Lote / animal *</label><select id="baixaAlvoV76" required></select></div>
+          <div><label>Data da baixa *</label><input id="baixaDataV76" type="date" required></div>
+          <div><label>Quantidade *</label><input id="baixaQuantidadeV76" type="number" min="1" step="1" value="1" required></div>
+          <div><label>Peso médio (kg)</label><input id="baixaPesoV76" type="number" min="0" step="0.01" placeholder="Opcional"></div>
+          <div><label>Motivo / destino</label><input id="baixaMotivoV76" placeholder="Ex.: causa provável, comprador, destino..."></div>
+          <div><label>Responsável pelo lançamento *</label><input id="baixaResponsavelV76" placeholder="Nome de quem está lançando" required></div>
+          <div><label>PIN do sistema *</label><input id="baixaPinV76" type="password" inputmode="numeric" autocomplete="off" placeholder="Mesmo PIN já configurado" required></div>
+          <div class="full"><label>Observação</label><textarea id="baixaObservacaoV76" rows="3" placeholder="Detalhes da ocorrência, condição dos animais, destino, providências tomadas..."></textarea></div>
+          <div class="full mov-v76-resumo" id="baixaResumoV76"></div>
+          <div class="full mov-v76-info"><div><strong>Baia atual</strong><span id="baixaBaiaV76">—</span></div><div><strong>Quantidade estimada antes da baixa</strong><span id="baixaSaldoV76">—</span></div><div><strong>Saldo após lançamento</strong><span id="baixaSaldoDepoisV76">—</span></div></div>
+        </div>
+        <div id="baixaMensagemV76" class="lancamento-aviso-v73" style="display:none"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" class="btn" onclick="limparBaixaV76()">Limpar</button><button type="submit" class="btn btn-lancamento-v73">✓ Registrar baixa</button></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="lancamentotransferencia" class="section">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h2>Transferir baia</h2>
+          <p>Atualiza a localização atual do lote ou animal e mantém o histórico da movimentação. Para lote, a transferência considera o lote inteiro.</p>
+        </div>
+        <span class="badge b-ok">ETAPA 4 · transferência protegida</span>
+      </div>
+      <form id="formTransferenciaV76" class="lancamento-card-v73" onsubmit="event.preventDefault();salvarTransferenciaV76();">
+        <div class="mov-v76-grid">
+          <div><label>Transferir *</label><select id="transferEscopoV76"><option value="lote">Lote inteiro</option><option value="animal">Animal individual</option></select></div>
+          <div><label>Data da transferência *</label><input id="transferDataV76" type="date" required></div>
+          <div class="full"><label>Lote / animal *</label><select id="transferAlvoV76" required></select></div>
+          <div><label>Baia atual</label><input id="transferOrigemV76" readonly></div>
+          <div><label>Nova baia *</label><input id="transferDestinoV76" placeholder="Ex.: C3, R2, Maternidade 4..." required></div>
+          <div><label>Responsável pelo lançamento *</label><input id="transferResponsavelV76" placeholder="Nome de quem está lançando" required></div>
+          <div><label>PIN do sistema *</label><input id="transferPinV76" type="password" inputmode="numeric" autocomplete="off" placeholder="Mesmo PIN já configurado" required></div>
+          <div class="full"><label>Observação</label><textarea id="transferObservacaoV76" rows="3" placeholder="Ex.: transferência maternidade-creche, reorganização de lotação, manutenção da baia..."></textarea></div>
+          <div class="full mov-v76-resumo" id="transferResumoV76"></div>
+          <div class="full mov-v76-alerta" id="transferAvisoV76">Ao transferir um lote, todos os animais desse lote passam a ter a nova baia como localização operacional atual.</div>
+        </div>
+        <div id="transferMensagemV76" class="lancamento-aviso-v73" style="display:none"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" class="btn" onclick="limparTransferenciaV76()">Limpar</button><button type="submit" class="btn btn-lancamento-v73">✓ Registrar transferência</button></div>
+      </form>
+    </div>
+  </section>
+
   <section id="fichamatriz" class="section">
     <div class="panel">
       <div class="title-row no-print">
@@ -2096,6 +2186,9 @@ let ATIVIDADES_API_ATIVA = false;
 let LANCAMENTOS_API_V73 = false;
 let PARTOS_API_V74 = false;
 let DESMAMES_API_V75 = false;
+let MOVIMENTACOES = [];
+let BAIXAS_API_V76 = false;
+let TRANSFERENCIAS_API_V76 = false;
 let EVENTO_ATIVIDADE_EM_EDICAO = null;
 const CHAVE_ATIVIDADES_LOCAL_V72 = "sui_etec_atividades_realizadas_v72";
 const CHAVE_PIN_LOCAL_V72 = "sui_etec_pin_atividades_v72";
@@ -2492,7 +2585,7 @@ function textoStatusAnimal(r){
 function animalDescartado(r){
  const s = textoStatusAnimal(r).toLowerCase()
    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
- return s.includes("descart") || s.includes("vendid") || s.includes("obito") || s.includes("morreu") || s.includes("morta") || s.includes("inativ");
+ return s.includes("descart") || s.includes("vendid") || s.includes("venda") || s.includes("obito") || s.includes("morreu") || s.includes("morta") || s.includes("abat") || s.includes("saida") || s.includes("baixa") || s.includes("inativ");
 }
 
 function badgeStatusAnimal(r){
@@ -2681,6 +2774,10 @@ function registroAtividadeAutomatico(e){
   }
   if(ac==="Desmame / saída da matriz" && e.dataDesmame){
     return {chave:chaveEventoAtividade(e),dataRealizada:e.dataDesmame,responsavel:"Registro de desmame",observacao:"Desmame real já informado nos dados zootécnicos.",automatico:true,origem:"dados"};
+  }
+  if(ac.includes("Transferência maternidade-creche") || ac.includes("Transferencia maternidade-creche")){
+    const mov=(MOVIMENTACOES||[]).filter(m=>normalizarTextoBusca(m.tipo).includes("transfer") && loteKey(m.lote)===loteKey(e.lote)).sort((a,b)=>((movDataV76(b)||new Date(0))-(movDataV76(a)||new Date(0))))[0];
+    if(mov && mov.data) return {chave:chaveEventoAtividade(e),dataRealizada:mov.data,responsavel:mov.responsavel||"Registro de transferência",observacao:`Transferência registrada: ${mov.baiaOrigem||"—"} → ${mov.baiaDestino||"—"}.`,automatico:true,origem:"movimentacoes"};
   }
   return null;
 }
@@ -3213,6 +3310,69 @@ async function salvarDesmameV75(){
   }catch(err){mostrarMensagemDesmameV75(err.message||String(err),"erro");}
 }
 
+
+// --- v76: baixas/mortalidade e transferências de baia ---
+function lotesAtivosV76(){
+  const mapa=new Map();
+  DATA.map(normalizar).filter(r=>loteComFicha(r)).forEach(r=>{const k=loteKey(r.lote);const a=mapa.get(k);if(!a || (r.partoRealDt&&(!a.partoRealDt||r.partoRealDt>a.partoRealDt))) mapa.set(k,r);});
+  return [...mapa.values()].sort((a,b)=>String(a.lote).localeCompare(String(b.lote),"pt-BR"));
+}
+function animaisAtivosV76(){
+  const mapa=new Map();
+  DATA.map(normalizar).filter(r=>r.id && !animalDescartado(r)).forEach(r=>{const k=String(r.id);const a=mapa.get(k);const da=rDataMin(r),db=a?rDataMin(a):null;if(!a || (da&&(!db||da>db))) mapa.set(k,r);});
+  (LEITOES||[]).filter(l=>l.id && !leitaoBaixado(l,dataRef)).forEach(l=>{if(!mapa.has(String(l.id))) mapa.set(String(l.id),{id:l.id,nome:l.nome||"Leitão",categoria:"Leitão",lote:l.lote||"",baia:l.baia||"",statusAnimal:l.status||"",origemLeitao:true});});
+  return [...mapa.values()].sort((a,b)=>String(a.nome||a.id).localeCompare(String(b.nome||b.id),"pt-BR"));
+}
+function alvoMovV76(escopo,valor){
+  return escopo==="lote"?lotesAtivosV76().find(r=>loteKey(r.lote)===loteKey(valor)):animaisAtivosV76().find(r=>String(r.id)===String(valor));
+}
+function preencherAlvosMovV76(selectId,escopo){
+  const s=$(selectId); if(!s)return; const atual=s.value;
+  const regs=escopo==="lote"?lotesAtivosV76():animaisAtivosV76();
+  s.innerHTML='<option value="">Selecione...</option>'+regs.map(r=>escopo==="lote"?`<option value="${esc(r.lote)}">${esc(r.lote)} · ${esc(matrizLabel(r))} · ${qtdAnimaisBaseLote(r,dataRef)??"?"} animal(is)</option>`:`<option value="${esc(r.id)}">${esc(r.nome||"Animal")} (${esc(r.id)}) · ${esc(r.categoria||"Animal")}</option>`).join("");
+  if([...s.options].some(o=>o.value===atual))s.value=atual;
+}
+function renderLancamentoBaixaV76(){
+  if(!$("#baixaEscopoV76"))return;
+  const escopo=$("#baixaEscopoV76").value||"lote"; preencherAlvosMovV76("#baixaAlvoV76",escopo);
+  const d=$("#baixaDataV76");if(d&&!d.value)d.value=iso(new Date());
+  const resp=$("#baixaResponsavelV76");if(resp&&!resp.value)resp.value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";
+  const q=$("#baixaQuantidadeV76"); if(q){q.disabled=escopo==="animal";if(escopo==="animal")q.value="1";}
+  atualizarResumoBaixaV76();
+}
+function atualizarResumoBaixaV76(){
+  const escopo=$("#baixaEscopoV76")?.value||"lote", valor=$("#baixaAlvoV76")?.value||"", r=alvoMovV76(escopo,valor);
+  const qtd=Math.max(1,parseInt($("#baixaQuantidadeV76")?.value||"1",10)||1), resumo=$("#baixaResumoV76");
+  let saldo=null,baia="—"; if(r){baia=baiaDoRegistro(r)||r.baia||"—";if(escopo==="lote")saldo=qtdAnimaisBaseLote(r,dataRef);else saldo=1;}
+  if(resumo) resumo.innerHTML=r?(escopo==="lote"?`<b>Lote ${esc(r.lote)}</b> · ${esc(matrizLabel(r))}<br>O lançamento será guardado em Movimentações e descontado do saldo operacional do lote.`:`<b>${esc(r.nome||"Animal")} (${esc(r.id)})</b> · ${esc(r.categoria||"Animal")}<br>O status do animal será atualizado e a ocorrência ficará registrada no histórico.`):'<b>Selecione um lote ou animal.</b>';
+  if($("#baixaBaiaV76"))$("#baixaBaiaV76").textContent=baia;
+  if($("#baixaSaldoV76"))$("#baixaSaldoV76").textContent=saldo===null?"—":String(saldo);
+  if($("#baixaSaldoDepoisV76"))$("#baixaSaldoDepoisV76").textContent=saldo===null?"—":String(Math.max(0,saldo-(escopo==="animal"?1:qtd)));
+}
+function mensagemBaixaV76(msg,tipo=""){const e=$("#baixaMensagemV76");if(!e)return;e.style.display="block";e.textContent=msg;e.className="lancamento-aviso-v73"+(tipo?" "+tipo:"");}
+function limparBaixaV76(){const f=$("#formBaixaV76");if(f)f.reset();if($("#baixaDataV76"))$("#baixaDataV76").value=iso(new Date());if($("#baixaResponsavelV76"))$("#baixaResponsavelV76").value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";if($("#baixaMensagemV76"))$("#baixaMensagemV76").style.display="none";renderLancamentoBaixaV76();}
+async function salvarBaixaV76(){
+  if(!BAIXAS_API_V76){mensagemBaixaV76("Atualize a implantação do Apps Script para a Etapa 4 antes de registrar baixas.","erro");return;}
+  const escopo=$("#baixaEscopoV76").value, valor=$("#baixaAlvoV76").value, r=alvoMovV76(escopo,valor); if(!r){mensagemBaixaV76("Selecione o lote ou animal.","erro");return;}
+  const data=$("#baixaDataV76").value,tipo=$("#baixaTipoV76").value,qtd=escopo==="animal"?1:Math.max(0,parseInt($("#baixaQuantidadeV76").value||"0",10)||0),peso=$("#baixaPesoV76").value,motivo=$("#baixaMotivoV76").value.trim(),responsavel=$("#baixaResponsavelV76").value.trim(),observacao=$("#baixaObservacaoV76").value.trim(),pin=$("#baixaPinV76").value.trim();
+  if(!data||qtd<=0||!responsavel||!pin){mensagemBaixaV76("Preencha data, quantidade, responsável e PIN.","erro");return;}
+  if(escopo==="lote"){const saldo=qtdAnimaisBaseLote(r,dataRef);if(saldo!==null&&qtd>saldo){mensagemBaixaV76(`A baixa não pode ser maior que o saldo estimado do lote (${saldo}).`,"erro");return;}}
+  try{mensagemBaixaV76("Gravando baixa...","");const resp=await chamarJSONPComParametros($("#scriptUrl").value.trim(),{modo:"registrarBaixa",pin,escopo,tipo_baixa:tipo,data_movimento:data,id:r.id||"",nome:r.nome||"",lote:escopo==="lote"?(r.lote||""):(r.lote||""),quantidade:qtd,peso_medio_kg:peso,motivo,responsavel,observacao});if(!resp||resp.ok!==true)throw new Error(resp?.erro||"O Apps Script não confirmou a baixa.");localStorage.setItem(CHAVE_RESPONSAVEL_LOCAL_V72,responsavel);await carregarDadosAppsScript(true);if($("#baixaPinV76"))$("#baixaPinV76").value="";mensagemBaixaV76(`✓ ${resp.tipo||tipo} registrada. Quantidade: ${resp.quantidade||qtd}.`,"ok");renderLancamentoBaixaV76();}catch(err){mensagemBaixaV76(err.message||String(err),"erro");}
+}
+function renderLancamentoTransferenciaV76(){
+  if(!$("#transferEscopoV76"))return;const escopo=$("#transferEscopoV76").value||"lote";preencherAlvosMovV76("#transferAlvoV76",escopo);const d=$("#transferDataV76");if(d&&!d.value)d.value=iso(new Date());const resp=$("#transferResponsavelV76");if(resp&&!resp.value)resp.value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";atualizarResumoTransferenciaV76();
+}
+function atualizarResumoTransferenciaV76(){
+  const escopo=$("#transferEscopoV76")?.value||"lote",valor=$("#transferAlvoV76")?.value||"",r=alvoMovV76(escopo,valor),orig=r?(baiaDoRegistro(r)||r.baia||""):"";if($("#transferOrigemV76"))$("#transferOrigemV76").value=orig;const resumo=$("#transferResumoV76");if(resumo)resumo.innerHTML=r?(escopo==="lote"?`<b>Lote ${esc(r.lote)}</b> · ${esc(matrizLabel(r))} · ${qtdAnimaisBaseLote(r,dataRef)??"?"} animal(is)<br>Baia atual: <b>${esc(orig||"não informada")}</b>. A transferência será aplicada ao lote inteiro.`:`<b>${esc(r.nome||"Animal")} (${esc(r.id)})</b> · ${esc(r.categoria||"Animal")}<br>Baia atual: <b>${esc(orig||"não informada")}</b>.`):'<b>Selecione um lote ou animal.</b>';
+}
+function mensagemTransferV76(msg,tipo=""){const e=$("#transferMensagemV76");if(!e)return;e.style.display="block";e.textContent=msg;e.className="lancamento-aviso-v73"+(tipo?" "+tipo:"");}
+function limparTransferenciaV76(){const f=$("#formTransferenciaV76");if(f)f.reset();if($("#transferDataV76"))$("#transferDataV76").value=iso(new Date());if($("#transferResponsavelV76"))$("#transferResponsavelV76").value=localStorage.getItem(CHAVE_RESPONSAVEL_LOCAL_V72)||"";if($("#transferMensagemV76"))$("#transferMensagemV76").style.display="none";renderLancamentoTransferenciaV76();}
+async function salvarTransferenciaV76(){
+  if(!TRANSFERENCIAS_API_V76){mensagemTransferV76("Atualize a implantação do Apps Script para a Etapa 4 antes de registrar transferências.","erro");return;}
+  const escopo=$("#transferEscopoV76").value,valor=$("#transferAlvoV76").value,r=alvoMovV76(escopo,valor);if(!r){mensagemTransferV76("Selecione o lote ou animal.","erro");return;}const data=$("#transferDataV76").value,origem=$("#transferOrigemV76").value.trim(),destino=$("#transferDestinoV76").value.trim(),responsavel=$("#transferResponsavelV76").value.trim(),observacao=$("#transferObservacaoV76").value.trim(),pin=$("#transferPinV76").value.trim();if(!data||!destino||!responsavel||!pin){mensagemTransferV76("Preencha data, nova baia, responsável e PIN.","erro");return;}if(normalizarTextoBusca(origem)===normalizarTextoBusca(destino)){mensagemTransferV76("A nova baia é igual à baia atual.","erro");return;}
+  try{mensagemTransferV76("Registrando transferência...","");const resp=await chamarJSONPComParametros($("#scriptUrl").value.trim(),{modo:"registrarTransferencia",pin,escopo,data_movimento:data,id:r.id||"",nome:r.nome||"",lote:escopo==="lote"?(r.lote||""):(r.lote||""),baia_origem:origem,baia_destino:destino,responsavel,observacao});if(!resp||resp.ok!==true)throw new Error(resp?.erro||"O Apps Script não confirmou a transferência.");localStorage.setItem(CHAVE_RESPONSAVEL_LOCAL_V72,responsavel);await carregarDadosAppsScript(true);if($("#transferPinV76"))$("#transferPinV76").value="";if($("#transferDestinoV76"))$("#transferDestinoV76").value="";mensagemTransferV76(`✓ Transferência registrada: ${resp.baia_origem||origem||"—"} → ${resp.baia_destino||destino}.`,"ok");renderLancamentoTransferenciaV76();}catch(err){mensagemTransferV76(err.message||String(err),"erro");}
+}
+
 function normalizar(r){
  const cobertura=parseDate(r.cobertura);
  const partoPrev=parseDate(r.parto_previsto)||addDays(cobertura,PARAMS.gestacao);
@@ -3227,8 +3387,36 @@ function normalizar(r){
  return {...r,loteOriginal:loteOriginal,lote:lotePadrao,coberturaDt:cobertura,confirmacaoPlanilhaDt:confirmacaoPlanilha,confirmacaoDt:confirmacao,partoPrevDt:partoPrev,partoRealDt:partoReal,partoBaseDt:partoBase,nascimentoDt:parseDate(r.nascimento),dataDesmameDt:parseDate(r.dataDesmame)};
 }
 
+
+// --- v76: movimentos reais passam a influenciar baia atual e saldo dos lotes ---
+function movDataV76(m){return parseDate(m?.data) || parseDate(m?.registradoEm)}
+function ultimaTransferenciaV76(ref){
+  if(!ref) return null;
+  const id=normalizarTextoBusca(ref.id||ref.nome||""), lote=loteKey(ref.lote||"");
+  return (MOVIMENTACOES||[]).filter(m=>{
+    const tipo=normalizarTextoBusca(m.tipo);
+    if(!tipo.includes("transfer")) return false;
+    if(String(m.status||"").toLowerCase().includes("excl")) return false;
+    if(lote && loteKey(m.lote)===lote) return true;
+    const mid=normalizarTextoBusca(m.id||m.nome||"");
+    return id && mid===id;
+  }).sort((a,b)=>((movDataV76(b)||new Date(0))-(movDataV76(a)||new Date(0))))[0]||null;
+}
+function qtdSaidasMovimentacoesLoteV76(lote,ate=dataRef,depoisDe=null){
+  const k=loteKey(lote); if(!k) return 0;
+  return (MOVIMENTACOES||[]).reduce((s,m)=>{
+    if(loteKey(m.lote)!==k || normalizarTextoBusca(m.escopo)!=="lote") return s;
+    if(normalizarTextoBusca(m.tipo).includes("transfer")) return s;
+    const d=movDataV76(m); if(d && ate && d>ate) return s;
+    if(d && depoisDe && d<=depoisDe) return s;
+    return s+Math.max(0,Number(String(m.quantidade||0).replace(",","."))||0);
+  },0);
+}
+
 function baiaDoRegistro(r){
  if(!r) return "";
+ const mov=ultimaTransferenciaV76(r);
+ if(mov && String(mov.baiaDestino||"").trim()) return String(mov.baiaDestino).trim();
  const direta = String(r.baia || r.baiaAtual || r.baia_lote || r.baia_matriz || "").trim();
  if(direta) return direta;
 
@@ -3493,14 +3681,15 @@ function qtdAnimaisBaseLote(r, ate=dataRef){
  // a partir da data da pesagem. Na prática, este campo está sendo usado como quantidade atual do lote.
  const pesagemQtd = ultimaPesagemAte(r, ate);
  if(pesagemQtd && pesagemQtd.animaisPesados !== null && pesagemQtd.animaisPesados !== undefined && pesagemQtd.animaisPesados > 0){
-   return pesagemQtd.animaisPesados;
+   const saidasDepoisPesagem=qtdSaidasMovimentacoesLoteV76(r.lote,ate,pesagemQtd.dataDt||null);
+   return Math.max(0,pesagemQtd.animaisPesados-saidasDepoisPesagem);
  }
 
  // Prioridade 1: cadastro individual de leitões.
  // Se houver leitões cadastrados para o lote, o cálculo da ração usa somente os ativos.
  // Status como óbito, morte, vendido, saída ou baixa são descontados automaticamente conforme a data.
  const ativosLeitoes = qtdLeitoesAtivosNoLote(r.lote, ate);
- if(ativosLeitoes !== null) return ativosLeitoes;
+ if(ativosLeitoes !== null) return Math.max(0,ativosLeitoes-qtdSaidasMovimentacoesLoteV76(r.lote,ate));
 
  const totalDesm = Number(String(r.desmamados || somaCampos(r.desm_machos, r.desm_femeas)).replace(",", "."));
  const totalNasc = Number(String(r.nasc_vivos || somaCampos(r.nasc_machos, r.nasc_femeas)).replace(",", "."));
@@ -3519,6 +3708,8 @@ function qtdAnimaisBaseLote(r, ate=dataRef){
    }
  }
 
+ // v76: baixas lançadas pelo HTML ficam no livro de Movimentações.
+ base = Math.max(0, base - qtdSaidasMovimentacoesLoteV76(r.lote, ate));
  return base;
 }
 
@@ -4136,6 +4327,8 @@ function loteEncerrado(r){
 
  const leits = leitoesDoLote(r.lote);
  if(leits.length && leits.every(l=>leitaoBaixado(l, dataRef))) return true;
+ const atualV76=qtdAnimaisBaseLote(r,dataRef);
+ if(atualV76!==null && atualV76<=0) return true;
  return false;
 }
 
@@ -4545,6 +4738,7 @@ function mapJSON(payload){
  var semanalRows = [];
  var pesagensRows = [];
  var atividadesRows = [];
+ var movimentacoesRows = [];
 
  if(Array.isArray(payload)){
    dadosRows = payload;
@@ -4555,10 +4749,13 @@ function mapJSON(payload){
    semanalRows = payload.semanal || payload["Semanal"] || payload["semanal"] || payload.resumoSemanal || payload.fichaSemanal || payload.ficha_semanal || payload["Ficha Semanal"] || payload["Ficha_Semanal"] || payload["Resumo Semanal"] || [];
    pesagensRows = payload.pesagens_lotes || payload.PESAGENS_LOTES || payload["Pesagens_Lotes"] || payload["Pesagens Lotes"] || payload.pesagens || [];
     atividadesRows = payload.atividades_realizadas || payload.atividadesRealizadas || payload["Atividades Realizadas"] || payload["Atividades_Realizadas"] || [];
+    movimentacoesRows = payload.movimentacoes || payload.MOVIMENTACOES || payload["Movimentações"] || payload["Movimentacoes"] || [];
     ATIVIDADES_API_ATIVA = payload.atividades_api === true || payload.atividadesApi === true;
     LANCAMENTOS_API_V73 = payload.lancamentos_api_v73 === true || payload.lancamentosApiV73 === true;
     PARTOS_API_V74 = payload.partos_api_v74 === true || payload.partosApiV74 === true;
     DESMAMES_API_V75 = payload.desmames_api_v75 === true || payload.desmamesApiV75 === true;
+    BAIXAS_API_V76 = payload.baixas_api_v76 === true || payload.baixasApiV76 === true;
+    TRANSFERENCIAS_API_V76 = payload.transferencias_api_v76 === true || payload.transferenciasApiV76 === true;
  }
 
  function limparChave(s){
@@ -4627,6 +4824,7 @@ function mapJSON(payload){
      idadeMeses:valorIdadeMeses(r),
      categoria:pegarExato(r,["Categoria","Tipo"]) || "",
      statusAnimal:pegarFlex(r,["Status","Situação","Situacao","Situação do animal","Situacao do animal","Status animal","Condição","Condicao"]),
+     statusLote:pegarFlex(r,["Status lote","Situação lote","Situacao lote","Status do lote"]),
      foto:pegarFlex(r,["Foto","URL Foto","Url Foto","Link foto","Link da foto","Imagem","URL imagem","Url imagem"]),
      baia:pegarFlex(r,["Baia","Baía","Baia atual","Baia da matriz","Baia animal","Baia no setor","Instalação","Instalacao"]),
      escoreCorporal:pegarFlex(r,["Escore corporal","Escore","ECC","Condição corporal","Condicao corporal"]),
@@ -4775,6 +4973,27 @@ function mapJSON(payload){
    };
  }
 
+
+ function mapMovimentacaoV76(r){
+   return {
+     registradoEm:pegarFlex(r,["Data/hora registro","Registro","Registrado em"]),
+     data:pegarFlex(r,["Data movimento","Data","Data da movimentação","Data da movimentacao"]),
+     tipo:pegarFlex(r,["Tipo","Operação","Operacao"]),
+     escopo:pegarFlex(r,["Escopo"]),
+     id:pegarFlex(r,["ID","ID animal","ID matriz"]),
+     nome:pegarFlex(r,["Animal/Matriz","Animal","Matriz","Nome"]),
+     lote:pegarFlex(r,["Lote"]),
+     quantidade:pegarFlex(r,["Quantidade","Qtd"]),
+     baiaOrigem:pegarFlex(r,["Baia origem","Origem"]),
+     baiaDestino:pegarFlex(r,["Baia destino","Destino baia","Nova baia"]),
+     motivo:pegarFlex(r,["Motivo/Destino","Motivo","Destino"]),
+     pesoMedio:pegarFlex(r,["Peso médio kg","Peso medio kg","Peso médio","Peso medio"]),
+     responsavel:pegarFlex(r,["Responsável","Responsavel"]),
+     observacao:pegarFlex(r,["Observação","Observacao","Obs"]),
+     status:pegarFlex(r,["Status"])
+   };
+ }
+
  function mapPesagem(r){
    return {
      data:pegarFlex(r,["Data","Data pesagem","Data da pesagem"]),
@@ -4802,6 +5021,7 @@ function mapJSON(payload){
  LEITOES = leitoesRows.map(mapLeitao).filter(l=>l.id || l.nome || l.lote || l.dataNascimento);
  PESAGENS_LOTES = pesagensRows.map(mapPesagem).filter(p=>p.data || p.lote || p.peso_medio_kg);
  ATIVIDADES_REALIZADAS_SERVIDOR = atividadesRows.map(mapAtividadeRealizada).filter(a=>a.chave && a.dataRealizada);
+ MOVIMENTACOES = movimentacoesRows.map(mapMovimentacaoV76).filter(m=>m.data || m.tipo || m.id || m.lote);
  atualizarStatusPinAtividades();
  
  function expandirSemanalBaias(rows){
@@ -6546,7 +6766,7 @@ function renderFichaSemanalColaborador(){
 function renderTudo(){
  dataRef=parseDate($("#dataRef").value)||new Date();
  atualizarStatusPinAtividades();
- preencherFiltrosSuspensos(); renderLancamentoCoberturaV73(); renderLancamentoPartoV74(); renderLancamentoDesmameV75(); renderAlertaRepeticaoCio(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderQuadroPartos(); renderDesempenhoReprodutivoV71(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderLeitoes(); renderFichaSemanalColaborador(); renderRelatorios(); renderNutricao();
+ preencherFiltrosSuspensos(); renderLancamentoCoberturaV73(); renderLancamentoPartoV74(); renderLancamentoDesmameV75(); renderLancamentoBaixaV76(); renderLancamentoTransferenciaV76(); renderAlertaRepeticaoCio(); renderMetricas(); renderProximos(); renderHoje(); renderCalendario(); renderQuadroPartos(); renderDesempenhoReprodutivoV71(); renderCadastro(); renderMatrizes(); renderSelMatrizFicha(); renderFichaMatriz(); renderReprodutores(); renderSelLote(); renderFichaLote(); renderLeitoes(); renderFichaSemanalColaborador(); renderRelatorios(); renderNutricao();
 }
 
 
@@ -6627,6 +6847,8 @@ $$(".tab").forEach(b=>b.addEventListener("click",()=>{
   if(b.dataset.tab==="lancamentocobertura") renderLancamentoCoberturaV73();
   if(b.dataset.tab==="lancamentoparto") renderLancamentoPartoV74();
   if(b.dataset.tab==="lancamentodesmame") renderLancamentoDesmameV75();
+  if(b.dataset.tab==="lancamentobaixa") renderLancamentoBaixaV76();
+  if(b.dataset.tab==="lancamentotransferencia") renderLancamentoTransferenciaV76();
 }));
 $("#busca").addEventListener("input",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderRelatorios();});
 $("#filtroMatriz").addEventListener("change",()=>{renderCadastro();renderMatrizes();renderReprodutores();renderProximos();renderHoje();renderFichaSemanalColaborador();renderLeitoes();renderCalendario();renderQuadroPartos();renderSelMatrizFicha();renderFichaMatriz();renderSelLote();renderFichaLote();renderRelatorios();});
@@ -6650,7 +6872,7 @@ async function carregarDadosAppsScript(silencioso=false){
    if(!arr.length) throw new Error("Nenhum registro encontrado na resposta do Apps Script.");
    DATA=arr;
    renderTudo();
-   if(status) status.textContent = "Dados sincronizados. Registros: " + DATA.length + ". Leitões: " + (LEITOES ? LEITOES.length : 0) + ". Semanal: " + (SEMANAL ? SEMANAL.length : 0) + ". Pesagens: " + (PESAGENS_LOTES ? PESAGENS_LOTES.length : 0) + "."; if(syncResumo){ syncResumo.textContent = "Dados sincronizados com a planilha às " + new Date().toLocaleTimeString("pt-BR"); syncResumo.classList.remove("erro"); syncResumo.classList.add("ok"); }
+   if(status) status.textContent = "Dados sincronizados. Registros: " + DATA.length + ". Leitões: " + (LEITOES ? LEITOES.length : 0) + ". Semanal: " + (SEMANAL ? SEMANAL.length : 0) + ". Pesagens: " + (PESAGENS_LOTES ? PESAGENS_LOTES.length : 0) + ". Movimentações: " + (MOVIMENTACOES ? MOVIMENTACOES.length : 0) + "."; if(syncResumo){ syncResumo.textContent = "Dados sincronizados com a planilha às " + new Date().toLocaleTimeString("pt-BR"); syncResumo.classList.remove("erro"); syncResumo.classList.add("ok"); }
    if(!silencioso) alert("Dados recarregados via Apps Script: "+DATA.length);
  }catch(e){
    const status = $("#statusCarga"); const syncResumo = $("#syncResumo");
@@ -6677,6 +6899,8 @@ document.addEventListener("input",e=>{
   if(e.target && (e.target.id==="desmameMachosV75" || e.target.id==="desmameFemeasV75" || e.target.id==="desmamePesoMedioV75" || e.target.id==="desmameDataV75")){
     atualizarResumoDesmameV75();
   }
+  if(e.target && e.target.id==="baixaQuantidadeV76") atualizarResumoBaixaV76();
+  if(e.target && e.target.id==="transferDestinoV76") atualizarResumoTransferenciaV76();
 });
 
 document.addEventListener("change",e=>{
@@ -6689,6 +6913,10 @@ document.addEventListener("change",e=>{
   if(e.target && (e.target.id==="desmameLoteV75" || e.target.id==="desmameDataV75" || e.target.id==="desmameMachosV75" || e.target.id==="desmameFemeasV75" || e.target.id==="desmamePesoMedioV75")){
     atualizarResumoDesmameV75();
   }
+  if(e.target && e.target.id==="baixaEscopoV76") renderLancamentoBaixaV76();
+  if(e.target && (e.target.id==="baixaAlvoV76" || e.target.id==="baixaTipoV76")) atualizarResumoBaixaV76();
+  if(e.target && e.target.id==="transferEscopoV76") renderLancamentoTransferenciaV76();
+  if(e.target && e.target.id==="transferAlvoV76") atualizarResumoTransferenciaV76();
   if(e.target && e.target.id==="selMatrizDesempenho"){
     MATRIZ_DESEMPENHO_V71=e.target.value;
     renderTabelaDesempenhoV71();
